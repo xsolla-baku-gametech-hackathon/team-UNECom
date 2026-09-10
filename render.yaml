@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: fraud-radar-engine
+    runtime: python
+    rootDir: engine
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false # set manually in the Render dashboard — never commit a real key
+      - key: CLAUDE_MODEL
+        value: claude-sonnet-5
+
+  - type: web
+    name: fraud-radar-api
+    runtime: node
+    rootDir: api
+    plan: free
+    buildCommand: npm install && npm run build && npx prisma generate && npx prisma db push
+    startCommand: npm run start
+    envVars:
+      - key: DATABASE_URL
+        value: file:./dev.db
+      - key: HOST
+        value: 0.0.0.0
+      - key: ENGINE_URL
+        sync: false # set to the fraud-radar-engine service's Render URL after it deploys
+      - key: ENGINE_TIMEOUT_MS
+        value: 5000
