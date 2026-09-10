@@ -383,31 +383,32 @@ export default function App() {
             </div>
           )}
 
-          {selectedRing && derived && (
-            <InvestigationPanel
-              ring={selectedRing}
-              flagged={derived.flaggedRingIds.has(selectedRing.id)}
-              armed={armed}
-              committing={committing}
-              onArm={setArmed}
-              onCommit={commitDecision}
-              onClose={() => select(null)}
-              onNextCase={nextCase}
-              ringSensOverride={ringSensOverrides[selectedRing.id] ?? null}
-              globalSensitivity={sensitivity}
-              onSetRingSensOverride={(v) =>
-                setRingSensOverrides((prev) => {
-                  const next = { ...prev };
-                  if (v == null) delete next[selectedRing.id];
-                  else next[selectedRing.id] = v;
-                  return next;
-                })
-              }
-            />
-          )}
 
           <UploadPanel open={uploadOpen} mock={mock} onClose={() => setUploadOpen(false)} onUploaded={load} />
         </div>
+
+        {selectedRing && derived && (
+          <InvestigationPanel
+            ring={selectedRing}
+            flagged={derived.flaggedRingIds.has(selectedRing.id)}
+            armed={armed}
+            committing={committing}
+            onArm={setArmed}
+            onCommit={commitDecision}
+            onClose={() => select(null)}
+            onNextCase={nextCase}
+            ringSensOverride={ringSensOverrides[selectedRing.id] ?? null}
+            globalSensitivity={sensitivity}
+            onSetRingSensOverride={(v) =>
+              setRingSensOverrides((prev) => {
+                const next = { ...prev };
+                if (v == null) delete next[selectedRing.id];
+                else next[selectedRing.id] = v;
+                return next;
+              })
+            }
+          />
+        )}
       </div>
     </div>
   );

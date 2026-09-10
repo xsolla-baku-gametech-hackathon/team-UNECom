@@ -61,7 +61,7 @@ export function InvestigationPanel({
 
   return (
     <div
-      className="flex h-full flex-col overflow-y-auto border-l"
+      className="flex h-full shrink-0 flex-col overflow-y-auto border-l"
       style={{ width: 380, borderColor: "#24282f", background: "#0a0b0d" }}
     >
       <div className="flex items-start gap-2.5 border-b px-3.5 py-3" style={{ borderColor: "#24282f", background: "#0d0f12" }}>
