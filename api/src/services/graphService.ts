@@ -68,6 +68,22 @@ function deriveSignals(ring: EngineRingResult): string[] {
 export const graphService = {
   async buildSnapshot(): Promise<GraphSnapshot> {
     const contractEvents = await eventRepository.findAllAsContract();
+
+    // An empty database is a real, expected state — it's what /web renders its
+    // "no data ingested" screen from, and what a first upload starts from. The
+    // engine rejects an empty event list (AnalyzeRequest requires min_length=1),
+    // so asking it would surface as engine_unreachable and push /web into its
+    // offline mock mode instead of showing the empty state.
+    if (contractEvents.length === 0) {
+      return {
+        generatedAt: new Date().toISOString(),
+        accounts: [],
+        events: [],
+        rings: [],
+        stats: { activeAccounts: 0, dailyEvents: 0, dailyVolumeUsd: 0, ringsAtRisk: 0 },
+      };
+    }
+
     const [analysis, decisions] = await Promise.all([
       engineClient.analyze(contractEvents),
       ringDecisionRepository.findAll(),
