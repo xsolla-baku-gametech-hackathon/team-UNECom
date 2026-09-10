@@ -25,7 +25,8 @@ Env vars (`.env`):
 | `PORT` | `3001` | API listen port |
 | `DATABASE_URL` | `file:./dev.db` | SQLite file |
 | `ENGINE_URL` | `http://localhost:8000` | Base URL of `/engine` |
-| `ENGINE_TIMEOUT_MS` | `5000` | Abort engine calls after this long |
+| `ENGINE_TIMEOUT_MS` | `5000` | Abort engine `/analyze` calls after this long |
+| `ENGINE_EXPLAIN_TIMEOUT_MS` | `30000` | Separate budget for engine `/explain`, which calls Claude (10–15 s typical) |
 
 ## Engine contract
 

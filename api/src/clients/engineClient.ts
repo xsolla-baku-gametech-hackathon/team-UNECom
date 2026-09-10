@@ -67,9 +67,9 @@ export class EngineError extends Error {
   }
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+async function request<T>(path: string, init?: RequestInit, timeoutMs = config.engineTimeoutMs): Promise<T> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), config.engineTimeoutMs);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   let res: Response;
   try {
@@ -105,8 +105,10 @@ export const engineClient = {
   // the analysis_id from a just-made analyze() call rather than relying on
   // the engine's "latest analysis" fallback, so we're never explaining a
   // stale/unrelated dataset another caller last analyzed.
+  // The engine calls Claude inside this request, so it gets its own, longer
+  // timeout — the default analyze timeout aborted every real explanation.
   explain(ringId: string, analysisId: string): Promise<EngineExplainResponse> {
     const query = new URLSearchParams({ analysis_id: analysisId });
-    return request(`/explain/${encodeURIComponent(ringId)}?${query}`);
+    return request(`/explain/${encodeURIComponent(ringId)}?${query}`, undefined, config.engineExplainTimeoutMs);
   },
 };
