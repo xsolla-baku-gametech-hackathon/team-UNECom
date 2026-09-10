@@ -55,6 +55,14 @@ function toRingExplanation(res: EngineExplainResponse) {
   };
 }
 
+type RingExplanation = ReturnType<typeof toRingExplanation>;
+
+// One Claude call per (ring, dataset). Events are only ever inserted, never
+// edited or deleted, so the stored event count identifies the dataset; a new
+// upload changes the count and invalidates every cached case. Reopening a
+// case, or a client pre-warming the flagged rings, then costs nothing.
+const cache = new Map<string, Promise<RingExplanation>>();
+
 export const explanationService = {
   // /web's InvestigationPanel "Claude izahatı" section. Runs a fresh
   // analyze() first to get an analysis_id grounded in the current stored
@@ -63,8 +71,18 @@ export const explanationService = {
   // caller last ran.
   async getExplanation(ringId: string) {
     const events = await eventRepository.findAllAsContract();
-    const analysis = await engineClient.analyze(events);
-    const res = await engineClient.explain(ringId, analysis.analysis_id);
-    return toRingExplanation(res);
+    const key = `${events.length}:${ringId}`;
+    let pending = cache.get(key);
+    if (!pending) {
+      pending = (async () => {
+        const analysis = await engineClient.analyze(events);
+        const res = await engineClient.explain(ringId, analysis.analysis_id);
+        return toRingExplanation(res);
+      })();
+      cache.set(key, pending);
+      // A failed call must not poison the cache — the next request retries.
+      pending.catch(() => cache.delete(key));
+    }
+    return pending;
   },
 };
