@@ -32,6 +32,12 @@ function buildAccountCreatedAtMap(events: EngineEvent[]): Map<string, string> {
   return map;
 }
 
+// Engine risk_score is 0-100 (risk_scoring.py caps at min(risk, 100.0));
+// /web's GraphSnapshot expects 0-1 (web/src/lib/types.ts).
+function normalizeRiskScore(score: number): number {
+  return Math.min(1, Math.max(0, score / 100));
+}
+
 function buildAccountRingMap(rings: EngineRingResult[]): Map<string, string> {
   const map = new Map<string, string>();
   for (const ring of rings) {
@@ -75,7 +81,7 @@ export const graphService = {
       id: a.account_id,
       label: a.account_id,
       createdAt: accountCreatedAt.get(a.account_id) ?? null,
-      riskScore: a.risk_score,
+      riskScore: normalizeRiskScore(a.risk_score),
       ringId: accountRingId.get(a.account_id) ?? null,
     }));
 
@@ -83,7 +89,7 @@ export const graphService = {
       id: r.ring_id,
       memberAccountIds: r.account_ids,
       hubAccountIds: r.hub_candidates,
-      riskScore: r.risk_score,
+      riskScore: normalizeRiskScore(r.risk_score),
       status: decisionByRingId.get(r.ring_id) ?? "pending",
       signals: deriveSignals(r),
       totalValueUsd: r.total_value_usd,
