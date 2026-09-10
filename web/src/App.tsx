@@ -61,6 +61,10 @@ export default function App() {
     [snapshot, derived],
   );
   const decidedCount = flaggedRings.filter((r) => r.status !== "pending").length;
+  const totalVolumeUsd = useMemo(
+    () => (snapshot ? snapshot.events.reduce((sum, e) => sum + e.valueUsdEstimate, 0) : 0),
+    [snapshot],
+  );
   const flaggedAccountCount = flaggedRings.reduce((s, r) => s + r.memberAccountIds.length, 0);
 
   // What a payment-moment competitor could see in this same dataset.
@@ -243,7 +247,13 @@ export default function App() {
 
           {snapshot && derived && !isEmpty && (
             <div className="absolute flex flex-wrap items-start justify-between gap-3" style={{ left: 16, right: 16, top: 14, zIndex: 30 }}>
-              <StatsBar stats={snapshot.stats} flaggedRingCount={flaggedRings.length} decidedCount={decidedCount} />
+              <StatsBar
+                stats={snapshot.stats}
+                totalEvents={snapshot.events.length}
+                totalVolumeUsd={totalVolumeUsd}
+                flaggedRingCount={flaggedRings.length}
+                decidedCount={decidedCount}
+              />
               <div className="flex flex-col items-end gap-2.5" style={{ minWidth: 0 }}>
                 <div className="flex flex-wrap justify-end gap-2">
                   <div
