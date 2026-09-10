@@ -1,6 +1,6 @@
 # SPEAKER SCRIPT — səhnədə əldə tutulan yeganə vərəq (bir spiker)
 
-**UNECom · 11 Sep 2026 · 15:00 · 3:00 pitch · bir spiker · file: `events.csv` on Desktop · slider 0.5 · toggle OFF**
+**UNECom · 11 Sep 2026 · 15:00 · 3:00 pitch · spiker: Nezrin · file: `events.csv` on Desktop · slider 0.5 · toggle OFF**
 
 Oxu: yuxarıdan aşağı. Mötərizədə yalnız (vaxt · klik · ekrandan oxunan rəqəm).
 `[…]` = qəsdən fasilə, büdcədədir. *tələffüz:* sətri = rəqəmi belə de.

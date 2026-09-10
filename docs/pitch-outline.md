@@ -354,11 +354,11 @@ yerini alırdı. Vaxt artıq qalsa deyilir (bax `demo-script.md` §8).
 
 | Ad | Rol |
 |---|---|
-| _(doldur)_ | Engine / detection (Python · FastAPI) |
-| _(doldur)_ | API / data layer (Node · Fastify · Prisma) |
-| _(doldur)_ | Dashboard / UX (React · Vite) |
-| _(doldur)_ | Data generation & evaluation |
-| _(doldur)_ | Pitch & business case |
+| Nezrin Ceferova | Pitch & presentation — speaker on stage |
+| Aslan Musayev | Data generation & evaluation — synthetic rings · accuracy.md |
+| Sardar Soltanzade | Business case & research — business-case.md · sources |
+| Hamid Aslanov | Full-stack · detection engine — Python · FastAPI · networkx |
+| Matin Mehdi | Full-stack · API & dashboard — Node · Fastify · Prisma · React |
 
 **De (EN) — komanda (2:37–2:45):**
 > "Team UNECom. Everything's in the repo, including the doc that says our hub recall is zero at default."
