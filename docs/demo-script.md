@@ -121,6 +121,13 @@ inteqrasiya vaxtı." *(Komandanı təqdim et.)*
   (react-force-graph), minlərlə node-u brauzerdə rahat göstərə bilir;
   ağır analiz backend/engine tərəfində aparılır, frontend yalnız nəticəni
   göstərir.
+- **"Production-da da fayl yükləyəcəklər?"** — Xeyr. CSV/JSON yükləmə
+  "sıfır öhdəlik" sınaq qapısıdır — mühəndis vaxtı sərf etmədən 30
+  saniyəyə nəticəni görmək üçündür. Əsl inteqrasiya eyni `/events`
+  API-dir: oyunun öz backend-i (və ya birbaşa Xsolla-nın ödəniş axını)
+  hər ticarət/hədiyyə/satış anında bura real-vaxtda push edir — fayl
+  yükləmə bunun kiçildilmiş, sənədsiz versiyasıdır, arxada duran API
+  ikisi üçün də eynidir.
 
 ## Texniki backup planı
 
