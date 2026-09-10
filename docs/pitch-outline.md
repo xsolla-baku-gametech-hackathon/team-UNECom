@@ -1,4 +1,4 @@
-# Pitch outline — 6 slayd / 180 saniyə / 2 spiker
+# Pitch outline — 6 slayd / 180 saniyə / 1 spiker
 
 **Team UNECom · GameTech Bootcamp Baku 2026 · 11 sentyabr, 15:00**
 
@@ -24,20 +24,21 @@ Format: **3 dəqiqə pitch + 2 dəqiqə Q&A**. Jüri beynəlxalq Xsolla komandas
 
 ---
 
-## Spikerlər
+## Spiker — bir nəfər
 
-| | Kim | Nə | Niyə |
-|---|---|---|---|
-| **Spiker A** | _(doldur)_ | Slayd 1–2: soyuq açılış, tərif, problem | kontekst — rəqəmlər əzbər, ekranla iş yoxdur |
-| **Spiker B** | _(doldur)_ | Demo (Slayd 3) + Slayd 4–6 + ask | əli klaviaturada olan adam demonu **özü** danışır — "sən klik et, mən danışım" sinxronu səhnədə həmişə qırılır |
+Pitch-i **bir spiker** aparır: slaydlar, demo, ask — hamısı. Klaviatura onun
+qabağındadır, demo cümlələrini klik edən adam özü deyir.
 
-**Ötürmə nöqtəsi: 0:44–0:48.** A-nın son sözü "exposed", ekran dashboard-a
-keçir, B irəli çıxır. 4 saniyə büdcəyə salınıb — tələsmə. A geri çəkilir, amma
-səhnədən çıxmır: Q&A-da Slayd 2-nin mənbələri A-nındır.
+**Kritik an: 0:44–0:48.** Slayd 2-nin son sözü "exposed", ekran dashboard-a
+keçir, spiker klaviaturaya keçib faylı masaüstündə tapır. **Bu 4 saniyə
+büdcədədir — danışma, tələs də yox.** Səhnədə ən çox itirilən vaxt "hardadır
+fayl?" anıdır; masaüstündə faylı əvvəlcədən görünən yerə qoy
+(`demo-script.md` §1).
 
-**Niyə iki spiker:** Execution & Teamwork meyarı birbaşa buna baxır. Bir adamın
-3 dəqiqə danışması "komanda" göstərmir. Üç spiker isə iki ötürmə deməkdir —
-8 saniyə büdcə, ikiqat risk. İki.
+**Execution & Teamwork meyarı** iki spikerlə yox, Slayd 6-nın komanda cədvəli və
+repo-dakı rol bölgüsü ilə göstərilir (engine / API / dashboard / evaluation).
+Q&A-da komandanın başqa üzvləri öz sahələrinin sualına cavab verə bilər —
+bu, "komanda" mesajını ötürmə riski olmadan verir.
 
 ---
 
@@ -53,7 +54,7 @@ səhnədən çıxmır: Q&A-da Slayd 2-nin mənbələri A-nındır.
 | qraf render (fayl atıldıqdan sonra) | 2 |
 | callout-u tapıb ekrandan oxumaq | 2 |
 | slider çəkmək | 3 |
-| spiker ötürməsi | 4 |
+| ekran dashboard-a keçir, klaviaturaya keçmək | 4 |
 | slayd keçidləri (5 × 1 s) | 5 |
 | bir büdrəmə ehtiyatı | 5 |
 | açılış / bağlanış nəfəsi | 3 |
@@ -66,19 +67,19 @@ saniyəsi qorunur.
 
 ### Cədvəl
 
-| # | Slayd | Spiker | Vaxt | Söz | Danışıq s | Boşluq s | Cəmi s | Boşluğun tərkibi |
-|---|---|---|---|---|---|---|---|---|
-| 1 | Soyuq açılış + What you built | A | 0:00–0:26 | 51 | 23 | 3 | 26 | açılış nəfəsi 2 · keçid 1 |
-| 2 | The problem | A | 0:26–0:48 | 39 | 17 | 5 | 22 | keçid 1 · **ötürmə 4** |
-| 3a | Demo · CSV upload | B | 0:48–0:59 | 17 | 8 | 3 | 11 | render 2 · büdrəmə 1 |
-| 3b | Demo · halqa çıxır | B | 0:59–1:07 | 18 | 8 | 0 | 8 | — |
-| 3c | Demo · **toggle + 28%** | B | 1:07–1:40 | 67 | 30 | 3 | 33 | callout oxu 2 · büdrəmə 1 |
-| 3d | Demo · slider 0.5→0.8 | B | 1:40–1:56 | 28 | 12 | 4 | 16 | slider 3 · büdrəmə 1 |
-| 3e | Demo · Claude + qərar | B | 1:56–2:05 | 14 | 6 | 3 | 9 | büdrəmə 2 · keçid 1 |
-| 4 | Features & users | B | 2:05–2:18 | 26 | 12 | 1 | 13 | keçid 1 |
-| 5 | Monetization | B | 2:18–2:37 | 41 | 18 | 1 | 19 | keçid 1 |
-| 6 | Team + **ask** | B | 2:37–3:00 | 48 | 22 | 1 | 23 | bağlanış nəfəsi 1 |
-| | **CƏMİ** | | | **349** | **156** | **24** | **180** | |
+| # | Slayd | Vaxt | Söz | Danışıq s | Boşluq s | Cəmi s | Boşluğun tərkibi |
+|---|---|---|---|---|---|---|---|
+| 1 | Soyuq açılış + What you built | 0:00–0:26 | 51 | 23 | 3 | 26 | açılış nəfəsi 2 · keçid 1 |
+| 2 | The problem | 0:26–0:48 | 39 | 17 | 5 | 22 | keçid 1 · **klaviaturaya keçmək 4** |
+| 3a | Demo · CSV upload | 0:48–0:59 | 17 | 8 | 3 | 11 | render 2 · büdrəmə 1 |
+| 3b | Demo · halqa çıxır | 0:59–1:07 | 18 | 8 | 0 | 8 | — |
+| 3c | Demo · **toggle + 28%** | 1:07–1:40 | 67 | 30 | 3 | 33 | callout oxu 2 · büdrəmə 1 |
+| 3d | Demo · slider 0.5→0.8 | 1:40–1:56 | 28 | 12 | 4 | 16 | slider 3 · büdrəmə 1 |
+| 3e | Demo · Claude + qərar | 1:56–2:05 | 14 | 6 | 3 | 9 | büdrəmə 2 · keçid 1 |
+| 4 | Features & users | 2:05–2:18 | 26 | 12 | 1 | 13 | keçid 1 |
+| 5 | Monetization | 2:18–2:37 | 41 | 18 | 1 | 19 | keçid 1 |
+| 6 | Team + **ask** | 2:37–3:00 | 48 | 22 | 1 | 23 | bağlanış nəfəsi 1 |
+| | **CƏMİ** | | **349** | **156** | **24** | **180** | |
 
 Danışıq saniyəsi = söz ÷ 135 × 60, tam ədədə yuvarlaqlanıb. Slayd 6-nın 21.3 s-i
 22-yə yuvarlaqlanıb — ask cümləsi qəsdən yavaş deyilir. Demo hissəsi (3a–3e):
@@ -94,7 +95,7 @@ awk '/^\*\*De \(EN\)/{f=1;buf="";next} f&&/^>/{sub(/^> /,"");buf=buf" "$0;next} 
 
 ---
 
-## Slayd 1 — Soyuq açılış + What you built · 0:00–0:26 · **Spiker A**
+## Slayd 1 — Soyuq açılış + What you built · 0:00–0:26
 
 ### 1a · Soyuq açılış (ilk build, 0:00–0:10)
 
@@ -130,7 +131,7 @@ oxunur, deyilmir.
 
 ---
 
-## Slayd 2 — The problem · 0:26–0:48 · **Spiker A**
+## Slayd 2 — The problem · 0:26–0:48
 
 **Ekranda:** Üç rəqəm, böyük, mənbə adı ilə — **maksimum 3 element**:
 
@@ -150,11 +151,11 @@ oxunur, deyilmir.
 deyilmir — slaydda qalır, jüri oxuyur; səhnədə iki böyük rəqəm bir cümlədə
 büdrəmə yeridir. Valve buradan çıxıb açılışa keçdi.
 
-**Son söz "exposed" → ekran dashboard-a → B irəli.** 0:44–0:48.
+**Son söz "exposed" → ekran dashboard-a → klaviaturaya keç.** 0:44–0:48, danışma.
 
 ---
 
-## Slayd 3 — Your solution · 0:48–2:05 · **Spiker B** · **EKRAN CANLI DASHBOARD**
+## Slayd 3 — Your solution · 0:48–2:05 · **EKRAN CANLI DASHBOARD**
 
 Bu slayd təsvir deyil, **77 saniyəlik canlı demodur**. Dəqiq klik ardıcıllığı və
 gözlənilən ekran vəziyyəti [`demo-script.md`](./demo-script.md)-dədir.
@@ -270,7 +271,7 @@ confidence, tövsiyə. Sonra **F** → **Enter**.
 
 ---
 
-## Slayd 4 — Features & users · 2:05–2:18 · **Spiker B**
+## Slayd 4 — Features & users · 2:05–2:18
 
 **Ekranda:** Üç sətir, iki sütun — **maksimum 3 element** (köhnə 5 sətirlik
 cədvəl kəsildi; dinlənilən slaydda oxunacaq şey 3-dən çox olmamalıdır).
@@ -292,7 +293,7 @@ jüri soruşacaq.
 
 ---
 
-## Slayd 5 — Monetization · 2:18–2:37 · **Spiker B**
+## Slayd 5 — Monetization · 2:18–2:37
 
 **Ekranda:** Üç rəqəm — **maksimum 3 element** (köhnə 5 bullet kəsildi: Valve
 açılışda, 13× Slayd 2-də deyilib — təkrar idi):
@@ -316,7 +317,7 @@ yerini alırdı. Vaxt artıq qalsa deyilir (bax `demo-script.md` §8).
 
 ---
 
-## Slayd 6 — Team + **ASK** · 2:37–3:00 · **Spiker B**
+## Slayd 6 — Team + **ASK** · 2:37–3:00
 
 **Ekranda:** İki element. Üstdə komanda — bir sətir, 4 ad + rol, kiçik. Altda
 **slaydın ən böyük mətni**:

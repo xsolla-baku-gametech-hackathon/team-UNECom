@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UNECom Speaker Sheet</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --bg: #f5f6f3;
+    --panel: #ffffff;
+    --ink: #1a1d21;
+    --muted: #6a7078;
+    --rule: #d9dcd6;
+    --slide: #4f7a5f;
+    --slide-soft: #e6efe8;
+    --demo: #b0473f;
+    --demo-soft: #f4e3e0;
+    --amber: #9a8038;
+    --amber-soft: #f1ebd8;
+    --scale: 1;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1b1e22;
+      --panel: #23272c;
+      --ink: #e9e7e1;
+      --muted: #9aa0a8;
+      --rule: #33383f;
+      --slide: #7fb08f;
+      --slide-soft: #22302a;
+      --demo: #d8776c;
+      --demo-soft: #3a2724;
+      --amber: #c4a85a;
+      --amber-soft: #302c1f;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1b1e22;
+    --panel: #23272c;
+    --ink: #e9e7e1;
+    --muted: #9aa0a8;
+    --rule: #33383f;
+    --slide: #7fb08f;
+    --slide-soft: #22302a;
+    --demo: #d8776c;
+    --demo-soft: #3a2724;
+    --amber: #c4a85a;
+    --amber-soft: #302c1f;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.45;
+    padding-inline: 16px;
+    padding-block: 0 48px;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  /* ---------- header ---------- */
+  header {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--bg);
+    border-bottom: 1px solid var(--rule);
+    padding-block: 12px 10px;
+    margin-bottom: 20px;
+  }
+  .head-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+  h1 {
+    margin: 0;
+    font-size: 15px; font-weight: 600; letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  h1 small { font-weight: 400; color: var(--muted); text-transform: none; letter-spacing: 0; margin-left: 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .chip {
+    font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace; font-size: 12px;
+    padding: 3px 8px; border: 1px solid var(--rule); border-radius: 3px;
+    color: var(--ink); background: var(--panel);
+    font-variant-numeric: tabular-nums;
+  }
+  .chip b { font-weight: 600; }
+  .controls { margin-left: auto; display: flex; gap: 6px; }
+  .controls button {
+    font: inherit; font-size: 13px; font-family: "IBM Plex Mono", Menlo, Consolas, monospace;
+    color: var(--ink); background: var(--panel);
+    border: 1px solid var(--rule); border-radius: 3px;
+    padding: 4px 10px; cursor: pointer;
+  }
+  .controls button:hover { border-color: var(--muted); }
+  .controls button:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+  .controls button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .legend { margin-top: 8px; font-size: 12.5px; color: var(--muted); }
+  .legend span { margin-right: 14px; white-space: nowrap; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; margin-right: 5px; }
+
+  /* ---------- phases ---------- */
+  section.phase { margin-bottom: 26px; }
+  .phase-head {
+    display: flex; align-items: baseline; gap: 12px;
+    padding: 8px 14px; border-radius: 4px;
+    margin-bottom: 14px;
+  }
+  .phase-head h2 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: 0.01em; color: inherit; }
+  .phase-head .span { font-family: "IBM Plex Mono", Menlo, Consolas, monospace; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .phase-head .note { margin-left: auto; font-size: 13px; color: var(--muted); }
+  section.slides .phase-head { background: var(--slide-soft); color: var(--slide); }
+  section.demo .phase-head { background: var(--demo-soft); color: var(--demo); }
+
+  .beats { display: grid; gap: 14px; border-left: 3px solid var(--rule); }
+  section.slides .beats { border-color: var(--slide); }
+  section.demo .beats { border-color: var(--demo); }
+
+  .beat {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 4px 14px;
+    padding-left: 14px;
+    break-inside: avoid;
+  }
+  .time {
+    font-family: "IBM Plex Mono", Menlo, Consolas, monospace;
+    font-size: 15px; font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    padding-top: 3px;
+  }
+  .cue {
+    grid-column: 2;
+    font-family: "IBM Plex Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px; color: var(--muted);
+    letter-spacing: 0.01em;
+  }
+  .cue b { color: var(--ink); font-weight: 600; }
+  .cue .read { color: var(--amber); font-weight: 600; }
+  .line {
+    grid-column: 2;
+    margin: 0;
+    font-size: calc(22px * var(--scale));
+    line-height: 1.4;
+    font-weight: 400;
+    max-width: 34em;
+    text-wrap: pretty;
+  }
+  .line b { font-weight: 700; }
+  .line.ask { font-weight: 600; font-size: calc(24px * var(--scale)); }
+  .pron {
+    grid-column: 2;
+    font-size: 14px; color: var(--muted); font-style: italic;
+  }
+  .pron b { font-style: normal; color: var(--ink); font-weight: 600; }
+
+  .pause {
+    display: flex; align-items: center; gap: 10px;
+    margin-left: 14px;
+    padding: 6px 12px;
+    background: var(--amber-soft);
+    color: var(--amber);
+    border-radius: 3px;
+    font-family: "IBM Plex Mono", Menlo, Consolas, monospace; font-size: 13px; font-weight: 500;
+    break-inside: avoid;
+  }
+  .pause .sec { margin-left: auto; font-weight: 600; white-space: nowrap; }
+  .pause.big { padding: 10px 12px; font-size: 14px; font-weight: 600; margin-left: 0; border-left: 3px solid var(--amber); border-radius: 0 3px 3px 0; }
+  .pause.big small { display: block; font-weight: 400; font-size: 12.5px; }
+
+  /* ---------- panic ---------- */
+  .panic {
+    margin-top: 12px;
+    border: 2px solid var(--demo);
+    border-radius: 4px;
+    padding: 14px 18px;
+    background: var(--panel);
+    break-inside: avoid;
+  }
+  .panic h2 { margin: 0 0 10px; font-size: 15px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--demo); }
+  .panic ol { margin: 0; padding-left: 22px; display: grid; gap: 10px; }
+  .panic li { font-size: 15.5px; }
+  .panic li b { font-weight: 700; }
+  .panic q { font-style: italic; quotes: "“" "”"; }
+
+  body.no-cues .cue, body.no-cues .pron { display: none; }
+  body.no-cues .beat { gap: 0 14px; }
+
+  @media (max-width: 480px) {
+    .beat { grid-template-columns: 1fr; }
+    .cue, .line, .pron { grid-column: 1; }
+    .time { font-size: 13px; padding-top: 0; }
+    .phase-head .note { display: none; }
+  }
+
+  @media print {
+    :root { --bg: #fff; --panel: #fff; --ink: #000; --muted: #555; --rule: #bbb; --scale: 0.8; }
+    body { font-size: 13px; padding: 0; }
+    header { position: static; border: 0; margin-bottom: 10px; }
+    .controls, .legend { display: none; }
+    .wrap { max-width: none; }
+    .beats { gap: 8px; }
+    .line { font-size: 15.5px; line-height: 1.32; }
+    .line.ask { font-size: 17px; }
+    .cue { font-size: 10.5px; }
+    .pron { font-size: 11px; }
+    .pause { padding: 3px 10px; font-size: 11px; }
+    section.phase { margin-bottom: 12px; }
+    .panic { padding: 10px 14px; }
+    .panic li { font-size: 12.5px; }
+  }
+</style>
+
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="head-row">
+      <h1>Speaker sheet <small>UNECom · 11 Sep 2026 · 15:00 · 3:00 + Q&amp;A · bir spiker</small></h1>
+      <div class="controls" aria-label="Görünüş">
+        <button type="button" id="font-down" aria-label="Şrifti kiçilt">A−</button>
+        <button type="button" id="font-up" aria-label="Şrifti böyüt">A+</button>
+        <button type="button" id="toggle-cues" aria-pressed="false">Yalnız mətn</button>
+      </div>
+    </div>
+    <div class="chips">
+      <span class="chip">fayl: <b>events.csv</b> masaüstündə</span>
+      <span class="chip">slider <b>0.5</b></span>
+      <span class="chip">toggle <b>OFF</b></span>
+      <span class="chip">panel bağlı</span>
+      <span class="chip">F11</span>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--slide)"></i>slaydlar</span>
+      <span><i style="background:var(--demo)"></i>canlı demo</span>
+      <span><i style="background:var(--amber)"></i>fasilə — büdcədədir, doldurma</span>
+      <span>kəhrəba mətn = ekrandan oxu</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="phase slides">
+    <div class="phase-head">
+      <h2>Slayd 1–2</h2>
+      <span class="span">0:00 – 0:44</span>
+      <span class="note">kontekst · klaviaturaya toxunma</span>
+    </div>
+    <div class="beats">
+
+      <div class="beat">
+        <div class="time">0:00</div>
+        <div class="cue">qara slayd · Valve sitatı · klik yoxdur</div>
+        <p class="line">“In 2019, Valve’s answer to fraud was amputation: delete CS:GO key trading. Still the state of the art. We built the alternative.”</p>
+      </div>
+
+      <div class="pause"><span>nəfəs · klik → başlıq slaydı</span><span class="sec">2 s</span></div>
+
+      <div class="beat">
+        <div class="time">0:10</div>
+        <div class="cue">S1 başlıq · klik yoxdur</div>
+        <p class="line">“Fraud Radar traces where in-game value goes after the payment clears, and finds the laundering rings in that flow. Every other tool stops at the payment. We start there.”</p>
+      </div>
+
+      <div class="pause"><span>klik → S2</span><span class="sec">1 s</span></div>
+
+      <div class="beat">
+        <div class="time">0:26</div>
+        <div class="cue">S2 üç rəqəm · klik yoxdur</div>
+        <p class="line">“Roblox told the SEC that <b>3.41 percent</b> of its 2024 bookings, <b>149 million dollars</b>, went to fraud chargebacks, and described our threat model: stolen cards, in-game currency, resale off-platform. Industry average: <b>0.26 percent</b>. Tradeable economies: <b>thirteen times</b> more exposed.”</p>
+        <div class="pron">3.41 → <b>three point four one</b> · 149 → <b>one hundred forty-nine</b> · 0.26 → <b>zero point two six</b> · 2024 → <b>twenty twenty-four</b></div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="pause big">
+    <span>0:44 · son söz “exposed” · ekran → dashboard · klaviaturaya keç, faylı masaüstündə tap<small>hələ danışma — bu 4 saniyə büdcədədir</small></span>
+    <span class="sec">4 s</span>
+  </div>
+
+  <section class="phase demo" style="margin-top:22px">
+    <div class="phase-head">
+      <h2>Canlı demo</h2>
+      <span class="span">0:48 – 2:05</span>
+      <span class="note">rəqəmləri ekrandan oxu, əzbərdən yox</span>
+    </div>
+    <div class="beats">
+
+      <div class="beat">
+        <div class="time">0:48</div>
+        <div class="cue"><b>DRAG</b> events.csv → yükləmə zonası</div>
+        <p class="line">“No integration, no API key. A raw event log, dropped into the browser.”</p>
+      </div>
+
+      <div class="pause"><span>gözlə — qraf qurulur</span><span class="sec">2 s</span></div>
+
+      <div class="beat">
+        <div class="time">0:57</div>
+        <div class="cue"><span class="read">oxu: 122 · 388</span></div>
+        <p class="line">“<b>122</b> accounts, <b>388</b> events.”</p>
+      </div>
+
+      <div class="beat">
+        <div class="time">0:59</div>
+        <div class="cue">klik yoxdur · kursorla qırmızı klasteri dövrələ · <span class="read">oxu: ring_3 · 0.59</span></div>
+        <p class="line">“The graph builds itself. Louvain pulls the ring out of the noise: <b>94.9 percent</b> measured purity, five seeds.”</p>
+        <div class="pron">94.9 → <b>ninety-four point nine</b> · Louvain → <b>loo-VAN</b></div>
+      </div>
+
+      <div class="beat">
+        <div class="time">1:07</div>
+        <div class="cue"><b>TOGGLE</b> “Ödəniş anı görünüşü” <b>ON</b></div>
+        <p class="line">“Now the differentiator. This toggle shows a payment-moment tool’s entire view: the receiving end of a flagged card.”</p>
+      </div>
+
+      <div class="pause"><span>callout-u tap (sağ panel)</span><span class="sec">2 s</span></div>
+
+      <div class="beat">
+        <div class="time">1:14</div>
+        <div class="cue"><span class="read">oxu: 33 / 9 / $7,607 / 1 hub</span></div>
+        <p class="line">“It sees <b>33</b> accounts. It misses <b>9</b>, holding <b>seven thousand six hundred dollars</b>, including a cash-out hub that never touched a card.”</p>
+        <div class="pron">ekranda $7,607 — <b>“seven thousand six hundred”</b> de, “six-oh-seven” yox</div>
+      </div>
+
+      <div class="beat">
+        <div class="time">1:26</div>
+        <div class="cue">kursor → StatsBar <b>$26,814</b></div>
+        <p class="line">“<b>Twenty-eight percent</b> of every dollar here lands in accounts a payment-time tool cannot see. The file is small. The blind spot behind Roblox’s <b>149 million</b> is not.”</p>
+        <div class="pron">28.4% ekranda yoxdur, hesablanıb — <b>“twenty-eight”</b> de, “point four” demə</div>
+      </div>
+
+      <div class="beat">
+        <div class="time">1:40</div>
+        <div class="cue"><b>TOGGLE OFF</b> · əl slider-ə, hələ tərpətmə</div>
+        <p class="line">“A hub is aged, low-velocity, never flagged: invisible to per-account scoring.”</p>
+      </div>
+
+      <div class="pause"><span>slider 0.5 → 0.8, yavaş</span><span class="sec">3 s</span></div>
+
+      <div class="beat">
+        <div class="time">1:49</div>
+        <div class="cue"><span class="read">oxu: 2 halqa · ring_5 · hub_2 içində</span></div>
+        <p class="line">“Raise the threshold: a second ring surfaces, hub inside, precision still <b>one hundred</b> at the account level.”</p>
+      </div>
+
+      <div class="pause"><span>slider → 0.5 (vaxt varsa)</span><span class="sec">—</span></div>
+
+      <div class="beat">
+        <div class="time">1:56</div>
+        <div class="cue"><b>J → Enter</b> · panel açılır · barmaqla göstər: sübutlar → Claude → tövsiyə</div>
+        <p class="line">“Claude writes the case: evidence, confidence, recommendation. It never decides. The analyst does.”</p>
+      </div>
+
+      <div class="beat">
+        <div class="time">2:03</div>
+        <div class="cue"><b>F → Enter</b> · Enter ilə eyni anda</div>
+        <p class="line">“Confirmed.”</p>
+      </div>
+
+      <div class="pause"><span>Alt+Tab → slaydlar</span><span class="sec">1 s</span></div>
+
+    </div>
+  </section>
+
+  <section class="phase slides">
+    <div class="phase-head">
+      <h2>Slayd 4–6</h2>
+      <span class="span">2:05 – 3:00</span>
+      <span class="note">son cümlə ask-dır, “Thank you” yox</span>
+    </div>
+    <div class="beats">
+
+      <div class="beat">
+        <div class="time">2:05</div>
+        <div class="cue">S4 · Features &amp; users</div>
+        <p class="line">“Built for a Trust and Safety analyst; Rockstar is hiring that role now. Drag-and-drop is the trial door; production pushes the same events to our API.”</p>
+      </div>
+
+      <div class="beat">
+        <div class="time">2:18</div>
+        <div class="cue">S5 · Monetization</div>
+        <p class="line">“Xsolla published <b>a billion dollars</b> of PC direct-to-consumer volume. A <b>one percent</b> dispute rate, our assumption inside a sourced <b>0.26 to 3.41</b> band, is <b>ten million</b> a year. We charge <b>60 thousand</b>. A <b>50-million-bookings</b> studio pays that back in <b>2.4 months</b>.”</p>
+        <div class="pron">0.26 to 3.41 → <b>zero point two six to three point four one</b> · 60 → <b>sixty thousand</b> · 2.4 → <b>two point four months</b></div>
+      </div>
+
+      <div class="beat">
+        <div class="time">2:37</div>
+        <div class="cue">S6 · Team</div>
+        <p class="line">“Team UNECom. Everything’s in the repo, including the doc that says our hub recall is zero at default.”</p>
+      </div>
+
+      <div class="pause"><span>nəfəs · yavaşla</span><span class="sec">1 s</span></div>
+
+      <div class="beat">
+        <div class="time">2:45</div>
+        <div class="cue">S6 · <b>ASK</b> — pitch-in son cümləsi · yavaş</div>
+        <p class="line ask">“We’re not asking you to believe synthetic numbers. Give us one labelled dataset from a live economy, <b>ninety days</b>, <b>five thousand dollars</b>, and we’ll show you where your money went.”</p>
+      </div>
+
+      <div class="pause"><span>sükut · “Thank you” DEMƏ · Q&amp;A</span><span class="sec">1 s</span></div>
+
+    </div>
+  </section>
+
+  <aside class="panic">
+    <h2>Panika xətti</h2>
+    <ol>
+      <li><b>Backend yoxdur</b> → upload atlanır, 0:48-də birbaşa: <q>We’re running on the local demo dataset here; the upload path pushes the same events through the API.</q> → sonra “The graph builds itself…” Rəqəmləri ekrandan oxu, əzbərdən yox.</li>
+      <li><b>Upload keçmədi</b> → dayanma: <q>The parser is strict about columns — that’s deliberate. Let’s look at the data that’s already loaded.</q> → events.json-u BİR dəfə sına → keçməsə bənd 1.</li>
+      <li><b>Vaxt bitir / moderator kəsir</b> → Slayd 4-ü at, “We charge 60 thousand…” cümləsini de, və nə olursa olsun ASK: <q>We’re not asking you to believe synthetic numbers. Give us one labelled dataset from a live economy, ninety days, five thousand dollars, and we’ll show you where your money went.</q></li>
+    </ol>
+  </aside>
+
+</main>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var body = document.body;
+  var scale = 1;
+  var noCues = false;
+  try {
+    var s = parseFloat(localStorage.getItem('unecom-sheet-scale'));
+    if (s >= 0.8 && s <= 1.6) scale = s;
+    noCues = localStorage.getItem('unecom-sheet-nocues') === '1';
+  } catch (e) {}
+  function apply() {
+    root.style.setProperty('--scale', String(scale));
+    body.classList.toggle('no-cues', noCues);
+    var btn = document.getElementById('toggle-cues');
+    btn.setAttribute('aria-pressed', noCues ? 'true' : 'false');
+    btn.textContent = noCues ? 'Göstərişləri göstər' : 'Yalnız mətn';
+    try {
+      localStorage.setItem('unecom-sheet-scale', String(scale));
+      localStorage.setItem('unecom-sheet-nocues', noCues ? '1' : '0');
+    } catch (e) {}
+  }
+  document.getElementById('font-up').addEventListener('click', function () { scale = Math.min(1.6, +(scale + 0.1).toFixed(2)); apply(); });
+  document.getElementById('font-down').addEventListener('click', function () { scale = Math.max(0.8, +(scale - 0.1).toFixed(2)); apply(); });
+  document.getElementById('toggle-cues').addEventListener('click', function () { noCues = !noCues; apply(); });
+  apply();
+})();
+</script>
+
+</body>
+</html>

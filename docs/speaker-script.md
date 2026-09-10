@@ -1,13 +1,13 @@
-# SPEAKER SCRIPT — səhnədə əldə tutulan yeganə vərəq
+# SPEAKER SCRIPT — səhnədə əldə tutulan yeganə vərəq (bir spiker)
 
-**UNECom · 11 Sep 2026 · 15:00 · 3:00 pitch · file: `events.csv` on Desktop · slider 0.5 · toggle OFF**
+**UNECom · 11 Sep 2026 · 15:00 · 3:00 pitch · bir spiker · file: `events.csv` on Desktop · slider 0.5 · toggle OFF**
 
 Oxu: yuxarıdan aşağı. Mötərizədə yalnız (vaxt · klik · ekrandan oxunan rəqəm).
 `[…]` = qəsdən fasilə, büdcədədir. *tələffüz:* sətri = rəqəmi belə de.
 
 ---
 
-## SPEAKER A · 0:00–0:44
+## SLAYD 1–2 · 0:00–0:44
 
 **(0:00 · qara slayd, Valve sitatı · klik yoxdur)**
 
@@ -27,11 +27,11 @@ Oxu: yuxarıdan aşağı. Mötərizədə yalnız (vaxt · klik · ekrandan oxuna
 
 *tələffüz:* 3.41 → **three point four one** · 149 → **one hundred forty-nine** · 0.26 → **zero point two six** · 2024 → **twenty twenty-four**
 
-`[son söz "exposed" · ekran → dashboard · A geri, B irəli · 4 s]`
+`[son söz "exposed" · ekran → dashboard · klaviaturaya keç, faylı tap · 4 s · DANIŞMA]`
 
-═══════════════════ ÖTÜRMƏ 0:44 → 0:48 ═══════════════════
+═══════════════ 0:44 → 0:48 · EKRAN DASHBOARD-A KEÇİR ═══════════════
 
-## SPEAKER B · 0:48–3:00
+## DEMO + SLAYD 4–6 · 0:48–3:00
 
 **(0:48 · DRAG events.csv → yükləmə zonası)**
 

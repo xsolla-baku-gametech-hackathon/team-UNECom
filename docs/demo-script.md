@@ -12,8 +12,8 @@ Slayd strukturu və saniyə büdcəsi → [`pitch-outline.md`](./pitch-outline.m
 Səhnədə əldə tutulan vərəq → [`speaker-script.md`](./speaker-script.md) · Q&A →
 [`qa-defence.md`](./qa-defence.md).
 
-**Spikerlər:** **A** = Slayd 1–2 (0:00–0:44) · **B** = demo + Slayd 4–6
-(0:48–3:00). Ötürmə 0:44–0:48, ekran dashboard-a keçəndə. Üç sənəddəki İngilis
+**Bir spiker** — slaydlar, demo, ask. 0:44–0:48: ekran dashboard-a keçir,
+spiker klaviaturaya keçir, danışmır (4 s büdcədədir). Üç sənəddəki İngilis
 cümlələr hərfən eynidir.
 
 ---
@@ -66,9 +66,9 @@ Pitch-dən **ən azı 10 dəqiqə əvvəl**, sırayla.
 - [ ] **Tam ekran (F11).** Bookmark bar, bildirişlər, Slack — hamısı bağlı.
       Ekran parlaqlığı maksimum (proyektorda tünd tema solğun görünür).
 - [ ] Masaüstü fonu neytral, fayl adları oxunaqlı.
-- [ ] **Spiker B-nin əlində [`speaker-script.md`](./speaker-script.md) çapı var**,
-      Spiker A-da da. Başqa vərəq yoxdur.
-- [ ] **Bir dəfə tam quru məşq** — sekundomerlə, ucadan, iki spikerlə, ötürmə
+- [ ] **Spikerin əlində [`speaker-script.md`](./speaker-script.md) çapı var**
+      (və ya telefonda `speaker-script.html`). Başqa vərəq yoxdur.
+- [ ] **Bir dəfə tam quru məşq** — sekundomerlə, ucadan, klaviaturaya keçid
       daxil. Demo hissəsi (3a–3e) **77 saniyədir (0:48–2:05)**. 82-ni keçirsə →
       kəsmə sırası (bölmə 8). Bütün pitch 3:00-ı keçirsə → son cümlə (ask)
       mütləq deyilir, kəsilən şey Slayd 4-dür.
@@ -154,13 +154,13 @@ Halqa səviyyəsində: purity 94.9%, coverage 80.0%.
 
 ## 4 · Demo axını — saniyə-saniyə
 
-> Slayd 1 və 2 (0:00–0:44, **Spiker A**) statikdir — mətnlər
-> [`pitch-outline.md`](./pitch-outline.md)-dədir. **0:44-də A "exposed" deyir,
-> ekran dashboard-a keçir, B irəli çıxır. 0:48-də B danışmağa başlayır.** Bu
-> 4 saniyə büdcədədir — tələsmə, amma boş da dayanma: B bu 4 saniyədə faylı
-> masaüstündə göstərir.
+> Slayd 1 və 2 (0:00–0:44) statikdir — mətnlər
+> [`pitch-outline.md`](./pitch-outline.md)-dədir. **0:44-də "exposed" deyilir,
+> ekran dashboard-a keçir, spiker klaviaturaya keçir. 0:48-də danışıq davam
+> edir.** Bu 4 saniyə büdcədədir — tələsmə, amma boş da dayanma: bu 4 saniyədə
+> faylı masaüstündə tap və kursoru üstünə qoy.
 
-### ⏱ 0:48–0:59 · Canlı CSV upload — sıfır quraşdırma (8 s danışıq + 3 s boşluq) · **B**
+### ⏱ 0:48–0:59 · Canlı CSV upload — sıfır quraşdırma (8 s danışıq + 3 s boşluq)
 
 **Ekran:** dashboard boşdur, qraf yoxdur, statistika sıfırdır.
 
@@ -177,7 +177,7 @@ StatsBar dolur — **388 hadisə · 122 hesab · $26,814**.
 
 ---
 
-### ⏱ 0:59–1:07 · Halqa özü çıxır (8 s) · **B**
+### ⏱ 0:59–1:07 · Halqa özü çıxır (8 s)
 
 **Hərəkət:** Heç nə klikləmə. Qırmızı klasteri kursorla dövrələ. Sol paneldəki
 case queue-nun dolduğunu göstər — **bir case: `ring_3`, risk 0.59, 35 hesab**.
@@ -188,7 +188,7 @@ case queue-nun dolduğunu göstər — **bir case: `ring_3`, risk 0.59, 35 hesab
 
 ---
 
-### ⏱ 1:07–1:40 · **"Ödəniş anı görünüşü" + miqyas körpüsü — ƏSAS AN** (30 s + 3 s) · **B**
+### ⏱ 1:07–1:40 · **"Ödəniş anı görünüşü" + miqyas körpüsü — ƏSAS AN** (30 s + 3 s)
 
 **Hərəkət:** Qrafın üstündəki **"Ödəniş anı görünüşü"** toggle-ına klik.
 **Slider 0.5-də olmalıdır** (bax bölmə 2-dəki xəbərdarlıq).
@@ -218,7 +218,7 @@ case queue-nun dolduğunu göstər — **bir case: `ring_3`, risk 0.59, 35 hesab
 
 ---
 
-### ⏱ 1:40–1:56 · Həddi qaldır — ikinci halqa (12 s + 4 s) · **B**
+### ⏱ 1:40–1:56 · Həddi qaldır — ikinci halqa (12 s + 4 s)
 
 **Hərəkət:** Sağ-aşağıdakı **Sensitivity slider**-ə (Sərt ↔ Geniş) əl qoy, hələ
 tərpətmə. Toggle **sönük** olmalıdır.
@@ -247,7 +247,7 @@ darsa qaytarma — kritik deyil.
 
 ---
 
-### ⏱ 1:56–2:05 · Claude izahatı + insan qərarı (6 s + 3 s) · **B**
+### ⏱ 1:56–2:05 · Claude izahatı + insan qərarı (6 s + 3 s)
 
 **Hərəkət:** Case queue-nun ən yuxarısındakı `ring_3` case-inə klik (və ya **J**,
 sonra **Enter**). Investigation panel açılır.
@@ -268,7 +268,7 @@ Enter-lə eyni anda deyilir.
 
 ---
 
-### ⏱ 2:05–3:00 · Slayd 4, 5, 6-ya qayıt · **B**
+### ⏱ 2:05–3:00 · Slayd 4, 5, 6-ya qayıt
 
 Ekranı slaydlara qaytar: Features & users (13 s) → Monetization (19 s) →
 Team + ask (23 s). Mətnlər [`pitch-outline.md`](./pitch-outline.md)-dədir.
@@ -397,20 +397,20 @@ Tam mətn (yalnız İngilis, çap üçün) → [`speaker-script.md`](./speaker-s
 
 ```
 FAYL: data-generator/output/events.csv   ·   SLIDER: 0.5   ·   TOGGLE: OFF
-SPİKER A: 0:00–0:44   ·   ÖTÜRMƏ 0:44–0:48   ·   SPİKER B: 0:48–3:00
+BİR SPİKER   ·   0:44–0:48 EKRAN → DASHBOARD, KLAVİATURAYA KEÇ (4 s, danışma)
 
-0:00  S1a A  Valve 2019 "amputation" → "We built the alternative."   10s
-0:10  S1b A  "Fraud Radar traces…" · "We start there."               13s+3
-0:26  S2  A  3.41% / $149M / 0.26% / 13× → son söz "exposed"        17s+5
-0:44  ▶  DASHBOARD · A geri, B irəli (4 s)
-0:48  3a  B  CSV drop [qraf 2s] → 388 · 122 · $26,814                8s+3
-0:59  3b  B  1 halqa: ring_3, 0.59 → "94.9 percent measured purity"  8s
-1:07  3c  B  🔴 TOGGLE → 33 / 9 / $7,607 / 1 hub → 28% → 149M        30s+3
-1:40  3d  B  🔴 SLIDER 0.5→0.8 [3s] → 2 halqa, hub_2 · "account level" 12s+4
-1:56  3e  B  J → Enter → panel → F → Enter → "Confirmed."              6s+3
+0:00  S1a  Valve 2019 "amputation" → "We built the alternative."   10s
+0:10  S1b  "Fraud Radar traces…" · "We start there."               13s+3
+0:26  S2  3.41% / $149M / 0.26% / 13× → son söz "exposed"        17s+5
+0:44  ▶  DASHBOARD · klaviaturaya keç (4 s)
+0:48  3a  CSV drop [qraf 2s] → 388 · 122 · $26,814                8s+3
+0:59  3b  1 halqa: ring_3, 0.59 → "94.9 percent measured purity"  8s
+1:07  3c  🔴 TOGGLE → 33 / 9 / $7,607 / 1 hub → 28% → 149M        30s+3
+1:40  3d  🔴 SLIDER 0.5→0.8 [3s] → 2 halqa, hub_2 · "account level" 12s+4
+1:56  3e  J → Enter → panel → F → Enter → "Confirmed."              6s+3
 2:05  ◀  SLAYDLAR
-2:05  S4  B  T&S analyst / Rockstar / trial door → API               12s+1
-2:18  S5  B  $1B → 1% (assumption) → $10M → $60K → 2.4 ay            18s+1
-2:37  S6  B  "hub recall is zero at default" → ASK: $5,000 · 90 days 22s+1
+2:05  S4  T&S analyst / Rockstar / trial door → API               12s+1
+2:18  S5  $1B → 1% (assumption) → $10M → $60K → 2.4 ay            18s+1
+2:37  S6  "hub recall is zero at default" → ASK: $5,000 · 90 days 22s+1
 3:00  ■  son söz "went" → Q&A → qa-defence.md (əzbər 3: №1, №2, №10)
 ```
