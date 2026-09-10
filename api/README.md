@@ -25,7 +25,8 @@ Env vars (`.env`):
 | `PORT` | `3001` | API listen port |
 | `DATABASE_URL` | `file:./dev.db` | SQLite file |
 | `ENGINE_URL` | `http://localhost:8000` | Base URL of `/engine` |
-| `ENGINE_TIMEOUT_MS` | `5000` | Abort engine calls after this long |
+| `ENGINE_TIMEOUT_MS` | `5000` | Analysis request timeout (ms) |
+| `ENGINE_EXPLAIN_TIMEOUT_MS` | `30000` | Explanation request timeout (ms) |
 
 ## Engine contract
 
@@ -87,7 +88,7 @@ engine `analyze()` call, reshaped into `GraphSnapshot`
   "accounts": [{ "id": "acct_0001", "label": "acct_0001", "createdAt": "...|null", "riskScore": 0.12, "ringId": "ring_001|null" }],
   "events": [{ "id": "evt_...", "type": "trade", "timestamp": "...", "from": "...", "to": "...", "assetType": "currency", "assetId": "...", "quantity": 1, "valueUsdEstimate": 9.99, "paymentFlagged": false }],
   "rings": [{ "id": "ring_001", "memberAccountIds": [...], "hubAccountIds": [...], "riskScore": 0.91, "status": "pending", "signals": ["..."], "totalValueUsd": 1234.56 }],
-  "stats": { "activeAccounts": 1, "dailyEvents": 533, "dailyVolumeUsd": 19371.57, "ringsAtRisk": 1 }
+  "stats": { "activeAccounts": 1, "totalEvents": 533, "totalVolumeUsd": 19371.57, "ringsAtRisk": 1 }
 }
 ```
 
@@ -101,8 +102,7 @@ engine `analyze()` call, reshaped into `GraphSnapshot`
   engine's numeric `RingResult` fields (size, avg_taint_score,
   flagged_purchase_count, hub_candidates, total_value_usd) — the engine
   itself doesn't return prose.
-- `stats.dailyEvents` / `dailyVolumeUsd` are over the trailing 24h from
-  stored events; `activeAccounts` / `ringsAtRisk` are just the accounts /
+- `stats.totalEvents` / `totalVolumeUsd` cover all stored events, including purchases; `activeAccounts` / `ringsAtRisk` are just the accounts /
   rings counts the engine returned.
 
 502 `engine_unreachable` if the engine can't be reached.
@@ -132,14 +132,13 @@ engine. → `{ "ring_id": "...", "sensitivity": 0.75, "updated_at": "..." }`.
 
 **What `/web`'s `fetchExplanation()` calls.** Proxies the engine's
 `/explain` (Claude-generated; falls back to a template if the engine has
-no `ANTHROPIC_API_KEY` — either way it never errors). → `RingExplanation`:
+no `ANTHROPIC_API_KEY` — the response includes `source: "ai" | "template"`). → `RingExplanation`:
 
 ```json
-{ "ringId": "ring_001", "summary": "...", "signals": [{ "label": "...", "value": "..." }], "recommendedAction": "..." }
+{ "ringId": "ring_001", "source": "ai", "summary": "...", "signals": [{ "label": "...", "value": "..." }], "recommendedAction": "..." }
 ```
 
-502 `engine_unreachable` if the engine is down (the frontend already
-falls back to its local mock explanation on any failure).
+502 `engine_unreachable` if the engine is down (the frontend shows an unavailable explanation message on failure).
 
 ### `POST /rings/:id/decision`
 
@@ -156,3 +155,9 @@ Doesn't touch the engine. → `{ "ring_id": "...", "status": "confirmed_fraud", 
 
 Ring detection itself is **not** stored here — `/rings` and `/graph` always
 ask the engine fresh. Only our two local overrides persist independently.
+
+Empty databases return `[]` from `/rings` and `404 account_not_found` from
+`/accounts/:id/risk`. Upstream HTTP errors preserve their status; connection
+failures return 502 and timeouts return 504.
+
+Run `npm test` to build and check upstream HTTP status and timeout handling.
