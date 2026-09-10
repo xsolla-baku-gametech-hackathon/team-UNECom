@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Mirrors the shared event data contract exactly — do not rename fields
+// without updating data-generator/, /engine, and /web.
+model Event {
+  id String @id @default(cuid())
+
+  eventId          String   @unique @map("event_id")
+  type             String // trade | gift | marketplace_sale | key_redeem | purchase
+  timestamp        DateTime
+  fromAccountId    String   @map("from_account_id")
+  toAccountId      String   @map("to_account_id")
+  assetType        String   @map("asset_type") // currency | item | key
+  assetId          String   @map("asset_id")
+  quantity         Int
+  valueUsdEstimate Float    @map("value_usd_estimate")
+  paymentFlagged   Boolean  @map("payment_flagged")
+
+  // Creation date of from_account_id. Null for the STORE system account,
+  // which has no signup date of its own (see data-generator/generate.py).
+  accountCreatedAt DateTime? @map("account_created_at")
+
+  ingestedAt DateTime @default(now()) @map("ingested_at")
+
+  @@index([fromAccountId])
+  @@index([toAccountId])
+  @@index([timestamp])
+  @@map("events")
+}
+
+// Designer-tunable sensitivity per fraud ring, persisted locally so it
+// survives independently of whatever the engine currently holds in memory.
+// The ring itself (member accounts, score) is owned by the /engine service;
+// this table only stores our override of its sensitivity knob.
+model RingSensitivity {
+  id          String   @id @default(cuid())
+  ringId      String   @unique @map("ring_id")
+  sensitivity Float
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("ring_sensitivity")
+}
