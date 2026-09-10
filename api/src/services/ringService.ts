@@ -1,6 +1,7 @@
 import { engineClient } from "../clients/engineClient.js";
 import { eventRepository } from "../repositories/eventRepository.js";
 import { ringSensitivityRepository } from "../repositories/ringSensitivityRepository.js";
+import { ringDecisionRepository } from "../repositories/ringDecisionRepository.js";
 
 export const ringService = {
   // Flagged rings from the engine, each annotated with our locally-stored
@@ -21,5 +22,12 @@ export const ringService = {
 
   async setSensitivity(ringId: string, sensitivity: number) {
     return ringSensitivityRepository.upsert(ringId, sensitivity);
+  },
+
+  // Analyst verdict from /web's InvestigationPanel ("real" | "fraud"),
+  // stored as the confirmed_real/confirmed_fraud status GET /graph reports.
+  async setDecision(ringId: string, decision: "real" | "fraud") {
+    const status = decision === "real" ? "confirmed_real" : "confirmed_fraud";
+    return ringDecisionRepository.upsert(ringId, status);
   },
 };
