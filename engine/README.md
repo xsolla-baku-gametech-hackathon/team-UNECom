@@ -22,6 +22,16 @@ uvicorn app.main:app --reload --port 8000
 
 Sağlamlıq yoxlaması: `curl http://localhost:8000/health` → `{"status":"ok"}`
 
+## Testlər
+
+Risk skorlama düsturları (taint propagation, velocity, degree imbalance)
+və qraf qurulması üçün unit testlər (`tests/`):
+
+```bash
+pip install -r requirements-dev.txt
+pytest tests/ -v
+```
+
 Hazır nümunə data ilə test:
 
 ```bash
