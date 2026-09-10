@@ -1,3 +1,4 @@
+import { usd } from "../lib/format";
 import type { GraphSnapshot } from "../lib/types";
 
 interface Props {
@@ -22,8 +23,8 @@ export function StatsBar({ stats, flaggedRingCount, decidedCount }: Props) {
   return (
     <div className="flex items-stretch" style={{ border: "1px solid #24282f", background: "#0d0f12", borderRadius: 3 }}>
       <Cell label="Aktiv hesab" value={stats.activeAccounts.toLocaleString("en-US")} sub="yüklənmiş qrafda" />
-      <Cell label="Bugünkü əməliyyat" value={stats.dailyEvents.toLocaleString("en-US")} sub="ingest edilmiş köçürmə" />
-      <Cell label="Bugünkü dövriyyə" value={`$${stats.dailyVolumeUsd.toLocaleString("en-US")}`} sub="təxmini USD" />
+      <Cell label="Ümumi hadisə" value={stats.totalEvents.toLocaleString("en-US")} sub="yüklənmiş jurnalda" />
+      <Cell label="Ümumi dövriyyə" value={usd(stats.totalVolumeUsd)} sub="təxmini USD" />
       <Cell label="Riskli halqa" value={String(flaggedRingCount)} sub={`${decidedCount} qərarlanıb`} hot last />
     </div>
   );

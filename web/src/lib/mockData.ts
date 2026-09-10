@@ -239,8 +239,8 @@ export function buildMockSnapshot(): GraphSnapshot {
     rings,
     stats: {
       activeAccounts: accounts.length,
-      dailyEvents: events.length,
-      dailyVolumeUsd: Math.round(events.reduce((s, e) => s + e.valueUsdEstimate, 0) * 100) / 100,
+      totalEvents: events.length,
+      totalVolumeUsd: Math.round(events.reduce((s, e) => s + e.valueUsdEstimate, 0) * 100) / 100,
       ringsAtRisk: rings.length,
     },
   };
@@ -250,6 +250,7 @@ export function buildMockExplanation(ringId: string, snapshot: GraphSnapshot) {
   const ring = snapshot.rings.find((r) => r.id === ringId);
   if (!ring) {
     return {
+      source: "demo" as const,
       ringId,
       summary: "Bu halqa üçün əlavə məlumat tapılmadı.",
       signals: [],
@@ -258,6 +259,7 @@ export function buildMockExplanation(ringId: string, snapshot: GraphSnapshot) {
   }
   if (ring.id === "ring_farm_01") {
     return {
+      source: "demo" as const,
       ringId,
       summary:
         `Bu 52 hesablıq qrup klassik "gold farming" halqasına bənzəyir: 50 hesab son 72 saat ` +
@@ -270,6 +272,7 @@ export function buildMockExplanation(ringId: string, snapshot: GraphSnapshot) {
     };
   }
   return {
+    source: "demo" as const,
     ringId,
     summary:
       `Bu hesab yüksək ticarət həcminə görə bayraqlanıb, lakin siqnallar fərqlidir: hesab 320 gün əvvəl ` +

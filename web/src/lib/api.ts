@@ -8,7 +8,7 @@ import type { GraphSnapshot, RingExplanation } from "./types";
 export type Decision = "real" | "fraud";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
-const FETCH_TIMEOUT_MS = 1500;
+const FETCH_TIMEOUT_MS = 35000;
 const UPLOAD_TIMEOUT_MS = 10000; // a judge's own export can be large
 
 let usingMock = false;
@@ -16,7 +16,7 @@ export function isUsingMockData() {
   return usingMock;
 }
 
-async function timedFetch(path: string, init?: RequestInit, timeoutMs = FETCH_TIMEOUT_MS): Promise<Response> {
+async function timedFetch<T>(path: string, init?: RequestInit, timeoutMs = FETCH_TIMEOUT_MS): Promise<T> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -25,7 +25,7 @@ async function timedFetch(path: string, init?: RequestInit, timeoutMs = FETCH_TI
       const detail = await res.text().catch(() => "");
       throw new Error(`${res.status} ${res.statusText}${detail ? ` — ${detail}` : ""}`);
     }
-    return res;
+    return await res.json() as T;
   } finally {
     clearTimeout(timeout);
   }
@@ -39,9 +39,9 @@ export function getCachedSnapshot(): GraphSnapshot | null {
 
 export async function fetchGraph(): Promise<GraphSnapshot> {
   try {
-    const res = await timedFetch("/graph");
+    const data = await timedFetch<GraphSnapshot>("/graph");
     usingMock = false;
-    cachedSnapshot = await res.json();
+    cachedSnapshot = data;
     return cachedSnapshot!;
   } catch {
     // The mock scenario is generated once and reused: it's an in-memory
@@ -54,17 +54,26 @@ export async function fetchGraph(): Promise<GraphSnapshot> {
   }
 }
 
-export async function fetchExplanation(ringId: string): Promise<RingExplanation> {
-  if (!usingMock) {
-    try {
-      const res = await timedFetch(`/rings/${ringId}/explanation`);
-      return await res.json();
-    } catch {
-      // fall through to mock
-    }
-  }
-  const snapshot = cachedSnapshot ?? buildMockSnapshot();
-  return buildMockExplanation(ringId, snapshot);
+const explanations = new Map<string, Promise<RingExplanation>>();
+
+export function fetchExplanation(ringId: string): Promise<RingExplanation> {
+  if (usingMock) return Promise.resolve(buildMockExplanation(ringId, cachedSnapshot ?? buildMockSnapshot()));
+  const existing = explanations.get(ringId);
+  if (existing) return existing;
+  const pending = timedFetch<RingExplanation>(`/rings/${encodeURIComponent(ringId)}/explanation`)
+    .catch((): RingExplanation => ({
+      ringId,
+      source: "unavailable",
+      summary: "İzah gecikdi və ya əlçatan deyil. Ölçülmüş sübutları nəzərdən keçirin.",
+      signals: [],
+      recommendedAction: "Qərarı halqanın ölçülmüş sübutlarına əsasən verin.",
+    }));
+  explanations.set(ringId, pending);
+  return pending;
+}
+
+export function prefetchExplanations(ringIds: string[]): void {
+  for (const ringId of ringIds) void fetchExplanation(ringId);
 }
 
 // The one call that must NOT fall back to mock data: this is the pitch's
@@ -72,7 +81,7 @@ export async function fetchExplanation(ringId: string): Promise<RingExplanation>
 // judge, not disappear into a silent mock swap. Caller re-runs fetchGraph()
 // on success to pull the now-real snapshot in.
 export async function uploadEvents(events: RawEvent[]): Promise<{ inserted: number; skipped: number }> {
-  const res = await timedFetch(
+  const data = await timedFetch<{ received: number; inserted: number; skipped: number }>(
     "/events",
     {
       method: "POST",
@@ -81,22 +90,17 @@ export async function uploadEvents(events: RawEvent[]): Promise<{ inserted: numb
     },
     UPLOAD_TIMEOUT_MS,
   );
-  const data: { received: number; inserted: number; skipped: number } = await res.json();
+  explanations.clear();
   return { inserted: data.inserted, skipped: data.skipped };
 }
 
 export async function submitDecision(ringId: string, decision: Decision): Promise<void> {
   if (!usingMock) {
-    try {
-      await timedFetch(`/rings/${ringId}/decision`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ decision }),
-      });
-      return;
-    } catch {
-      // fall through — still reflect the decision locally so the demo works
-    }
+    await timedFetch(`/rings/${encodeURIComponent(ringId)}/decision`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ decision }),
+    });
   }
   if (cachedSnapshot) {
     const ring = cachedSnapshot.rings.find((r) => r.id === ringId);

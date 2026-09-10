@@ -43,13 +43,14 @@ export interface GraphSnapshot {
   rings: Ring[];
   stats: {
     activeAccounts: number;
-    dailyEvents: number;
-    dailyVolumeUsd: number;
+    totalEvents: number;
+    totalVolumeUsd: number;
     ringsAtRisk: number;
   };
 }
 
 export interface RingExplanation {
+  source: "ai" | "template" | "demo" | "unavailable";
   ringId: string;
   summary: string;
   signals: { label: string; value: string }[];
