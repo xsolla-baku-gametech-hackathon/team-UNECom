@@ -4,6 +4,7 @@ import { InvestigationPanel } from "./components/InvestigationPanel";
 import { Legend } from "./components/Legend";
 import { SensitivitySlider } from "./components/SensitivitySlider";
 import { StatsBar } from "./components/StatsBar";
+import { UploadPanel } from "./components/UploadPanel";
 import { fetchGraph, getCachedSnapshot, isUsingMockData } from "./lib/api";
 import { deriveGraph } from "./lib/deriveGraph";
 import type { GraphNode, GraphSnapshot } from "./lib/types";
@@ -79,7 +80,10 @@ export default function App() {
             )}
           </p>
         </div>
-        <SensitivitySlider value={sensitivity} onChange={setSensitivity} />
+        <div className="flex flex-wrap items-start gap-6">
+          <UploadPanel mock={mock} onUploaded={load} />
+          <SensitivitySlider value={sensitivity} onChange={setSensitivity} />
+        </div>
       </header>
 
       <div className="flex items-center justify-between gap-4 px-6 py-3">
