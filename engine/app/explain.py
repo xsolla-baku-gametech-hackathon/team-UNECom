@@ -105,7 +105,7 @@ def call_claude(evidence: dict) -> tuple[str, bool]:
         client = anthropic.Anthropic(api_key=api_key)
         response = client.messages.create(
             model=CLAUDE_MODEL,
-            max_tokens=400,
+            max_tokens=700,
             system=SYSTEM_PROMPT,
             messages=[{
                 "role": "user",
