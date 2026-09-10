@@ -263,7 +263,7 @@ Content zone: three numbers stacked, each on its own hairline-separated row; num
 
 The `2.4 months` row is the slide's most valuable number: set the number in `#e8e6e1` at 120 like the others, but give the row 24 px more vertical space above and below than the other two.
 
-Source line, one line: `PocketGamer.biz, Jun 2026 · Sift Q4 2025 · Vendr contract data · Roblox FY2024 10-K · business-case.md §5`
+Source line, one line: `PocketGamer.biz, Jun 2026 · Sift Q4 2025 · Vendr · Roblox FY2024 10-K · business-case.md §5`
 
 ### 06 · Team + ask
 
