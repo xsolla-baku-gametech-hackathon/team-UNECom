@@ -35,7 +35,7 @@ When a choice is between "more" and "less", choose less, then make what remains 
 
 **Product.** Fraud Radar is an investigation dashboard for game economies. Fraud tools on the market (Sift, Kount, Magify) score the *payment*: was this card stolen? Fraud Radar starts after the payment clears and traces where the in-game value *goes* — trades, gifts, marketplace sales, key redemptions — and finds laundering rings: many freshly created "mule" accounts buying with bad cards and forwarding value to a "cash-out hub" that never touches a flagged card itself. A human analyst confirms or rejects each case. Nothing is auto-banned.
 
-**Team.** UNECom, four people, 48-hour build. Public repo: `github.com/xsolla-baku-gametech-hackathon/team-UNECom`.
+**Team.** UNECom, five people, 48-hour build. Public repo: `github.com/xsolla-baku-gametech-hackathon/team-UNECom`.
 
 **Event.** GameTech Bootcamp Baku 2026, final pitch on 11 September 2026 at 15:00. 3 minutes on stage, 2 minutes Q&A. Jury: an international team from Xsolla. All copy is English.
 
@@ -273,15 +273,27 @@ Top band: pill `MEASURED` · eyebrow `06 · TEAM`.
 
 Beneath the headline, Plex Sans 36 `#c3c7cc`, one line: `We are not asking you to believe synthetic numbers. Give us real ones.`
 
-Content zone: the team, four equal columns. In each column, top to bottom:
+Content zone: the team, **five** equal columns (five 240 px frames across the 1728 px content width leaves 132 px gutters). In each column, top to bottom:
 
-- **Photo** — square, 240×240, radius 4 px, 2 px `#24282f` border, no filter, no crop tricks, no grayscale. If the user attaches four photos, place them in the order given. If not, draw a `#0d0f12` square of the same size with `(photo)` in Plex Mono 28 `#4b5058` centred; the team will replace it.
-- **Name** — Plex Sans 36 weight 600. Use the literal placeholder `(name)` for all four.
-- **Role** — Plex Sans 28 `#c3c7cc`, two lines in every column (role on line one, stack on line two; the fourth column's second line is empty), verbatim:
-  - `Engine / detection · Python · FastAPI`
-  - `API / data layer · Node · Fastify · Prisma`
-  - `Dashboard / UX · React · Vite`
-  - `Data generation & evaluation`
+- **Photo** — square, 240×240, radius 4 px, 2 px `#24282f` border. The five source photos are shot in five different conditions (daylight street, night with a film filter, grey studio, phone selfie, white studio), so they must be made to match: crop each to a square with the eyes on the same horizontal line and the head filling the same fraction of the frame, then convert **all five to greyscale** with the same contrast. Colour photos in five different palettes on one row read as "pasted in"; five matched greyscale frames read as one team. Place them in the order below. If a photo is missing, draw a `#0d0f12` square of the same size with `(photo)` in Plex Mono 28 `#4b5058` centred.
+- **Name** — Plex Sans 36 weight 600, verbatim and in this order: `Nezrin Ceferova` · `Aslan Musayev` · `Sardar Soltanzade` · `Hamid Aslanov` · `Matin Mehdi`.
+- **Role** — Plex Sans 28 `#c3c7cc`, two lines in every column (role on line one, stack on line two; a column with no stack keeps an empty second line so the five columns stay level). The five roles, verbatim, are:
+  - `Engine / detection` / `Python · FastAPI`
+  - `API / data layer` / `Node · Fastify · Prisma`
+  - `Dashboard / UX` / `React · Vite`
+  - `Data generation & evaluation` / (empty)
+  - `Pitch & business case` / (empty)
+
+  Which role sits under which name is set by the team, not by the designer: use the mapping in the section "Name → role" below if it is filled in; if it is not, print `(role)` under every name and leave the second line empty.
+
+**Name → role** (team fills this in; leave `(role)` until it is filled):
+| Name | Role |
+|---|---|
+| Nezrin Ceferova | (role) |
+| Aslan Musayev | (role) |
+| Sardar Soltanzade | (role) |
+| Hamid Aslanov | (role) |
+| Matin Mehdi | (role) |
 
 Below the team row, one line in Plex Mono 28 `#9aa0a8` with a `MEASURED` pill at its left:
 `docs/accuracy.md · hub recall at default sensitivity: 0% · published, not patched`
@@ -327,7 +339,7 @@ If you find yourself typing any other number, stop — it is not in the brief.
 7. Top band, headline baseline and source line sit at identical coordinates on 01b–06.
 8. Nothing meaningful below 28 px; weights 400 / 600 / 700 only.
 9. 02, 04 and 05 have at most three content elements below the headline.
-10. 06 has four equal photo frames of identical size and alignment, names and roles on shared baselines.
+10. 06 has five equal greyscale photo frames of identical size, eyes on one line, names and roles on shared baselines.
 11. Nothing outside the frame, nothing overlapping, decimals aligned where numbers stack.
 12. Look at each slide as a picture: is at least half of it empty ground, is one thing clearly the largest, could a ruler align every left edge? If any answer is no, remove something.
 

@@ -348,7 +348,7 @@ yerini alırdı. Vaxt artıq qalsa deyilir (bax `demo-script.md` §8).
 ## Slayd 6 — Team + **ASK** · 2:37–3:00
 
 **Ekranda:** Başlıq = ask (slaydın ən böyük mətni, narıncı), altda komanda —
-4 şəkil + ad + rol:
+5 şəkil (eyni kadr, boz-ağ) + ad + rol — Nezrin Ceferova · Aslan Musayev · Sardar Soltanzade · Hamid Aslanov · Matin Mehdi:
 
 > **One labelled dataset. Ninety days.**
 
@@ -358,6 +358,7 @@ yerini alırdı. Vaxt artıq qalsa deyilir (bax `demo-script.md` §8).
 | _(doldur)_ | API / data layer (Node · Fastify · Prisma) |
 | _(doldur)_ | Dashboard / UX (React · Vite) |
 | _(doldur)_ | Data generation & evaluation |
+| _(doldur)_ | Pitch & business case |
 
 **De (EN) — komanda (2:37–2:45):**
 > "Team UNECom. Everything's in the repo, including the doc that says our hub recall is zero at default."
