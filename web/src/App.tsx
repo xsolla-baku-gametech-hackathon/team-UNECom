@@ -7,7 +7,7 @@ import { PaymentMomentCallout } from "./components/PaymentMomentCallout";
 import { SensitivitySlider } from "./components/SensitivitySlider";
 import { StatsBar } from "./components/StatsBar";
 import { UploadPanel } from "./components/UploadPanel";
-import { fetchGraph, getCachedSnapshot, isUsingMockData, submitDecision, type Decision } from "./lib/api";
+import { fetchGraph, getCachedSnapshot, isUsingMockData, prefetchExplanations, submitDecision, type Decision } from "./lib/api";
 import { deriveGraph } from "./lib/deriveGraph";
 import { computePaymentMomentView } from "./lib/paymentMomentView";
 import { riskColor } from "./lib/colors";
@@ -21,6 +21,7 @@ export default function App() {
   const [selectedRingId, setSelectedRingId] = useState<string | null>(null);
   const [armed, setArmed] = useState<Decision | null>(null);
   const [committing, setCommitting] = useState(false);
+  const [decisionError, setDecisionError] = useState<string | null>(null);
   const [filter, setFilter] = useState<QueueFilter>("open");
   const [query, setQuery] = useState("");
   const [flaggedOnly, setFlaggedOnly] = useState(false);
@@ -56,6 +57,10 @@ export default function App() {
     [snapshot, sensitivity, ringSensOverrides],
   );
 
+  useEffect(() => {
+    if (snapshot && derived && !mock) prefetchExplanations([...derived.flaggedRingIds]);
+  }, [snapshot, derived, mock]);
+
   const flaggedRings = useMemo(
     () => (snapshot && derived ? snapshot.rings.filter((r) => derived.flaggedRingIds.has(r.id)) : []),
     [snapshot, derived],
@@ -77,6 +82,7 @@ export default function App() {
   function select(ringId: string | null) {
     setSelectedRingId(ringId);
     setArmed(null);
+    setDecisionError(null);
   }
 
   function handleSelectNode(node: GraphNode) {
@@ -100,13 +106,19 @@ export default function App() {
   }
 
   async function commitDecision() {
-    if (!selectedRingId || !armed) return;
+    if (!selectedRingId || !armed || committing) return;
     setCommitting(true);
-    await submitDecision(selectedRingId, armed);
-    setCommitting(false);
-    setArmed(null);
-    const current = getCachedSnapshot();
-    if (current) setSnapshot({ ...current, rings: [...current.rings] });
+    setDecisionError(null);
+    try {
+      await submitDecision(selectedRingId, armed);
+      setArmed(null);
+      const current = getCachedSnapshot();
+      if (current) setSnapshot({ ...current, rings: [...current.rings] });
+    } catch {
+      setDecisionError("Qərar saxlanmadı. Yenidən cəhd edin.");
+    } finally {
+      setCommitting(false);
+    }
   }
 
   function nextCase() {
@@ -153,7 +165,7 @@ export default function App() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [armed, uploadOpen, selectedRingId, filter, query, flaggedRings]);
+  }, [armed, committing, uploadOpen, selectedRingId, filter, query, flaggedRings]);
 
   const hoverRing = hoveredNode?.ringId ? snapshot?.rings.find((r) => r.id === hoveredNode.ringId) : null;
   const isEmpty = !mock && !!snapshot && snapshot.accounts.length === 0;
@@ -383,31 +395,31 @@ export default function App() {
             </div>
           )}
 
-          {selectedRing && derived && (
-            <InvestigationPanel
-              ring={selectedRing}
-              flagged={derived.flaggedRingIds.has(selectedRing.id)}
-              armed={armed}
-              committing={committing}
-              onArm={setArmed}
-              onCommit={commitDecision}
-              onClose={() => select(null)}
-              onNextCase={nextCase}
-              ringSensOverride={ringSensOverrides[selectedRing.id] ?? null}
-              globalSensitivity={sensitivity}
-              onSetRingSensOverride={(v) =>
-                setRingSensOverrides((prev) => {
-                  const next = { ...prev };
-                  if (v == null) delete next[selectedRing.id];
-                  else next[selectedRing.id] = v;
-                  return next;
-                })
-              }
-            />
-          )}
-
           <UploadPanel open={uploadOpen} mock={mock} onClose={() => setUploadOpen(false)} onUploaded={load} />
         </div>
+        {selectedRing && derived && (
+          <InvestigationPanel
+            ring={selectedRing}
+            flagged={derived.flaggedRingIds.has(selectedRing.id)}
+            armed={armed}
+            committing={committing}
+            decisionError={decisionError}
+            onArm={setArmed}
+            onCommit={commitDecision}
+            onClose={() => select(null)}
+            onNextCase={nextCase}
+            ringSensOverride={ringSensOverrides[selectedRing.id] ?? null}
+            globalSensitivity={sensitivity}
+            onSetRingSensOverride={(v) =>
+              setRingSensOverrides((prev) => {
+                const next = { ...prev };
+                if (v == null) delete next[selectedRing.id];
+                else next[selectedRing.id] = v;
+                return next;
+              })
+            }
+          />
+        )}
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ interface Props {
   flagged: boolean;
   armed: Decision | null;
   committing: boolean;
+  decisionError: string | null;
   onArm: (v: Decision | null) => void;
   onCommit: () => void;
   onClose: () => void;
@@ -29,6 +30,7 @@ export function InvestigationPanel({
   flagged,
   armed,
   committing,
+  decisionError,
   onArm,
   onCommit,
   onClose,
@@ -62,7 +64,7 @@ export function InvestigationPanel({
   return (
     <div
       className="flex h-full flex-col overflow-y-auto border-l"
-      style={{ width: 380, borderColor: "#24282f", background: "#0a0b0d" }}
+      style={{ width: 380, flex: "0 0 380px", minHeight: 0, borderColor: "#24282f", background: "#0a0b0d" }}
     >
       <div className="flex items-start gap-2.5 border-b px-3.5 py-3" style={{ borderColor: "#24282f", background: "#0d0f12" }}>
         <div className="min-w-0 flex-1">
@@ -141,7 +143,7 @@ export function InvestigationPanel({
           <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 10, letterSpacing: ".16em", color: "#c8792e" }}>
             Model interpretasiyası
           </span>
-          <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10, color: "#676d76" }}>Claude tərəfindən yazılıb</span>
+          <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10, color: "#676d76" }}>{explanation?.source === "ai" ? "Claude tərəfindən yazılıb" : explanation?.source === "template" ? "Şablon izah" : explanation?.source === "demo" ? "Demo izahı" : ""}</span>
         </div>
         {loading ? (
           <div className="mt-2.5">
@@ -235,6 +237,7 @@ export function InvestigationPanel({
       </div>
 
       <div className="mt-auto border-t px-3.5 py-3" style={{ borderColor: "#24282f", background: "#0d0f12" }}>
+        {decisionError && <div role="alert" className="mb-2" style={{ color: "#d1685f" }}>{decisionError}</div>}
         {!armed && !decided && (
           <div>
             <div style={{ fontSize: 11.5, color: "#676d76", lineHeight: 1.45 }}>
