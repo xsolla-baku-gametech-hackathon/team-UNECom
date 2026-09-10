@@ -2,24 +2,29 @@
 // to local mock data whenever the backend isn't reachable yet, so the
 // dashboard is always demoable regardless of backend build status.
 import { buildMockExplanation, buildMockSnapshot } from "./mockData";
+import type { RawEvent } from "./parseUpload";
 import type { GraphSnapshot, RingExplanation } from "./types";
 
 export type Decision = "real" | "fraud";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
 const FETCH_TIMEOUT_MS = 1500;
+const UPLOAD_TIMEOUT_MS = 10000; // a judge's own export can be large
 
 let usingMock = false;
 export function isUsingMockData() {
   return usingMock;
 }
 
-async function timedFetch(path: string, init?: RequestInit): Promise<Response> {
+async function timedFetch(path: string, init?: RequestInit, timeoutMs = FETCH_TIMEOUT_MS): Promise<Response> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const res = await fetch(`${API_BASE}${path}`, { ...init, signal: controller.signal });
-    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    if (!res.ok) {
+      const detail = await res.text().catch(() => "");
+      throw new Error(`${res.status} ${res.statusText}${detail ? ` — ${detail}` : ""}`);
+    }
     return res;
   } finally {
     clearTimeout(timeout);
@@ -60,6 +65,24 @@ export async function fetchExplanation(ringId: string): Promise<RingExplanation>
   }
   const snapshot = cachedSnapshot ?? buildMockSnapshot();
   return buildMockExplanation(ringId, snapshot);
+}
+
+// The one call that must NOT fall back to mock data: this is the pitch's
+// "throw your own file at it" moment, so a failure has to surface to the
+// judge, not disappear into a silent mock swap. Caller re-runs fetchGraph()
+// on success to pull the now-real snapshot in.
+export async function uploadEvents(events: RawEvent[]): Promise<{ inserted: number; skipped: number }> {
+  const res = await timedFetch(
+    "/events",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(events),
+    },
+    UPLOAD_TIMEOUT_MS,
+  );
+  const data: { received: number; inserted: number; skipped: number } = await res.json();
+  return { inserted: data.inserted, skipped: data.skipped };
 }
 
 export async function submitDecision(ringId: string, decision: Decision): Promise<void> {
