@@ -277,23 +277,15 @@ Content zone: the team, **five** equal columns (five 240 px frames across the 17
 
 - **Photo** — square, 240×240, radius 4 px, 2 px `#24282f` border. The five source photos are shot in five different conditions (daylight street, night with a film filter, grey studio, phone selfie, white studio), so they must be made to match: crop each to a square with the eyes on the same horizontal line and the head filling the same fraction of the frame, then convert **all five to greyscale** with the same contrast. Colour photos in five different palettes on one row read as "pasted in"; five matched greyscale frames read as one team. Place them in the order below. If a photo is missing, draw a `#0d0f12` square of the same size with `(photo)` in Plex Mono 28 `#4b5058` centred.
 - **Name** — Plex Sans 36 weight 600, verbatim and in this order: `Nezrin Ceferova` · `Aslan Musayev` · `Sardar Soltanzade` · `Hamid Aslanov` · `Matin Mehdi`.
-- **Role** — Plex Sans 28 `#c3c7cc`, two lines in every column (role on line one, stack on line two; a column with no stack keeps an empty second line so the five columns stay level). The five roles, verbatim, are:
-  - `Engine / detection` / `Python · FastAPI`
-  - `API / data layer` / `Node · Fastify · Prisma`
-  - `Dashboard / UX` / `React · Vite`
-  - `Data generation & evaluation` / (empty)
-  - `Pitch & business case` / (empty)
+- **Role** — Plex Sans 28 `#c3c7cc`, two lines in every column (role on line one, stack or artefact on line two), verbatim, under the names in the same order:
 
-  Which role sits under which name is set by the team, not by the designer: use the mapping in the section "Name → role" below if it is filled in; if it is not, print `(role)` under every name and leave the second line empty.
-
-**Name → role** (team fills this in; leave `(role)` until it is filled):
-| Name | Role |
-|---|---|
-| Nezrin Ceferova | (role) |
-| Aslan Musayev | (role) |
-| Sardar Soltanzade | (role) |
-| Hamid Aslanov | (role) |
-| Matin Mehdi | (role) |
+| Name | Line one | Line two |
+|---|---|---|
+| Nezrin Ceferova | `Pitch & presentation` | `speaker on stage` |
+| Aslan Musayev | `Data generation & evaluation` | `synthetic rings · accuracy.md` |
+| Sardar Soltanzade | `Business case & research` | `business-case.md · sources` |
+| Hamid Aslanov | `Full-stack · detection engine` | `Python · FastAPI · networkx` |
+| Matin Mehdi | `Full-stack · API & dashboard` | `Node · Fastify · Prisma · React` |
 
 Below the team row, one line in Plex Mono 28 `#9aa0a8` with a `MEASURED` pill at its left:
 `docs/accuracy.md · hub recall at default sensitivity: 0% · published, not patched`
