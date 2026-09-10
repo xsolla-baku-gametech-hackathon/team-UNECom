@@ -68,6 +68,12 @@ gizlənən bir neçə fırıldaq halqası".
 **İstifadəçilər:** Trust & Safety / fraud analitikləri, oyun
 iqtisadiyyatı komandaları, ödəniş risk komandaları.
 
+**İnteqrasiya — iki qat:** CSV/JSON yükləmə yeganə yol deyil, "sıfır
+öhdəlik" sınaq qapısıdır. Production üçün eyni `/events` API-yə oyunun
+öz backend-i real-vaxtda push edir (webhook/SDK tərzi) — Xsolla kimi
+müştəri üçün əsl inteqrasiya budur, fayl yükləmə isə demo/backfill
+üçündür.
+
 ---
 
 ## Slayd 5 — Monetization
