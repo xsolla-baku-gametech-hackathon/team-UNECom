@@ -3,11 +3,13 @@ import { CaseQueue, type QueueFilter } from "./components/CaseQueue";
 import { GraphCanvas } from "./components/GraphCanvas";
 import { InvestigationPanel } from "./components/InvestigationPanel";
 import { Legend } from "./components/Legend";
+import { PaymentMomentCallout } from "./components/PaymentMomentCallout";
 import { SensitivitySlider } from "./components/SensitivitySlider";
 import { StatsBar } from "./components/StatsBar";
 import { UploadPanel } from "./components/UploadPanel";
 import { fetchGraph, getCachedSnapshot, isUsingMockData, submitDecision, type Decision } from "./lib/api";
 import { deriveGraph } from "./lib/deriveGraph";
+import { computePaymentMomentView } from "./lib/paymentMomentView";
 import { riskColor } from "./lib/colors";
 import { caseRef } from "./lib/format";
 import type { GraphNode, GraphSnapshot } from "./lib/types";
@@ -22,6 +24,7 @@ export default function App() {
   const [filter, setFilter] = useState<QueueFilter>("open");
   const [query, setQuery] = useState("");
   const [flaggedOnly, setFlaggedOnly] = useState(false);
+  const [paymentMoment, setPaymentMoment] = useState(false);
   const [hoveredNode, setHoveredNode] = useState<GraphNode | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [mock, setMock] = useState(false);
@@ -59,6 +62,12 @@ export default function App() {
   );
   const decidedCount = flaggedRings.filter((r) => r.status !== "pending").length;
   const flaggedAccountCount = flaggedRings.reduce((s, r) => s + r.memberAccountIds.length, 0);
+
+  // What a payment-moment competitor could see in this same dataset.
+  const paymentView = useMemo(
+    () => (snapshot ? computePaymentMomentView(snapshot, flaggedRings) : null),
+    [snapshot, flaggedRings],
+  );
 
   const selectedRing = useMemo(
     () => snapshot?.rings.find((r) => r.id === selectedRingId) ?? null,
@@ -224,6 +233,7 @@ export default function App() {
               links={derived.links}
               selectedRingId={selectedRingId}
               flaggedOnly={flaggedOnly}
+              paymentVisibleIds={paymentMoment && paymentView ? paymentView.visibleIds : null}
               onSelectNode={handleSelectNode}
               onHoverNode={setHoveredNode}
               width={size.width}
@@ -234,22 +244,47 @@ export default function App() {
           {snapshot && derived && !isEmpty && (
             <div className="absolute flex flex-wrap items-start justify-between gap-3" style={{ left: 16, right: 16, top: 14, zIndex: 30 }}>
               <StatsBar stats={snapshot.stats} flaggedRingCount={flaggedRings.length} decidedCount={decidedCount} />
-              <div
-                onClick={() => setFlaggedOnly((v) => !v)}
-                className="flex cursor-pointer items-center rounded uppercase"
-                style={{
-                  height: 26,
-                  padding: "0 11px",
-                  border: `1px solid ${flaggedOnly ? "#c8792e" : "#24282f"}`,
-                  background: flaggedOnly ? "#1a1509" : "#0d0f12",
-                  color: flaggedOnly ? "#e0913f" : "#9aa0a8",
-                  fontFamily: "'Barlow Semi Condensed'",
-                  fontWeight: 600,
-                  fontSize: 11,
-                  letterSpacing: ".11em",
-                }}
-              >
-                Yalnız bayraqlanmış halqalar
+              <div className="flex flex-col items-end gap-2.5" style={{ minWidth: 0 }}>
+                <div className="flex flex-wrap justify-end gap-2">
+                  <div
+                    onClick={() => setFlaggedOnly((v) => !v)}
+                    className="flex cursor-pointer items-center rounded uppercase"
+                    style={{
+                      height: 26,
+                      padding: "0 11px",
+                      border: `1px solid ${flaggedOnly ? "#c8792e" : "#24282f"}`,
+                      background: flaggedOnly ? "#1a1509" : "#0d0f12",
+                      color: flaggedOnly ? "#e0913f" : "#9aa0a8",
+                      fontFamily: "'Barlow Semi Condensed'",
+                      fontWeight: 600,
+                      fontSize: 11,
+                      letterSpacing: ".11em",
+                    }}
+                  >
+                    Yalnız bayraqlanmış halqalar
+                  </div>
+                  <div
+                    onClick={() => setPaymentMoment((v) => !v)}
+                    className="flex cursor-pointer items-center gap-2 rounded uppercase"
+                    style={{
+                      height: 26,
+                      padding: "0 11px",
+                      border: `1px solid ${paymentMoment ? "#c8792e" : "#24282f"}`,
+                      background: paymentMoment ? "#1a1509" : "#0d0f12",
+                      color: paymentMoment ? "#e0913f" : "#9aa0a8",
+                      fontFamily: "'Barlow Semi Condensed'",
+                      fontWeight: 600,
+                      fontSize: 11,
+                      letterSpacing: ".11em",
+                    }}
+                  >
+                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: paymentMoment ? "#c8792e" : "#3a4048", flex: "0 0 auto" }} />
+                    Ödəniş anı görünüşü
+                  </div>
+                </div>
+                {paymentMoment && paymentView && (
+                  <PaymentMomentCallout view={paymentView} flaggedRingCount={flaggedRings.length} />
+                )}
               </div>
             </div>
           )}
