@@ -8,6 +8,8 @@ interface Props {
   links: GraphLink[];
   selectedRingId: string | null;
   flaggedOnly: boolean;
+  /** Non-null => payment-moment view: only these accounts stay lit. */
+  paymentVisibleIds: Set<string> | null;
   onSelectNode: (node: GraphNode) => void;
   onHoverNode: (node: GraphNode | null) => void;
   width: number;
@@ -21,6 +23,7 @@ export function GraphCanvas({
   links,
   selectedRingId,
   flaggedOnly,
+  paymentVisibleIds,
   onSelectNode,
   onHoverNode,
   width,
@@ -66,6 +69,9 @@ export function GraphCanvas({
   }, [graphData]);
 
   function nodeOpacity(node: FGNode): number {
+    // Payment-moment view is an outer mask: anything a payment processor
+    // never sees drops out first, whatever the other filters say.
+    if (paymentVisibleIds && !paymentVisibleIds.has(node.id)) return 0.06;
     if (selectedRingId) return node.ringId === selectedRingId ? 1 : 0.13;
     if (flaggedOnly && !node.flagged) return 0.09;
     if (!node.flagged) return 0.55;
@@ -80,9 +86,15 @@ export function GraphCanvas({
       height={height}
       backgroundColor="#0a0b0d"
       nodeRelSize={4}
-      linkColor={(l) => (l.paymentFlagged ? "rgba(176,71,63,0.55)" : "rgba(58,64,72,0.5)")}
+      linkColor={(l) =>
+        paymentVisibleIds
+          ? "rgba(58,64,72,0.10)"
+          : l.paymentFlagged
+            ? "rgba(176,71,63,0.55)"
+            : "rgba(58,64,72,0.5)"
+      }
       linkWidth={(l) => Math.min(3, 0.4 + Math.log10(1 + l.valueUsdEstimate) * 0.6)}
-      linkDirectionalParticles={(l) => (l.paymentFlagged ? 2 : 0)}
+      linkDirectionalParticles={(l) => (!paymentVisibleIds && l.paymentFlagged ? 2 : 0)}
       linkDirectionalParticleWidth={2}
       linkDirectionalParticleColor={() => "#b0473f"}
       cooldownTicks={100}
