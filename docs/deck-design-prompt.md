@@ -243,7 +243,7 @@ Content zone: a three-row, two-column table, hairline dividers, no header row, c
 |---|---|
 | `Value-flow graph · Louvain rings · sensitivity slider` | `Trust & Safety analyst` — `Rockstar is hiring this role now` |
 | `Claude-written case · human decision · nothing auto-banned` | `Payments / risk lead` — `at a merchant of record` |
-| `Drag-and-drop CSV today · same /events API in production` | `Game economy / live-ops lead` |
+| `Drag-and-drop CSV or JSON today · same /events API in production` | `Game economy / live-ops lead` |
 
 Source line: `Rockstar Games — Trust & Safety Senior Enforcement Analyst, open role (themuse.com)`
 

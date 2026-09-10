@@ -308,7 +308,7 @@ cədvəl kəsildi; dinlənilən slaydda oxunacaq şey 3-dən çox olmamalıdır)
 |---|---|
 | Value-flow graph · Louvain rings · sensitivity slider | **Trust & Safety analyst** — Rockstar bu rolu indi axtarır |
 | Claude-written case · human decision · nothing auto-banned | **Payments / risk lead** at a merchant of record |
-| Drag-and-drop CSV today · same `/events` API in production | **Game economy / live-ops lead** |
+| Drag-and-drop CSV or JSON today · same `/events` API in production | **Game economy / live-ops lead** |
 
 **De (EN):**
 > "Built for a Trust and Safety analyst; Rockstar is hiring one now. Drag-and-drop is the trial door; production pushes the same events to our API."
