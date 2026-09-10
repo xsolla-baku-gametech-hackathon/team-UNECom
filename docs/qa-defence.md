@@ -259,7 +259,7 @@ Safety Senior Enforcement Analyst" vakansiyası bu rolun real olduğunun sübutu
 **Fakt (`business-case.md` §4–5):** $60K/il platform haqqı, Sift-in $150K median
 müqaviləsindən qəsdən aşağı — çünki biz əvəzedici deyil, əlavə modulyuq. $50M
 bookings studio üçün ROI 5.1×, geri ödəmə **2.4 ay**; detection fərz etdiyimizdən
-3× pis olsa **7.1 ay**. Giriş: 90 günlük **$5,000** pilot.
+3× pis olsa **7.1 ay**. Giriş: 90 günlük pilot ($5,000 = illik haqqın 1/12-i; səhnədə deyilmir).
 
 **De (EN):**
 > **"Sixty thousand a year for a mid-size studio, deliberately under Sift's
@@ -267,11 +267,14 @@ bookings studio üçün ROI 5.1×, geri ödəmə **2.4 ay**; detection fərz etd
 > your payment fraud tooling, not a replacement for it. On a fifty-million-
 > bookings studio that pays back in 2.4 months — and if our detection turns out
 > to be three times worse than we assume, still under seven. We land with a
-> five-thousand-dollar ninety-day pilot so nobody needs a committee to sign it."
+> ninety-day pilot on one labelled dataset, priced so that a single manager can
+> sign it without a committee."
 
-**Qeyd:** pilot artıq pitch-in son cümləsində (ask) deyilib. Burada təkrar
-zərər vermir — jüri qiymət sualında "pilot" sözünü ikinci dəfə eşidəndə onu
-yadda saxlayır.
+**Qeyd:** pilot artıq pitch-in son cümləsində (ask) deyilib, **dollar rəqəmi
+olmadan** — hackathon jürisi müqavilə imzalamır, səhnədə "five thousand dollars"
+"bizə pul verin" kimi səslənirdi. Jüri "how much is the pilot?" deyə israr etsə:
+"one month of the annual fee, spread over ninety days" — $60K ÷ 12 = $5,000;
+`business-case.md` §4-dəki rəqəmdir, mənbəsi yoxdur, bizim seçimimizdir.
 
 ---
 
@@ -303,6 +306,34 @@ dəyəri isə "halqa daxilində dövr edən pul"u. Suala 5 saniyəlik cavab:
 > "No — it's the honest one. A purchase on a card that was never flagged is
 > precisely what a payment-time tool misses. Leaving it out would be
 > under-counting the blind spot."
+
+---
+
+## 12 · "How does the scoring actually work?"
+
+**Fakt (koddan, `engine/app/risk_scoring.py` + `community.py`):** hər hesab üçün
+dörd müstəqil siqnal hesablanır və çəkili cəmlənir — **taint 0.40** (dəyərin nə
+qədəri bayraqlanmış alışlardan gəlir; qraf boyunca "haircut" yayılması,
+kripto-forensikadan gələn üsul), **velocity 0.25** (hesab yaranandan ilk çıxışa
+qədər vaxt), **imbalance 0.20** (in/out dərəcə balanssızlığı — hub nümunəsi),
+**community 0.15** (hesabın icmasının orta riski). Louvain (networkx) icmaları
+tapır; halqa riski = üzvlərin orta riski; hub namizədləri ən yüksək imbalance.
+Slider halqa-səviyyəli həddir. Claude yalnız izahatı yazır.
+
+**De (EN):**
+> **"Four signals per account, weighted and summed: tainted value, forty percent;
+> velocity after account creation, twenty-five; in-out degree imbalance, twenty;
+> community risk, fifteen.** Taint spreads along the transfer graph by haircut
+> propagation, the method crypto forensics uses. Louvain community detection
+> groups accounts into rings, a ring's risk is its members' average, and the
+> slider is the ring-level threshold. Claude only writes the case; it never
+> scores."
+
+**Uzatma — "why those weights?"**
+> "Chosen by hand, not learned — we had no labelled data to learn from. That is
+> exactly what the pilot is for. The weights are in one dictionary in
+> risk_scoring.py, and the evaluation harness reruns in seconds, so retuning is
+> a five-line change."
 
 ---
 
