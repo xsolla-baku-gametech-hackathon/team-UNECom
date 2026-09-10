@@ -7,7 +7,7 @@ import { PaymentMomentCallout } from "./components/PaymentMomentCallout";
 import { SensitivitySlider } from "./components/SensitivitySlider";
 import { StatsBar } from "./components/StatsBar";
 import { UploadPanel } from "./components/UploadPanel";
-import { fetchGraph, getCachedSnapshot, isUsingMockData, submitDecision, type Decision } from "./lib/api";
+import { fetchGraph, getCachedSnapshot, isUsingMockData, prefetchExplanations, submitDecision, type Decision } from "./lib/api";
 import { deriveGraph } from "./lib/deriveGraph";
 import { computePaymentMomentView } from "./lib/paymentMomentView";
 import { riskColor } from "./lib/colors";
@@ -35,6 +35,9 @@ export default function App() {
     const data = await fetchGraph();
     setSnapshot(data);
     setMock(isUsingMockData());
+    // Warm the Claude explanations for every ring now, while the analyst is
+    // still looking at the graph, so opening a case is instant.
+    prefetchExplanations(data.rings.map((r) => r.id));
   }
 
   useEffect(() => {

@@ -10,6 +10,7 @@ export type Decision = "real" | "fraud";
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
 const FETCH_TIMEOUT_MS = 1500;
 const UPLOAD_TIMEOUT_MS = 10000; // a judge's own export can be large
+const EXPLAIN_TIMEOUT_MS = 30000; // the engine calls Claude for this one: 10-15s is normal
 
 let usingMock = false;
 export function isUsingMockData() {
@@ -42,6 +43,7 @@ export async function fetchGraph(): Promise<GraphSnapshot> {
     const res = await timedFetch("/graph");
     usingMock = false;
     cachedSnapshot = await res.json();
+    explanationCache.clear(); // new snapshot, possibly new data — cases must be re-explained
     return cachedSnapshot!;
   } catch {
     // The mock scenario is generated once and reused: it's an in-memory
@@ -54,17 +56,49 @@ export async function fetchGraph(): Promise<GraphSnapshot> {
   }
 }
 
-export async function fetchExplanation(ringId: string): Promise<RingExplanation> {
-  if (!usingMock) {
-    try {
-      const res = await timedFetch(`/rings/${ringId}/explanation`);
-      return await res.json();
-    } catch {
-      // fall through to mock
-    }
+// Explanations are memoised per ring for the life of a snapshot, so the
+// panel can be opened, closed and reopened without paying for Claude again,
+// and prefetchExplanations() can warm every case right after a load.
+const explanationCache = new Map<string, Promise<RingExplanation>>();
+
+// Shown on the live backend when the explanation call fails. Deliberately
+// NOT the bundled mock text: that describes a scripted scenario, and for any
+// ring it doesn't know it reads "probably a real player" — the opposite of
+// the evidence on screen. The measured signals are computed locally and
+// stay in the panel regardless.
+function unavailableExplanation(ringId: string): RingExplanation {
+  return {
+    ringId,
+    summary:
+      "Model izahı bu dəfə hazırlanmadı — backend vaxtında cavab vermədi. Yuxarıdakı ölçülmüş " +
+      "sübutlar yerli hesablanıb; case onlarsız da dayanır.",
+    signals: [],
+    recommendedAction: "Sübutlara əsasən qərar verin. İzah üçün case-i bir az sonra yenidən açın.",
+  };
+}
+
+export function fetchExplanation(ringId: string): Promise<RingExplanation> {
+  if (usingMock) {
+    return Promise.resolve(buildMockExplanation(ringId, cachedSnapshot ?? buildMockSnapshot()));
   }
-  const snapshot = cachedSnapshot ?? buildMockSnapshot();
-  return buildMockExplanation(ringId, snapshot);
+  let pending = explanationCache.get(ringId);
+  if (!pending) {
+    pending = timedFetch(`/rings/${ringId}/explanation`, undefined, EXPLAIN_TIMEOUT_MS)
+      .then((res) => res.json() as Promise<RingExplanation>)
+      .catch(() => {
+        explanationCache.delete(ringId); // let the next open retry
+        return unavailableExplanation(ringId);
+      });
+    explanationCache.set(ringId, pending);
+  }
+  return pending;
+}
+
+// Fire-and-forget warm-up so that by the time the analyst clicks a case its
+// Claude-written summary is already there instead of 10-15s away.
+export function prefetchExplanations(ringIds: string[]): void {
+  if (usingMock) return;
+  for (const id of ringIds) void fetchExplanation(id);
 }
 
 // The one call that must NOT fall back to mock data: this is the pitch's
@@ -93,14 +127,11 @@ export async function submitDecision(ringId: string, decision: Decision): Promis
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ decision }),
       });
+      return;
     } catch {
       // fall through — still reflect the decision locally so the demo works
     }
   }
-  // Reflect the verdict in the cached snapshot in every mode. On the live
-  // backend the decision is persisted and GET /graph would report it on the
-  // next load, but the panel, queue badge and header counter read from this
-  // cache right now — without this the UI stayed "pending" until a reload.
   if (cachedSnapshot) {
     const ring = cachedSnapshot.rings.find((r) => r.id === ringId);
     if (ring) ring.status = decision === "real" ? "confirmed_real" : "confirmed_fraud";

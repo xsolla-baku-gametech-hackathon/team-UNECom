@@ -148,6 +148,9 @@ export function InvestigationPanel({
             <div className="h-2.5" style={{ background: "#1d2127", animation: "fr-shim 1.1s infinite" }} />
             <div className="mt-1.5 h-2.5" style={{ width: "92%", background: "#1d2127", animation: "fr-shim 1.1s infinite .15s" }} />
             <div className="mt-1.5 h-2.5" style={{ width: "64%", background: "#1d2127", animation: "fr-shim 1.1s infinite .3s" }} />
+            <div className="mt-2" style={{ fontSize: 11, color: "#676d76" }}>
+              Claude izahı hazırlanır — ölçülmüş sübutlar yuxarıdadır və gözləmir.
+            </div>
           </div>
         ) : (
           <div className="mt-2.5">
