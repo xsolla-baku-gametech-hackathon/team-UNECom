@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -6,7 +7,58 @@
 
 body {
   margin: 0;
-  background: #0b0f14;
-  color: #e6edf3;
-  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  background: #0a0b0d;
+  color: #e8e6e1;
+  font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: #c8792e;
+  color: #0a0b0d;
+}
+
+input[type="range"] {
+  accent-color: #c8792e;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+::-webkit-scrollbar-thumb {
+  background: #24282f;
+  border: 2px solid #0d0f12;
+}
+::-webkit-scrollbar-track {
+  background: #0d0f12;
+}
+
+@keyframes fr-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes fr-shim {
+  0% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0.25;
+  }
+}
+@keyframes fr-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

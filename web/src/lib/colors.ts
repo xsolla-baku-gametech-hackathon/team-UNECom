@@ -1,37 +1,26 @@
-// Risk score (0..1) -> green -> yellow -> red.
-const STOPS: [number, [number, number, number]][] = [
-  [0, [34, 197, 94]], // green-500
-  [0.5, [234, 179, 8]], // yellow-500
-  [1, [239, 68, 68]], // red-500
-];
-
-function lerp(a: number, b: number, t: number) {
-  return a + (b - a) * t;
-}
+// Discrete 3-tier risk coloring (not a continuous gradient) — a ring is
+// either clearly high, elevated, or low risk, and the legend names exactly
+// these three bands, so the node/case coloring should too.
+export const RISK_HIGH = "#b0473f";
+export const RISK_ELEVATED = "#9a8038";
+export const RISK_LOW = "#4f7a5f";
+export const NEUTRAL_FILL = "#33383f"; // unflagged ring members + unaffiliated accounts
 
 export function riskColor(score: number): string {
-  const s = Math.min(1, Math.max(0, score));
-  let lo = STOPS[0];
-  let hi = STOPS[STOPS.length - 1];
-  for (let i = 0; i < STOPS.length - 1; i++) {
-    if (s >= STOPS[i][0] && s <= STOPS[i + 1][0]) {
-      lo = STOPS[i];
-      hi = STOPS[i + 1];
-      break;
-    }
-  }
-  const span = hi[0] - lo[0] || 1;
-  const t = (s - lo[0]) / span;
-  const [r, g, b] = [
-    Math.round(lerp(lo[1][0], hi[1][0], t)),
-    Math.round(lerp(lo[1][1], hi[1][1], t)),
-    Math.round(lerp(lo[1][2], hi[1][2], t)),
-  ];
-  return `rgb(${r}, ${g}, ${b})`;
+  if (score >= 0.75) return RISK_HIGH;
+  if (score >= 0.5) return RISK_ELEVATED;
+  return RISK_LOW;
 }
 
-// Maps the 0..1 "suspicion sensitivity" slider to a risk-score threshold.
-// Higher sensitivity -> lower threshold -> more rings get flagged.
+export function severityText(score: number): string {
+  if (score >= 0.75) return "Yüksək — həddi aydın keçir";
+  if (score >= 0.5) return "Yüksəldilmiş — həddin üzərindədir";
+  return "Aşağı — həddi cüzi keçir";
+}
+
+// sensitivity: 0..1. Higher sensitivity -> lower threshold -> more rings
+// flagged. At 0 the bar is nearly the ceiling (only the most obvious rings
+// clear it); at 1 it's low enough that most elevated-risk clusters clear it.
 export function sensitivityToThreshold(sensitivity: number): number {
-  return 1 - sensitivity;
+  return 0.92 - 0.72 * sensitivity;
 }

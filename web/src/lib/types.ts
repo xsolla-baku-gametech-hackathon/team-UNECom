@@ -62,6 +62,7 @@ export interface GraphNode {
   riskScore: number;
   ringId: string | null;
   flagged: boolean;
+  isHub: boolean;
   x?: number;
   y?: number;
 }
