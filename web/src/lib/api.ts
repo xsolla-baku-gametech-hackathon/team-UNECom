@@ -93,11 +93,14 @@ export async function submitDecision(ringId: string, decision: Decision): Promis
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ decision }),
       });
-      return;
     } catch {
       // fall through — still reflect the decision locally so the demo works
     }
   }
+  // Reflect the verdict in the cached snapshot in every mode. On the live
+  // backend the decision is persisted and GET /graph would report it on the
+  // next load, but the panel, queue badge and header counter read from this
+  // cache right now — without this the UI stayed "pending" until a reload.
   if (cachedSnapshot) {
     const ring = cachedSnapshot.rings.find((r) => r.id === ringId);
     if (ring) ring.status = decision === "real" ? "confirmed_real" : "confirmed_fraud";
