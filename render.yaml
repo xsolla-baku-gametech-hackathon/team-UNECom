@@ -7,6 +7,8 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9 # pydantic-core has no prebuilt wheel for Render's default 3.14 yet
       - key: ANTHROPIC_API_KEY
         sync: false # set manually in the Render dashboard — never commit a real key
       - key: CLAUDE_MODEL
