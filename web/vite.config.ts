@@ -8,8 +8,11 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
+        // The Fastify gateway mounts routes at the root (/graph, /rings,
+        // ...), not under /api — see api/README.md — so strip our prefix.
         target: process.env.VITE_API_PROXY_TARGET ?? 'http://localhost:3001',
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },
