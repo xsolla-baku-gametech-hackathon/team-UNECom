@@ -355,10 +355,10 @@ yerini alırdı. Vaxt artıq qalsa deyilir (bax `demo-script.md` §8).
 | Ad | Rol |
 |---|---|
 | Nezrin Ceferova | Pitch & presentation — speaker on stage |
-| Aslan Musayev | Data generation & evaluation — synthetic rings · accuracy.md |
-| Sardar Soltanzade | Business case & research — business-case.md · sources |
-| Hamid Aslanov | Full-stack · detection engine — Python · FastAPI · networkx |
-| Matin Mehdi | Full-stack · API & dashboard — Node · Fastify · Prisma · React |
+| Aslan Musayev | Data & evaluation — rings · accuracy.md |
+| Sardar Soltanzade | Business case — sources · ROI model |
+| Hamid Aslanov | Full-stack · engine — Python · FastAPI |
+| Matin Mehdi | Full-stack · API & UI — Node · Prisma · React |
 
 **De (EN) — komanda (2:37–2:45):**
 > "Team UNECom. Everything's in the repo, including the doc that says our hub recall is zero at default."

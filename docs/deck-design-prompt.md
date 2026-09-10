@@ -263,7 +263,7 @@ Content zone: three numbers stacked, each on its own hairline-separated row; num
 
 The `2.4 months` row is the slide's most valuable number: set the number in `#e8e6e1` at 120 like the others, but give the row 24 px more vertical space above and below than the other two.
 
-Source line: `PocketGamer.biz, Jun 2026 · Sift Q4 2025 · Vendr (Sift contract data) · Roblox FY2024 10-K · ROI model: business-case.md §5`
+Source line, one line: `PocketGamer.biz, Jun 2026 · Sift Q4 2025 · Vendr contract data · Roblox FY2024 10-K · business-case.md §5`
 
 ### 06 · Team + ask
 
@@ -282,10 +282,12 @@ Content zone: the team, **five** equal columns (five 240 px frames across the 17
 | Name | Line one | Line two |
 |---|---|---|
 | Nezrin Ceferova | `Pitch & presentation` | `speaker on stage` |
-| Aslan Musayev | `Data generation & evaluation` | `synthetic rings · accuracy.md` |
-| Sardar Soltanzade | `Business case & research` | `business-case.md · sources` |
-| Hamid Aslanov | `Full-stack · detection engine` | `Python · FastAPI · networkx` |
-| Matin Mehdi | `Full-stack · API & dashboard` | `Node · Fastify · Prisma · React` |
+| Aslan Musayev | `Data & evaluation` | `rings · accuracy.md` |
+| Sardar Soltanzade | `Business case` | `sources · ROI model` |
+| Hamid Aslanov | `Full-stack · engine` | `Python · FastAPI` |
+| Matin Mehdi | `Full-stack · API & UI` | `Node · Prisma · React` |
+
+Each role line is at most 21 characters: five columns of 326 px at Plex Sans 28 hold no more, and a wrapped role breaks the shared baseline.
 
 Below the team row, one line in Plex Mono 28 `#9aa0a8` with a `MEASURED` pill at its left:
 `docs/accuracy.md · hub recall at default sensitivity: 0% · published, not patched`
