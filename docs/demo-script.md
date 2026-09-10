@@ -1,144 +1,334 @@
-# Demo ssenarisi — 3 dəqiqə pitch + 2 dəqiqə Q&A
+# Demo ssenarisi — saniyə-saniyə
 
-Bu sənəd jüri qarşısında dəqiq nə deyiləcəyini və dashboard-da hansı klikin
-ediləcəyini addım-addım təsbit edir. Məqsəd: heç kim səhnədə "indi harda idi"
-deyə axtarmasın.
+**3 dəqiqə pitch + 2 dəqiqə Q&A · 11 sentyabr 2026, 15:00**
 
-## Hazırlıq (pitch-dən əvvəl, jüri girmədən)
+Bu sənəd səhnədə **hansı düymə, hansı klik, nə deyilir** sualını dəqiq bağlayır.
+Heç kim "indi harda idi?" deməsin.
 
-- [ ] `cd web && npm run dev` işə salınıb, brauzer tab açıq, tam ekran (F11).
-- [ ] Demo faylı hazır və asan tapılan yerdədir (məs. masaüstü):
-      `data-generator/output/events.csv` — ehtiyat nüsxə də `events.json`
-      formatında (əgər CSV drag-and-drop nədənsə keçmirsə).
-- [ ] **Backend `/api` + `/engine` boş verilənlər bazası ilə başladılıb**
-      (fayl atılana qədər `GET /events` heç nə qaytarmamalıdır) — məqsəd,
-      qrafın **canlı, jürinin gözü qarşısında** dolmasıdır. Əgər backend
-      artıq doludursa, `npm run prisma:migrate reset` (və ya DB faylını
-      sil + `prisma:push`) ilə sıfırla.
-- [ ] Sensitivlik sürüşdürücüsü **50%**-də saxlanılıb (defolt).
-- [ ] Heç bir halqa seçilməyib (investigation panel bağlıdır), upload
-      nəticə banner-i təmizdir.
-- [ ] Backend ayaqda deyilsə problem deyil — bax aşağıda "Texniki backup
-      planı": dashboard avtomatik mock ssenariyə keçir, eyni hekayəni
-      danışmaq mümkündür, sadəcə canlı-yükləmə addımı atlanır.
+**Dil qaydası:** göstərişlər Azərbaycanca, **jüriyə deyilən hər cümlə İngiliscə**,
+dırnaqda, olduğu kimi oxunacaq formada.
 
-## Ssenarinin arxa planı (özünüz üçün, jüriyə demə)
+Slayd strukturu üçün → [`pitch-outline.md`](./pitch-outline.md).
+Q&A üçün → [`qa-defence.md`](./qa-defence.md).
 
-Yüklənəcək fayldakı dünya: ~120 hesab, ~390 əməliyyat, ~$33K dövriyyə.
-Bunun içində:
-- **Fərma halqası** (`ring_farm_01`): son 72 saatda yaranmış 50 "mule"
-  hesabı, hər biri STORE-dan valyuta alıb (alışların ~70%-i ödəniş
-  provayderi tərəfindən oğurlanmış kart şübhəsi ilə bayraqlanıb) və
-  dəqiqələr içində 2 "hub" hesaba köçürüb. Risk skoru ~94%.
-- **"Whale" hesabı** (`ring_whale_watch`): 320 gün əvvəl yaranmış, 12 fərqli
-  tərəfdaşla yüksək dəyərli ticarət edən **real** oyunçu. Xam həcmə görə
-  orta-yüksək risk skoru (~58%) alır — sırf statistik oxşarlıq fərma
-  hesablarına bənzəyir, amma yaş və payment_flagged siqnalları fərqlidir.
+---
 
-## Pitch strukturu (3:00)
+## 1 · Hazırlıq checklist-i (jüri otağa girməzdən əvvəl)
 
-### 0:00–0:30 — Sıfır quraşdırma: canlı fayl yükləmə (açılış)
+Bunları **pitch-dən ən azı 10 dəqiqə əvvəl** yoxla. Sırayla.
 
-**De:** "Heç bir inteqrasiya, heç bir API açarı, heç bir sənədləşmə oxumaq
-lazım deyil." *(Ekran boş/demo-data vəziyyətindədir.)* "Bizim komandanın
-öz oyun analitikası ixracını götürüb — bax, adi CSV faylı" *(faylı Finder/
-Explorer-də bir anlıq göstər)* "— birbaşa brauzerə atıram."
+- [ ] **Engine ayaqdadır** — `cd engine && .venv/bin/uvicorn app.main:app` işləyir,
+      `/health` cavab verir.
+- [ ] **API ayaqdadır və verilənlər bazası BOŞDUR.** `GET /events` heç nə
+      qaytarmamalıdır. Dolu qalıbsa: `npm run prisma:migrate reset` (və ya DB
+      faylını sil + `prisma:push`).
+      **Niyə:** qraf jürinin gözü qarşısında dolmalıdır — boş ekrandan tam
+      şəbəkəyə keçid demonun ən güclü ilk 10 saniyəsidir.
+- [ ] **Web dev server açıqdır** — `cd web && npm run dev`, brauzer tab hazır.
+- [ ] **Demo faylı MASAÜSTÜNDƏDİR**, adı qısa və görünən:
+      `data-generator/output/events.csv` → masaüstünə kopyala.
+      Ehtiyat: eyni datanın `events.json` versiyası, yanında.
+- [ ] Fayl defolt parametrlərlə generasiya olunub: **352 hesab · 2,624 hadisə ·
+      50 mule + 2 hub**. (`python generate.py` — heç bir flag dəyişmə.)
+- [ ] **Slider 0.5-dədir** (defolt mövqe).
+- [ ] **"Ödəniş anı görünüşü" toggle SÖNÜKDÜR.**
+- [ ] **Investigation panel bağlıdır**, heç bir case seçilməyib, upload banner-i
+      təmizdir.
+- [ ] **Tam ekran (F11).** Brauzer bookmark bar-ı, bildirişlər, Slack — hamısı
+      bağlı. Ekran parlaqlığı maksimum (proyektorda tünd tema solğun görünür).
+- [ ] Masaüstü fon şəkli neytraldır, fayl adları oxunaqlıdır.
+- [ ] Bir dəfə **tam quru məşq** — sekundomerlə, ucadan. Demonun özü 74 saniyədir;
+      75-i keçirsə, kəsmə sırasına (bölmə 8) bax.
+- [ ] Klaviatura qısayolları yadda: **J/K** növbədə hərəkət · **Enter** təsdiq ·
+      **F** fırıldaq · **R** real oyunçu · **/** axtarış · **Esc** ləğv.
 
-**Klik:** CSV faylını header-dəki yükləmə zonasına sürüşdür (və ya klikləyib
-seç). *(İstəsən jürinin özünə "istəsəniz öz faylınızı da atın" təklifini
-elə bura, ehtiyat plan kimi saxla — nəticə qarışıq ola bilər, əsas demo
-öz hazırladığımız fayldır.)*
+---
 
-**De (yüklənərkən, ~2 san):** "Sistemin özü faylı oxuyub, hesabları
-tanıyıb, risk analizini işə salır." *(Yaşıl banner görünür: "388 hadisə
-yükləndi, 122 unikal hesab aşkarlandı" — qraf boş/az node-dan tam
-şəbəkəyə animasiya ilə keçir.)*
+## 2 · Ssenarinin arxa planı (özün üçün — jüriyə demə)
 
-### 0:30–1:00 — Sağlam iqtisadiyyat (Problem)
+Yüklənən fayldakı dünya (`data-generator/generate.py` defoltları):
 
-**De:** "Bax — saniyələr içində 120+ hesab, minə yaxın əməliyyat, $33K
-dövriyyə." *(StatsBar-a işarə et.)* "Hər gün minlərlə oyunçu ticarət edir,
-hədiyyə göndərir, bazarda satır. Bu sağlam bir iqtisadiyyatdır. Amma
-bunun içində gizlənən fırıldaq halqalarını insan gözü ilə tapmaq mümkün
-deyil."
+- **300 təmiz hesab**, ~2,500 fon hadisəsi — adi ticarət, hədiyyə, bazar satışı.
+  Təmiz populyasiyada ~1% təsadüfi bayraqlanma var.
+- **50 `mule_XXX` hesabı** — son saatlarda yaranıb, STORE-dan valyuta alıb
+  (alışların **70%-i** ödəniş provayderi tərəfindən bayraqlanıb), dəqiqələr
+  içində köçürüb.
+- **2 `hub_N` hesabı** — 80–120 gün əvvəl yaranmış, **heç vaxt bayraqlanmış karta
+  toxunmayan**, yalnız qəbul edən və sonra bazarda satan cash-out nöqtəsi.
 
-### 1:00–1:35 — Fərma halqası qırmızı işıqlanır (Solution)
+**Ölçülmüş nəticələr** (`docs/accuracy.md`, 5 seed):
+default 0.5 → precision 100%, recall 64.6%, **hub recall 0%**;
+0.8 → recall 74.2%, **hub recall 100%**, precision hələ də 100%.
+Halqa səviyyəsində: purity 94.9%, coverage 80.0%.
 
-**De:** "Bax, bu qırmızı topa diqqət et. Yüklədiyimiz datanın içində 50
-yeni hesab var idi — hər biri mağazadan valyuta alıb, dəqiqələr içində 2
-mərkəz hesaba köçürüb. Sistem bunu avtomatik aşkarlayıb: klassik 'gold
-farming' halqası, risk skoru 94%."
+**Bu demoda göstərilən hekayənin bir cümləsi:** *hub-u tapmaq üçün slider lazımdır,
+çünki hub davranışca normal oyunçudur — və bu, bizim öz ölçmələrimizlə sübutludur.*
 
-**Klik:** fərma halqasındakı istənilən qırmızı node üzərinə klik et →
-investigation panel açılır, "ring_farm_01" görünür, siqnallara işarə et.
+---
 
-### 1:35–2:15 — Sensitivlik sürüşdürücüsü: real oyunçu səhvən bağlanmır
+## 3 · Demo axını — saniyə-saniyə
 
-**De:** "İndi bu sarı/narıncı hesaba bax. Yüksək həcmli ticarət edir,
-statistik olaraq şübhəli görünür. Amma bu **real, sadiq bir oyunçudur** —
-320 gün əvvəl qeydiyyatdan keçib, heç bir ödənişi bayraqlanmayıb."
+> Slayd 1 və 2 (0:00–0:51) statik slaydlardır — mətnləri
+> [`pitch-outline.md`](./pitch-outline.md)-dədir. **0:51-də ekran dashboard-a
+> keçir** və aşağıdakı başlayır.
 
-**Klik:** narıncı "whale" node üzərinə klik → panel izahatını göstərir.
+### ⏱ 0:51–1:04 · Canlı CSV upload — sıfır quraşdırma (13 s)
 
-**De:** "Sensitivliyi aşağı salaq." **Sürüşdür:** ~50%-dən ~30%-ə. "Bax —
-bayraqlanmış halqa sayı 2-dən 1-ə düşdü. Real oyunçu artıq yanlış
-bağlanmır, amma fərma halqası hələ də qırmızıdır, çünki risk skoru
-həssaslıqdan asılı olmayaraq kifayət qədər yüksəkdir."
+**Ekran vəziyyəti:** dashboard boşdur, qraf yoxdur, statistika sıfırdır.
 
-### 2:15–2:45 — Claude izahatı oxunur (AI-native fərqlilik)
+**Hərəkət:** Masaüstündəki `events.csv`-i bir anlıq göstər → **sürüşdürüb
+yükləmə zonasına burax** (və ya upload modalını aç, faylı seç).
 
-**De:** "Hər bayraqlanmış halqa üçün Claude insan-dilində izahat yazır."
-*(Fərma halqasına klik et, "Claude izahatı" mətnini ucadan oxu/xülasə et,
-sonra tövsiyəyə işarə et.)*
+**De (EN) — fayl sürüşərkən:**
+> "No integration, no API key. A raw event log — trade, gift, marketplace, key
+> redeem — dropped straight into the browser."
 
-**Klik:** "Fırıldaqdır" düyməsini bas → status təsdiqlənir.
+**Görünəcək (~2 s):** yaşıl banner — hadisə və unikal hesab sayı; qraf boşdan
+tam şəbəkəyə animasiya ilə açılır; StatsBar dolur.
 
-### 2:45–3:00 — Bağlanış (Monetization + Team)
+**De (EN) — banner görünəndə, rəqəmləri EKRANDAN OXU:**
+> "352 accounts, 2,624 events."
 
-**De:** "Nəticə: bir CSV faylı atmaqdan saniyələr sonra — kim fırıldaqçı,
-kim real oyunçu, insan izahı ilə ayırd edilir. Sıfır quraşdırma, sıfır
-inteqrasiya vaxtı." *(Komandanı təqdim et.)*
+> ⚠️ **Rəqəmləri ekrandan oxu, əzbərdən demə.** Fayl fərqli seed ilə
+> generasiya olunubsa rəqəm dəyişər — ekranda nə yazılıbsa, onu de.
 
-## Q&A üçün hazır cavablar (2:00)
+---
 
-- **"Bu real datadır?"** — Demoda sintetik, ssenarili data istifadə
-  olunur (`data-generator/`), amma format istənilən real oyun hadisə
-  axını ilə eynidir (`event_id, type, from/to_account_id,
-  value_usd_estimate, payment_flagged...`) — məhz buna görə də onu CSV
-  kimi birbaşa yükləyə bildik, heç bir çevirmə lazım olmadan.
-- **"Bizim öz faylımızı yükləsək nə olar?"** — Format uyğun gəlsə (yuxarı
-  sütunlar), bəli — parser sətir-səviyyəsində xəta göstərir, sütun
-  çatışmazlığını dərhal deyir. Nəticə isə sizin datanızdakı əsl
-  nümunədən asılıdır (fərma halqası tapılmaya bilər — bu, sistemin
-  doğruluğunun sübutudur, hər şeyi fırıldaq kimi bayraqlamır).
-- **"Claude izahatını necə etibar edirsiniz?"** — İzahat qərar vermir,
-  yalnız insan araşdırmaçıya kontekst verir; son qərar həmişə "Real
-  oyunçudur / Fırıldaqdır" düyməsi ilə insanda qalır (human-in-the-loop).
-- **"Yeni fırıldaq nümunələrinə necə uyğunlaşır?"** — Sensitivlik
-  sürüşdürücüsü və per-ring "sensitivity override" (backend-də saxlanılır)
-  komandaya modeli yenidən yazmadan tənzimləmə imkanı verir.
-- **"Miqyaslana bilərmi?"** — Qraf vizuallaşdırması WebGL-canvas əsaslı
-  (react-force-graph), minlərlə node-u brauzerdə rahat göstərə bilir;
-  ağır analiz backend/engine tərəfində aparılır, frontend yalnız nəticəni
-  göstərir.
-- **"Production-da da fayl yükləyəcəklər?"** — Xeyr. CSV/JSON yükləmə
-  "sıfır öhdəlik" sınaq qapısıdır — mühəndis vaxtı sərf etmədən 30
-  saniyəyə nəticəni görmək üçündür. Əsl inteqrasiya eyni `/events`
-  API-dir: oyunun öz backend-i (və ya birbaşa Xsolla-nın ödəniş axını)
-  hər ticarət/hədiyyə/satış anında bura real-vaxtda push edir — fayl
-  yükləmə bunun kiçildilmiş, sənədsiz versiyasıdır, arxada duran API
-  ikisi üçün də eynidir.
+### ⏱ 1:04–1:13 · Halqa özü çıxır (9 s)
 
-## Texniki backup planı
+**Hərəkət:** Heç nə klikləmə. Qırmızı klasteri kursorla dövrələ. Sol paneldəki
+case queue-nun risk sırası ilə dolduğunu göstər.
 
-- **Backend/`engine` ayaqda deyilsə:** dashboard bunu avtomatik hiss edir
-  və "demo data" bayrağı ilə eyni ssenarini yerli mock data üzərində
-  göstərir. Bu halda **canlı yükləmə addımını (0:00–0:30) atla** — fayl
-  yükləmə əsl backend-ə bağlıdır, mock rejimdə uğursuz olacaq (bu,
-  bilərəkdən belədir: yükləmə düyməsi həmişə əsl backend-i sınayır, səssiz
-  mock-a keçmir). Pitch-ə birbaşa "0:30 — Sağlam iqtisadiyyat" addımından
-  başla, mock data ilə eyni hekayəni danış.
-- **Fayl yükləmə uğursuz olarsa (canlı backend var, amma vaxt keçir):**
-  panel qırmızı xəta banner-i göstərəcək, dashboard əvvəlki vəziyyətdə
-  qalacaq (heç nə sınmır) — sakit şəkildə "keçək əsas mənzərəyə" deyib
-  növbəti addıma keç, əvvəldən yüklənmiş demo data ilə davam et.
+**De (EN):**
+> "The graph builds itself. Louvain pulls one dominant ring out of the noise —
+> 94.9 percent pure, measured across five seeds."
+
+**Görünəcək:** force-directed qraf oturur; hub-lar konturlu node kimi seçilir;
+legend risk rənglərini izah edir.
+
+---
+
+### ⏱ 1:13–1:34 · **"Ödəniş anı görünüşü" — ƏSAS AN** (21 s)
+
+**Hərəkət:** Qrafın yuxarısındakı **"Ödəniş anı görünüşü"** toggle-ına klik.
+
+**Görünəcək:**
+- Yalnız bayraqlanmış ödənişin `to` tərəfindəki hesablar işıqlı qalır.
+- **Bütün köçürmə kənarları tamamilə sönür** — ödəniş prosessoru onları heç vaxt
+  görmür.
+- Sağda callout açılır: görülən hesab sayı, görülməyən hesab sayı, onların
+  əlindəki dəyər, və **heç vaxt bayraqlanmış karta toxunmamış hub sayı** —
+  gözdən qaçan hub ID-ləri ayrıca siyahı kimi.
+
+**De (EN) — toggle basılan anda:**
+> "Now the differentiator. This toggle leaves lit only what a payment-moment
+> tool can ever see — the receiving end of a flagged card. Transfer edges go
+> dark."
+
+**De (EN) — callout-u EKRANDAN oxuyaraq:**
+> "It sees [N] accounts. It misses [M], holding [$V], including cash-out hubs
+> that never touched a flagged card."
+
+> **[N], [M], [$V] — hamısı ekrandan oxunur.** Bu rəqəmlər yüklənmiş datadan
+> hesablanır, hardcode deyil. Bu faktı Q&A üçün saxla: jüri öz faylını yükləsə,
+> öz rəqəmlərini görəcək.
+
+**Hərəkət (bitirərkən):** Toggle-ı **söndür** — tam dəyər axını geri qayıdır.
+Bu geri-keçid vizual olaraq "bax, bazar bunun yalnız bu qədərini görür"
+mesajını möhkəmləndirir.
+
+---
+
+### ⏱ 1:34–1:58 · Slider 0.5 → 0.8 — zəif rəqəm sübuta çevrilir (24 s)
+
+**Hərəkət:** Sağ-aşağıdakı **Sensitivity slider**-ə (Sərt ↔ Geniş) əlini qoy,
+amma hələ tərpətmə.
+
+**De (EN) — slider-ə əl qoyanda:**
+> "Here's our weakest number, used as proof. Measured hub recall at the default
+> setting is zero percent — we publish that. A hub is an aged account, no
+> velocity, balanced degree: every per-account heuristic calls it a normal
+> player."
+
+**Hərəkət:** Slider-i **0.5-dən 0.8-ə** yavaş çək. Hub node-larının işıqlandığını
+barmaqla göstər; slider yanındakı bayraqlanmış halqa/hesab sayının canlı
+artdığını göstər.
+
+**De (EN) — slider hərəkət edərkən:**
+> "Slider to 0.8 — hub recall zero to one hundred, precision stays at one
+> hundred."
+
+**Görünəcək:** bayraqlanan hesab sayı ~33.6 → ~38.6 (ölçülmüş orta), hub-lar
+qırmızı zonaya keçir, yeni yanlış pozitiv yoxdur.
+
+> **Bu demonun mərkəzi anıdır.** Əgər vaxt daralırsa, başqa hər şeyi kəs, bunu
+> kəsmə (bax bölmə 8). Səbəb: bu, "zəifliyi gizlətmirik" mesajını **canlı sübut**
+> edir və Best Code münsifinin repo-da tapacağı "Hub recall 0.0%" sətrini
+> qabaqlayır.
+
+**Hərəkət:** Slider-i **0.5-ə qaytar** (növbəti addım defolt vəziyyətdə daha
+təmiz görünür). Vaxt darsa qaytarma — kritik deyil.
+
+---
+
+### ⏱ 1:58–2:05 · Claude izahatı + insan qərarı (7 s)
+
+**Hərəkət:** Case queue-nun ən yuxarısındakı case-ə klik (və ya **J** ilə seç,
+**Enter**). Investigation panel açılır.
+
+**Göstər (barmaqla, oxumadan):** ölçülmüş sübutlar → Claude izahatı → confidence
+→ tövsiyə → halqadakı hesablar (hub-lar konturlu).
+
+**De (EN):**
+> "Claude writes the case in plain language — evidence, confidence,
+> recommendation. It never decides. The analyst does."
+
+**Hərəkət:** **F** (və ya "Fırıldaqdır" düyməsi) → təsdiq ekranı açılır →
+**Enter** (və ya "Bəli — fırıldaq") → status "Fırıldaq kimi qeydə alındı".
+
+**De (EN) — təsdiq anında:**
+> "Confirmed. Nothing is auto-banned — this is a record for the payments team."
+
+> **Səhv qərar verdinsə:** təsdiq ekranındaykən **Esc** (və ya "Ləğv et") qərarı
+> geri qaytarır. Təsdiq artıq basılıbsa geri dönüş yoxdur — **"Növbəti case →"**
+> ilə davam et, dayanıb düzəltməyə çalışma.
+
+---
+
+### ⏱ 2:05–3:00 · Slayd 4, 5, 6-ya qayıt
+
+Ekranı slaydlara qaytar. Mətnlər [`pitch-outline.md`](./pitch-outline.md)-dədir:
+Features & users (15 s) → Monetization (25 s) → Team (15 s).
+
+**Dashboard-ı bağlama** — Q&A-da geri qayıtmaq lazım ola bilər. Alt+Tab ilə keçid
+məşq et.
+
+---
+
+## 4 · Q&A-da dashboard-a qayıtmaq (2 dəqiqə)
+
+Bu üç sualda ekranı yenidən göstərmək cavabı ikiqat gücləndirir:
+
+| Sual | Nə göstər |
+|---|---|
+| "How is this different from Sift/Kount/Magify?" | **"Ödəniş anı görünüşü"** toggle — 5 saniyə, sözsüz sübut |
+| "So you don't detect hubs?" | Slider 0.5 → 0.8, hub-ların işıqlanması |
+| "Would it work on our data?" | Upload modalı — "drop your own file" təklifi |
+
+**Jüri öz faylını atmaq istəsə:** qəbul et, amma əvvəlcə de (EN):
+> "Happy to — and if the columns don't match, the parser will tell you which
+> line and which column. Whatever it finds will be your data's real pattern,
+> not our demo's."
+
+---
+
+## 5 · Backup planı — backend ayaqda deyilsə
+
+Dashboard backend-in olmadığını avtomatik hiss edir və eyni ssenarini **yerli
+demo data** ilə göstərir. Amma **canlı fayl yükləmə mock rejimdə işləmir** —
+upload düyməsi həmişə əsl backend-i sınayır, səssiz mock-a keçmir.
+
+**Nə et:**
+1. **0:51–1:04 upload addımını tamamilə atla.**
+2. Birbaşa 1:04 beat-indən başla — qraf artıq doludur.
+3. **De (EN)** — üzr istəmədən, bir cümlə ilə:
+   > "We're running on the local demo dataset here; the upload path pushes the
+   > same events through the API."
+4. Qazanılan ~13 saniyəni **slider beat-inə** (1:34–1:58) əlavə et — orada
+   nəfəs almaq olar.
+5. Toggle və slider beat-ləri mock datada da tam işləyir — **əsas mesaj
+   itmir.**
+
+---
+
+## 6 · Backup planı — upload uğursuz olarsa (backend var, amma fayl keçmir)
+
+**Görünəcək:** qırmızı xəta banner-i, dashboard əvvəlki vəziyyətdə qalır —
+heç nə sınmır.
+
+**Nə et:** Dayanma, izah etmə, təkrar cəhd etmə. Bir cümlə de və davam et.
+
+**De (EN):**
+> "The parser is strict about columns — that's deliberate. Let's look at the
+> data that's already loaded."
+
+Sonra `events.json` ehtiyat faylını **bir dəfə** sına. O da keçməzsə, mock
+rejimlə davam et (bölmə 5).
+
+> **Qayda:** səhnədə eyni şeyi **iki dəfədən çox sınama.** Üçüncü cəhd 15 saniyə
+> yeyir və jüri gözündə "işləmir" mesajı qoyur. İki cəhd, sonra irəli.
+
+---
+
+## 7 · Backup planı — Claude API cavab vermirsə
+
+İzahat gecikirsə və ya boş gəlirsə, investigation panel-dəki **ölçülmüş
+sübutları** göstər (taint, velocity, imbalance, in/out degree) və de (EN):
+
+> "The evidence is computed locally — the language model only writes it up. The
+> case stands without it."
+
+Bu, həm də doğru mesajdır: Claude bizim detection-umuz deyil, izahat qatımızdır.
+
+---
+
+## 8 · KƏSMƏ SIRASI — vaxt çatmasa nə atılır
+
+3 dəqiqə çox qısadır. Səhnədə qərar verməli olsan, **bu sıra ilə** at:
+
+### Birinci atılanlar (mesaj itmir)
+
+1. **1:34-dəki "slider-i 0.5-ə qaytar" hərəkəti** — 2 s. Heç bir itki.
+2. **1:04–1:13 "halqa özü çıxır" beat-i** — 9 s. Toggle beat-i onsuz da qrafı
+   izah edir; sadəcə purity rəqəmi itir.
+3. **Slayd 4 (Features & users)** — 15 s. Bütün məzmunu slaydda qalır, jüri
+   oxuyur; demo onsuz da xüsusiyyətləri canlı göstərdi.
+4. **1:58–2:05 Claude beat-inin ikinci cümləsi** ("Confirmed. Nothing is
+   auto-banned…") — 4 s. Bu fikir Q&A 6-cı sualda onsuz da var.
+
+### İkinci atılanlar (ağrılı, amma mümkün)
+
+5. **0:51–1:04 canlı upload** — 13 s. "Sıfır quraşdırma" mesajı itir, amma
+   Slayd 4-də və Q&A-da qalır. Backend problemi olsa onsuz da atılır.
+6. **Slayd 2-dəki Valve cümləsi** — 6 s. Rəqəmlər (3.41% / 13×) qalır.
+
+### HEÇ VAXT ATILMAYANLAR
+
+> Bu üçü pitch-in özüdür. Onları atsan, çıxışın səbəbi qalmır.
+
+- 🔴 **1:13–1:34 · "Ödəniş anı görünüşü" toggle.** Bizim yeganə görünən
+  fərqləndiricimiz. Bunsuz biz "daha bir fraud dashboard"-uq.
+- 🔴 **1:34–1:58 · Slider 0.5 → 0.8 və hub recall reframe-i.** Həm ən güclü
+  texniki arqumentimiz, həm də dürüstlük mövqeyimiz.
+- 🔴 **Slayd 2-nin ilk cümləsi (3.41% / $149M / Roblox 10-K).** Problemin real
+  olduğunun yeganə xarici sübutu.
+- 🔴 **Slayd 5-in "$60K, 2.4 ay" cümləsi.** "Monetization" təşkilatçıların
+  tələb etdiyi slayddır — rəqəmsiz keçmək qiymət itkisidir.
+
+### Əksinə — vaxt ARTIQ qalsa
+
+Slider beat-indən sonra bir cümlə əlavə et (EN):
+> "Ring detection is threshold-independent — the ring is found by structure even
+> when its members score below the cut-off."
+
+*(Mənbə: `docs/accuracy.md` — ring coverage 80.0%, purity 94.9%.)*
+
+---
+
+## 9 · Səhnə vərəqi — bir baxışda
+
+```
+0:00  S1  "We built Fraud Radar…"                          20s
+0:20  S2  3.41% / $149M / 13× / Valve                      31s
+0:51  ▶  DASHBOARD
+0:51      CSV drop  →  "No integration, no API key…"       13s
+1:04      Ring appears  →  "94.9 percent pure…"             9s
+1:13   🔴 TOGGLE  →  "Now the differentiator…"             21s
+1:34   🔴 SLIDER 0.5→0.8  →  "our weakest number…"         24s
+1:58      Claude + F + Enter  →  "It never decides."        7s
+2:05  ◀  SLAYDLAR
+2:05  S4  Features & users                                 15s
+2:20  S5  $1B → $10M → $60K → 2.4 ay                       25s
+2:45  S6  Team + "hub recall is zero at default"           15s
+3:00  ■  Q&A → qa-defence.md
+```
