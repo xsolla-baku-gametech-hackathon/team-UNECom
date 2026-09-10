@@ -1,36 +1,54 @@
 import { engineClient, type EngineExplainResponse } from "../clients/engineClient.js";
 import { eventRepository } from "../repositories/eventRepository.js";
 
-// Reserved evidence keys the engine may set for us, separate from the
-// free-form signals shown to the analyst. See api/README.md.
-const RESERVED_EVIDENCE_KEYS = new Set(["risk_score", "recommended_action"]);
-
-function recommendedActionFor(evidence: Record<string, unknown>): string {
-  if (typeof evidence.recommended_action === "string") return evidence.recommended_action;
-
-  const riskScore = typeof evidence.risk_score === "number" ? evidence.risk_score : null;
-  if (riskScore === null) return "Nəticəni manual araşdırma üçün nəzərdən keçirin.";
-  if (riskScore >= 0.8) return "Bütün üzv hesabları dondurun və ödəniş provayderinə bildirin.";
-  if (riskScore >= 0.5) return "Əlavə araşdırma üçün bayraqlayın, avtomatik bloklamayın.";
+// evidence shape is engine/app/explain.py's build_evidence() output —
+// risk_score there is 0-100, same scale as everywhere else in the engine.
+function recommendedActionFor(riskScore: unknown): string {
+  const score = typeof riskScore === "number" ? riskScore : null;
+  if (score === null) return "Nəticəni manual araşdırma üçün nəzərdən keçirin.";
+  if (score >= 60) return "Bütün üzv hesabları dondurun və ödəniş provayderinə bildirin.";
+  if (score >= 30) return "Əlavə araşdırma üçün bayraqlayın, avtomatik bloklamayın.";
   return "Monitorinqi davam etdirin, hazırda kifayət qədər dəlil yoxdur.";
 }
 
 function toRingExplanation(res: EngineExplainResponse) {
+  const e = res.evidence;
+  const signals: { label: string; value: string }[] = [];
+
+  if (typeof e.account_count === "number") {
+    signals.push({ label: "Hesab sayı", value: String(e.account_count) });
+  }
+  if (typeof e.flagged_purchase_count === "number") {
+    signals.push({ label: "Bayraqlanmış mənbə alışları", value: String(e.flagged_purchase_count) });
+  }
+  if (typeof e.avg_taint_score === "number") {
+    signals.push({ label: "Orta taint score", value: `${Math.round(e.avg_taint_score * 100)}%` });
+  }
+  if (typeof e.total_value_usd === "number") {
+    signals.push({ label: "Ümumi dəyər", value: `$${e.total_value_usd.toLocaleString("en-US")}` });
+  }
+  if (Array.isArray(e.hub_candidates) && e.hub_candidates.length > 0) {
+    signals.push({ label: "Hub hesablar", value: e.hub_candidates.join(", ") });
+  }
+
   return {
     ringId: res.ring_id,
     summary: res.explanation,
-    signals: Object.entries(res.evidence)
-      .filter(([key]) => !RESERVED_EVIDENCE_KEYS.has(key))
-      .map(([label, value]) => ({ label, value: String(value) })),
-    recommendedAction: recommendedActionFor(res.evidence),
+    signals,
+    recommendedAction: recommendedActionFor(e.risk_score),
   };
 }
 
 export const explanationService = {
-  // /web's InvestigationPanel "Claude izahatı" section.
+  // /web's InvestigationPanel "Claude izahatı" section. Runs a fresh
+  // analyze() first to get an analysis_id grounded in the current stored
+  // events, then asks the engine to explain that specific ring within it —
+  // otherwise /explain would fall back to whatever analysis some other
+  // caller last ran.
   async getExplanation(ringId: string) {
     const events = await eventRepository.findAllAsContract();
-    const res = await engineClient.explain(ringId, events);
+    const analysis = await engineClient.analyze(events);
+    const res = await engineClient.explain(ringId, analysis.analysis_id);
     return toRingExplanation(res);
   },
 };

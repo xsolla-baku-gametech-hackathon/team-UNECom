@@ -27,33 +27,31 @@ Env vars (`.env`):
 | `ENGINE_URL` | `http://localhost:8000` | Base URL of `/engine` |
 | `ENGINE_TIMEOUT_MS` | `5000` | Abort engine calls after this long |
 
-## ⚠️ Status: engine contract is assumed, not yet live
+## Engine contract
 
-As of this writing `/engine` only has `app/schema.py` (Pydantic models) —
-no FastAPI routes are wired up yet. Everything below that touches the
-engine (`/accounts/:id/risk`, `/rings`, `/graph`, `/rings/:id/explanation`)
-is built against that schema and returns **502 `engine_unreachable`** until
-the engine exposes matching routes. `POST /events` and
-`POST /rings/:id/sensitivity` / `POST /rings/:id/decision` don't touch the
-engine and work standalone today.
+`/api` calls two real, live-verified `/engine` routes (see `engine/README.md`
+for the full engine-side docs):
 
-Expected engine routes (`ENGINE_URL` + path):
+- `POST /analyze` — body `{ events: Event[] }` → `AnalyzeResponse`
+  (`{ analysis_id, generated_at, num_events, num_accounts,
+  accounts: AccountResult[], rings: RingResult[] }`). The engine caches the
+  result in-memory keyed by `analysis_id`.
+- `GET /explain/{ring_id}?analysis_id=...` → `ExplainResponse`
+  (`{ ring_id, explanation, ai_generated, evidence }`). We always call
+  `/analyze` immediately before this to get a fresh `analysis_id`, rather
+  than relying on the engine's "most recent analysis" fallback — otherwise
+  we could end up explaining a stale/unrelated dataset some other caller
+  last analyzed.
 
-- `POST /analyze` — body `{ events: Event[] }` (Pydantic `AnalyzeRequest`) →
-  `AnalyzeResponse` (`{ analysis_id, generated_at, num_events, num_accounts,
-  accounts: AccountResult[], rings: RingResult[] }`).
-- `POST /explain` — body `{ ring_id: string, events: Event[] }` → Pydantic
-  `ExplainResponse` (`{ ring_id, explanation, ai_generated, evidence }`).
-  Events are sent because `ExplainResponse` alone doesn't carry which
-  accounts/events the ring covers. `evidence` may optionally include a
-  `risk_score` (number) and/or `recommended_action` (string) key — if
-  present we use them to phrase the recommendation in
-  `GET /rings/:id/explanation`; otherwise we derive a generic one from
-  `risk_score` thresholds.
+**`risk_score` is 0–100 on the engine** (see
+`engine/app/risk_scoring.py`), not 0–1. `GET /accounts/:id/risk` and
+`GET /rings` pass the engine's numbers through as-is (raw 0–100 scale,
+snake_case field names) — `GET /graph` is the one place we normalize to
+0–1, since that's what `web/src/lib/types.ts`'s `GraphSnapshot.riskScore`
+expects.
 
-If the engine's actual routes end up different, update
-`api/src/clients/engineClient.ts` — it's the only place that knows this
-shape.
+If the engine's routes change, `api/src/clients/engineClient.ts` is the
+only place that needs updating.
 
 ## Endpoints
 
@@ -112,14 +110,14 @@ engine `analyze()` call, reshaped into `GraphSnapshot`
 ### `GET /accounts/:id/risk`
 
 Runs the same engine `analyze()` and returns that account's
-`AccountResult` as-is (engine field names, snake_case). `404
-account_not_found` if the account has no events; `502
+`AccountResult` as-is (engine field names, snake_case, **`risk_score` is
+0–100**). `404 account_not_found` if the account has no events; `502
 engine_unreachable` if the engine is down.
 
 ### `GET /rings`
 
-Same engine call, returns the `RingResult[]` list (engine field names),
-each with a `sensitivity` field merged in from
+Same engine call, returns the `RingResult[]` list (engine field names,
+**`risk_score` 0–100**), each with a `sensitivity` field merged in from
 `POST /rings/:id/sensitivity` (`null` if never set). `502
 engine_unreachable` if the engine is down.
 
@@ -133,7 +131,8 @@ engine. → `{ "ring_id": "...", "sensitivity": 0.75, "updated_at": "..." }`.
 ### `GET /rings/:id/explanation`
 
 **What `/web`'s `fetchExplanation()` calls.** Proxies the engine's
-`/explain` (Claude-generated). → `RingExplanation`:
+`/explain` (Claude-generated; falls back to a template if the engine has
+no `ANTHROPIC_API_KEY` — either way it never errors). → `RingExplanation`:
 
 ```json
 { "ringId": "ring_001", "summary": "...", "signals": [{ "label": "...", "value": "..." }], "recommendedAction": "..." }

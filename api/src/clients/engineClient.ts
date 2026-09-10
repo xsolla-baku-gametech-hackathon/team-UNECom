@@ -16,6 +16,9 @@ export interface EngineEvent {
   account_created_at: string | null;
 }
 
+// risk_score is 0-100 (see engine/app/risk_scoring.py's combine_scores,
+// capped at min(risk, 100.0)) — NOT 0-1. Normalize before handing it to
+// anything that expects a 0-1 scale (GraphSnapshot).
 export interface EngineAccountResult {
   account_id: string;
   in_degree: number;
@@ -64,18 +67,13 @@ export class EngineError extends Error {
   }
 }
 
-async function post<T>(path: string, body: unknown): Promise<T> {
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), config.engineTimeoutMs);
 
   let res: Response;
   try {
-    res = await fetch(`${config.engineUrl}${path}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-      signal: controller.signal,
-    });
+    res = await fetch(`${config.engineUrl}${path}`, { ...init, signal: controller.signal });
   } catch (err) {
     throw new EngineError("failed to reach engine service", err);
   } finally {
@@ -89,21 +87,26 @@ async function post<T>(path: string, body: unknown): Promise<T> {
   return (await res.json()) as T;
 }
 
-// Talks to the Python fraud-detection engine (/engine). As of this writing
-// the engine only has its Pydantic schema (engine/app/schema.py) — no
-// FastAPI routes are wired up yet — so this client is written against that
-// schema. See api/README.md for the full assumed contract.
+// Talks to the Python fraud-detection engine (/engine). Contract per
+// engine/README.md and engine/app/main.py.
 export const engineClient = {
-  // POST /analyze with { events }, matching AnalyzeRequest -> AnalyzeResponse.
+  // POST /analyze { events } -> AnalyzeResponse. The engine caches the
+  // result in-memory keyed by the returned analysis_id; "most recent" is
+  // also tracked server-side and used by /explain when no id is given.
   analyze(events: EngineEvent[]): Promise<EngineAnalyzeResponse> {
-    return post("/analyze", { events });
+    return request("/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ events }),
+    });
   },
 
-  // POST /explain with { ring_id, events } -> ExplainResponse. The engine
-  // needs the events to regenerate the ring's context for its Claude call
-  // (per requirements.txt's anthropic dependency) since ExplainResponse
-  // alone isn't enough to identify which accounts/events the ring covers.
-  explain(ringId: string, events: EngineEvent[]): Promise<EngineExplainResponse> {
-    return post("/explain", { ring_id: ringId, events });
+  // GET /explain/{ring_id}?analysis_id=... -> ExplainResponse. Always pass
+  // the analysis_id from a just-made analyze() call rather than relying on
+  // the engine's "latest analysis" fallback, so we're never explaining a
+  // stale/unrelated dataset another caller last analyzed.
+  explain(ringId: string, analysisId: string): Promise<EngineExplainResponse> {
+    const query = new URLSearchParams({ analysis_id: analysisId });
+    return request(`/explain/${encodeURIComponent(ringId)}?${query}`);
   },
 };
