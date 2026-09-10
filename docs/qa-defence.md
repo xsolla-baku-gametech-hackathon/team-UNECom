@@ -10,6 +10,22 @@ kimi oxunacaq formada.
 
 ---
 
+## ⭐ ƏZBƏR BİLİNMƏLİ 3 — təzyiq altında yalnız qalın cümlə deyilir
+
+Bu üç sual gələcək. Hər cavabın **birinci cümləsi** tək başına tam cavabdır —
+qalanı vaxt varsa. Tam mətn aşağıda (№1, №2, №10).
+
+| # | Sual | Birinci cümlə — bunu de, sonra nəfəs al |
+|---|---|---|
+| **№1** | "How is this different from Sift / Magify?" | **"They all score the payment. We start ninety seconds later, when the goods move."** |
+| **№2** | "Your doc says hub recall is 0%. So you don't detect hubs?" | **"Correct — at the default threshold our harness catches zero percent of hubs, and we published that number ourselves."** |
+| **№10** | "How much would you charge?" | **"Sixty thousand a year for a mid-size studio, deliberately under Sift's hundred-and-fifty-thousand median contract."** |
+
+Slayd 6-nın son iki cümləsi ("hub recall is zero at default" + ask) Q&A-nı
+məhz №2 və №10-a çəkir. №1 isə toggle-dan sonra hər halda gəlir.
+
+---
+
 ## Üç qızıl qayda
 
 1. **Fərziyyəni fərziyyə kimi de.** "That's our assumption, inside a sourced
@@ -32,8 +48,10 @@ kimi oxunacaq formada.
 | "Hub recall 0% → 100%" | **burada doğrudur** | node rəngi sabit bantlardır, dəyişmir |
 | Datası | 5 seed, 352 hesab / 2,624 hadisə | demo faylı, 122 hesab / 388 hadisə |
 
-**Ona görə səhnədə deyilən cümlə "our harness measures zero percent hub recall"
-formasındadır** — "the dashboard shows" yox. Jüri bu fərqi qaldırsa, bu cədvəli
+**Ona görə səhnədə "zero" yalnız bir dəfə, Slayd 6-da deyilir: "the doc that
+says our hub recall is zero at default"** — "the dashboard shows" yox. Demo
+beat-i (3d) isə "precision still one hundred **at the account level**" deyir —
+üç son söz məhz bu cədvəlin ekvivalentidir. Jüri fərqi qaldırsa, bu cədvəli
 danış: bu, tutulmuş səhv deyil, ölçmə metodologiyasıdır.
 
 ---
@@ -47,9 +65,9 @@ Purchases, server-side validation"* — bu, tam olaraq ödəniş anıdır.
 çıxarır: ödəniş anı aləti yalnız bayraqlanmış ödənişin `to` tərəfini görə bilər.
 
 **De (EN):**
-> "They all score the payment. Magify's own slide says 'stop fraud in
-> subscriptions and purchases, server-side validation' — that's the payment
-> moment. We start ninety seconds later, when the goods move. And we don't
+> **"They all score the payment. We start ninety seconds later, when the goods
+> move.** Magify's own slide says 'stop fraud in subscriptions and purchases,
+> server-side validation' — that's the payment moment. And we don't
 > assert that difference, we compute it: the toggle you just saw masks the graph
 > down to exactly what a payment-time tool can see, from your data, not ours.
 > We're an add-on to Sift, not a replacement — that's also why we price under
@@ -73,8 +91,8 @@ risk skorunu aşağı salır**. Amma halqa üzvlüyü hədddən asılı deyil: L
 `hub_1`-i **0.5-də də** halqanın içində saxlayır.
 
 **De (EN):**
-> "Correct — at the default threshold our harness catches zero percent of hubs,
-> and we published that number ourselves. Here's why it matters: a hub is an
+> **"Correct — at the default threshold our harness catches zero percent of hubs,
+> and we published that number ourselves.** Here's why it matters: a hub is an
 > aged account with no velocity, balanced in-out degree, and it never touches a
 > flagged card. Every per-account heuristic on the market calls that a normal
 > player — which is exactly why per-account scoring can't find the cash-out
@@ -140,6 +158,10 @@ gizlədilmiş qüsurdan qat-qat güclüdür.
 > necessary next step, and we haven't done it. What these numbers do prove is
 > internal consistency: the pipeline recovers the structure it was built to
 > recover, and the slider behaves monotonically across five seeds."
+
+**Qeyd:** ask cümləsi ("We're not asking you to believe synthetic numbers…")
+bu sualı sual gəlməmiş qismən cavablayıb. Sual yenə gəlsə, yuxarıdakı cavab
+olduğu kimi — "synthetic" sözü ilə başla, "next step" ilə bitir.
 
 **Jüri "öz faylımızı ata bilərik?" deyərsə:** bəli. Callout rəqəmləri onların
 datasından hesablanır. Halqa tapılmasa, qələbə kimi çərçivələ:
@@ -240,12 +262,47 @@ bookings studio üçün ROI 5.1×, geri ödəmə **2.4 ay**; detection fərz etd
 3× pis olsa **7.1 ay**. Giriş: 90 günlük **$5,000** pilot.
 
 **De (EN):**
-> "Sixty thousand a year for a mid-size studio, deliberately under Sift's
-> hundred-and-fifty-thousand median contract, because we're a module next to
+> **"Sixty thousand a year for a mid-size studio, deliberately under Sift's
+> hundred-and-fifty-thousand median contract.** We're a module next to
 > your payment fraud tooling, not a replacement for it. On a fifty-million-
 > bookings studio that pays back in 2.4 months — and if our detection turns out
 > to be three times worse than we assume, still under seven. We land with a
 > five-thousand-dollar ninety-day pilot so nobody needs a committee to sign it."
+
+**Qeyd:** pilot artıq pitch-in son cümləsində (ask) deyilib. Burada təkrar
+zərər vermir — jüri qiymət sualında "pilot" sözünü ikinci dəfə eşidəndə onu
+yadda saxlayır.
+
+---
+
+## 11 · "Why is the missed value bigger than the ring's own value?" — $7,607 vs $6,616
+
+**Fakt (kodda yoxlanılıb, 10.09.2026):** iki rəqəm iki fərqli şeyi sayır.
+
+| | Nəyi toplayır | Haradan |
+|---|---|---|
+| Halqa dəyəri **$6,616** | halqanın 35 üzvünə daxil olan **köçürmələr** (trade · gift · marketplace · key) | engine, `community.py` → `in_value_usd`; engine qrafında STORE kənarı yoxdur, ona görə **alışlar sayılmır** |
+| Callout **$7,607** | 9 gözdən qaçan hesaba daxil olan **hər şey** | `paymentMomentView.ts` → `missedValueUsd`: `snapshot.events` üzərindən, **STORE alışları daxil** |
+
+Fərqin mənbəyi, çəkisinə görə: (1) gözdən qaçan mule-ların **bayraqlanmamış**
+STORE alışları — kart bayraqlanmayıb, ona görə ödəniş anı aləti onları
+görməyib, amma pul həmin hesaba düşüb; (2) halqadan kənar hesabların `hub_1`-ə
+ticarəti. Halqanın köçürmə dəyərinin böyük hissəsi onsuz da bu 9 hesabda —
+əsasən hub-da — bitir: hub məhz dəyərin toplandığı yerdir.
+
+Bu, səhv deyil: callout "ödəniş anı alətinin görmədiyi pul"u ölçür, halqa
+dəyəri isə "halqa daxilində dövr edən pul"u. Suala 5 saniyəlik cavab:
+
+**De (EN):**
+> **"Different denominators.** The ring value counts only account-to-account
+> transfers. The callout counts everything that landed in the nine accounts a
+> payment-time tool never saw, including store purchases whose card was never
+> flagged. Both come from your file, not from us."
+
+**Uzatma.** Jüri "so the number is inflated?" desə:
+> "No — it's the honest one. A purchase on a card that was never flagged is
+> precisely what a payment-time tool misses. Leaving it out would be
+> under-counting the blind spot."
 
 ---
 
