@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { ringService } from "../services/ringService.js";
+import { explanationService } from "../services/explanationService.js";
 import { EngineError } from "../clients/engineClient.js";
 
 const sensitivityBodySchema = z.object({
@@ -17,6 +18,19 @@ export async function ringRoutes(app: FastifyInstance) {
   app.get("/rings", async (_request, reply) => {
     try {
       return await ringService.listRings();
+    } catch (err) {
+      if (err instanceof EngineError) {
+        return reply.status(502).send({ error: "engine_unreachable", message: err.message });
+      }
+      throw err;
+    }
+  });
+
+  // GET /rings/:id/explanation — /web's InvestigationPanel "Claude izahatı"
+  // section, proxied to the engine's Claude-generated explanation.
+  app.get<{ Params: { id: string } }>("/rings/:id/explanation", async (request, reply) => {
+    try {
+      return await explanationService.getExplanation(request.params.id);
     } catch (err) {
       if (err instanceof EngineError) {
         return reply.status(502).send({ error: "engine_unreachable", message: err.message });
