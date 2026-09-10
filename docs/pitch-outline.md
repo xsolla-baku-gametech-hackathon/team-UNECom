@@ -29,9 +29,9 @@ Format: **3 dəqiqə pitch + 2 dəqiqə Q&A**. Jüri beynəlxalq Xsolla komandas
 Pitch-i **bir spiker** aparır: slaydlar, demo, ask — hamısı. Klaviatura onun
 qabağındadır, demo cümlələrini klik edən adam özü deyir.
 
-**Kritik an: 0:44–0:48.** Slayd 2-nin son sözü "exposed", ekran dashboard-a
-keçir, spiker klaviaturaya keçib faylı masaüstündə tapır. **Bu 4 saniyə
-büdcədədir — danışma, tələs də yox.** Səhnədə ən çox itirilən vaxt "hardadır
+**Kritik an: 0:39–0:49.** Slayd 3 (texnologiya) 6 saniyə danışılır, spiker bu
+vaxt laptopa doğru gedir; son söz "ring" → klik → ekran dashboard-a → əl siçana,
+faylı masaüstündə tap. **Bu 3 saniyə büdcədədir — danışma, tələs də yox.** Səhnədə ən çox itirilən vaxt "hardadır
 fayl?" anıdır; masaüstündə faylı əvvəlcədən görünən yerə qoy
 (`demo-script.md` §1).
 
@@ -54,13 +54,13 @@ bu, "komanda" mesajını ötürmə riski olmadan verir.
 | qraf render (fayl atıldıqdan sonra) | 2 |
 | callout-u tapıb ekrandan oxumaq | 2 |
 | slider çəkmək | 3 |
-| ekran dashboard-a keçir, klaviaturaya keçmək | 4 |
-| slayd keçidləri (5 × 1 s) | 5 |
+| ekran dashboard-a keçir, klaviaturaya keçmək | 3 |
+| slayd keçidləri (6 × 1 s) | 6 |
 | bir büdrəmə ehtiyatı | 5 |
 | açılış / bağlanış nəfəsi | 3 |
 | **cəmi** | **24** |
 
-**Niyə 350, 409 yox:** köhnə büdcə 409 söz / 180 s = 136 söz/dəq idi — yəni
+**Niyə 350, 409 yox** (hazırda 346)**:** köhnə büdcə 409 söz / 180 s = 136 söz/dəq idi — yəni
 sıfır fasilə, sıfır klik vaxtı, sıfır büdrəmə. Real məşqdə o pitch 3:15–3:35
 çəkir və kəsilən şey həmişə son slayd — yəni ask — olur. İndi ask-ın 22
 saniyəsi qorunur.
@@ -70,20 +70,21 @@ saniyəsi qorunur.
 | # | Slayd | Vaxt | Söz | Danışıq s | Boşluq s | Cəmi s | Boşluğun tərkibi |
 |---|---|---|---|---|---|---|---|
 | 1 | Soyuq açılış + What you built | 0:00–0:26 | 51 | 23 | 3 | 26 | açılış nəfəsi 2 · keçid 1 |
-| 2 | The problem | 0:26–0:48 | 39 | 17 | 5 | 22 | keçid 1 · **klaviaturaya keçmək 4** |
-| 3a | Demo · CSV upload | 0:48–0:59 | 17 | 8 | 3 | 11 | render 2 · büdrəmə 1 |
-| 3b | Demo · halqa çıxır | 0:59–1:07 | 18 | 8 | 0 | 8 | — |
-| 3c | Demo · **toggle + 28%** | 1:07–1:40 | 67 | 30 | 3 | 33 | callout oxu 2 · büdrəmə 1 |
-| 3d | Demo · slider 0.5→0.8 | 1:40–1:56 | 28 | 12 | 4 | 16 | slider 3 · büdrəmə 1 |
-| 3e | Demo · Claude + qərar | 1:56–2:05 | 14 | 6 | 3 | 9 | büdrəmə 2 · keçid 1 |
-| 4 | Features & users | 2:05–2:18 | 26 | 12 | 1 | 13 | keçid 1 |
-| 5 | Monetization | 2:18–2:37 | 41 | 18 | 1 | 19 | keçid 1 |
-| 6 | Team + **ask** | 2:37–3:00 | 48 | 22 | 1 | 23 | bağlanış nəfəsi 1 |
-| | **CƏMİ** | | **349** | **156** | **24** | **180** | |
+| 2 | The problem | 0:26–0:39 | 28 | 12 | 1 | 13 | keçid 1 |
+| 3·0 | Your solution · **texnologiya** | 0:39–0:49 | 14 | 6 | 4 | 10 | keçid 1 · **klaviaturaya keçmək 3** |
+| 3a | Demo · CSV upload | 0:49–1:00 | 17 | 8 | 3 | 11 | render 2 · büdrəmə 1 |
+| 3b | Demo · halqa çıxır | 1:00–1:08 | 18 | 8 | 0 | 8 | — |
+| 3c | Demo · **toggle + 28%** | 1:08–1:41 | 66 | 30 | 3 | 33 | callout oxu 2 · büdrəmə 1 |
+| 3d | Demo · slider 0.5→0.8 | 1:41–1:57 | 28 | 12 | 4 | 16 | slider 3 · büdrəmə 1 |
+| 3e | Demo · Claude + qərar | 1:57–2:06 | 14 | 6 | 3 | 9 | büdrəmə 2 · keçid 1 |
+| 4 | Features & users | 2:06–2:18 | 25 | 11 | 1 | 12 | keçid 1 |
+| 5 | Monetization | 2:18–2:37 | 40 | 18 | 1 | 19 | keçid 1 |
+| 6 | Team + **ask** | 2:37–3:00 | 45 | 22 | 1 | 23 | bağlanış nəfəsi 1 |
+| | **CƏMİ** | | **346** | **156** | **24** | **180** | |
 
-Danışıq saniyəsi = söz ÷ 135 × 60, tam ədədə yuvarlaqlanıb. Slayd 6-nın 21.3 s-i
-22-yə yuvarlaqlanıb — ask cümləsi qəsdən yavaş deyilir. Demo hissəsi (3a–3e):
-**0:48–2:05, 77 s**.
+Danışıq saniyəsi = söz ÷ 135 × 60, tam ədədə yuvarlaqlanıb. Slayd 6-nın 45 sözü
+22 s-yə uzadılıb (~123 söz/dəq) — ask cümləsi qəsdən yavaş deyilir; 3c 29.3 → 30. Demo hissəsi (3a–3e):
+**0:49–2:06, 77 s**.
 
 **Yeni cümlə əlavə etmək = başqa bir cümləni silmək.** Söz sayını yoxlamaq:
 
@@ -131,7 +132,7 @@ oxunur, deyilmir.
 
 ---
 
-## Slayd 2 — The problem · 0:26–0:48
+## Slayd 2 — The problem · 0:26–0:39
 
 **Ekranda:** Üç rəqəm, böyük, mənbə adı ilə — **maksimum 3 element**:
 
@@ -142,25 +143,52 @@ oxunur, deyilmir.
 | **0.26%** | sənaye ortalaması — *Sift Q4 2025* → **13×** |
 
 **De (EN):**
-> "Roblox told the SEC that 3.41 percent of its 2024 bookings, 149 million dollars, went to fraud chargebacks, and described our threat model: stolen cards, in-game currency, resale off-platform. Industry average: 0.26 percent. Tradeable economies: thirteen times more exposed."
+> "Roblox told the SEC that 3.41 percent of its 2024 bookings, 149 million dollars, went to fraud chargebacks. Industry average: 0.26 percent. Tradeable economies: thirteen times more exposed."
 
-*(39 söz · ~17 s)*
+*(28 söz · ~12 s)*
 
 **Niyə belə:** Rəqəmlərin heç biri bizim deyil — qurbanın öz SEC sənədindəndir.
 "13×" bazarın niyə mövcud olduğunu bir cümlədə izah edir. $4.37B artıq
 deyilmir — slaydda qalır, jüri oxuyur; səhnədə iki böyük rəqəm bir cümlədə
-büdrəmə yeridir. Valve buradan çıxıb açılışa keçdi.
+büdrəmə yeridir. Valve buradan çıxıb açılışa keçdi. **Threat-model cümləsi
+("stolen cards, in-game currency, resale off-platform") səhnədən çıxıb slayda
+keçdi** — 11 sözü Slayd 3-ün texnologiya cümləsinə verdik; slaydda 3.41%-in
+altındakı caption kimi qalır.
 
-**Son söz "exposed" → ekran dashboard-a → klaviaturaya keç.** 0:44–0:48, danışma.
+**Son söz "exposed" → klik → Slayd 3.** 0:39.
 
 ---
 
-## Slayd 3 — Your solution · 0:48–2:05 · **EKRAN CANLI DASHBOARD**
+## Slayd 3 — Your solution · 0:39–2:06 · texnologiya slaydı + **CANLI DASHBOARD**
 
-Bu slayd təsvir deyil, **77 saniyəlik canlı demodur**. Dəqiq klik ardıcıllığı və
-gözlənilən ekran vəziyyəti [`demo-script.md`](./demo-script.md)-dədir.
+Təşkilatçının şablonu (Nikita-nın participant deck-i) Slayd 3-ü belə təsvir edir:
+*"How it solves the problem, what makes it unique and innovative, **and which
+technologies you used**."* Ona görə Slayd 3 iki hissədir: 10 saniyəlik statik
+texnologiya slaydı, sonra **77 saniyəlik canlı demo**. Klik ardıcıllığı
+[`demo-script.md`](./demo-script.md)-dədir.
 
-### 3a · Sıfır quraşdırma — canlı CSV upload · 0:48–0:59 (8 s danışıq + 3 s boşluq)
+### 3·0 · Necə işləyir — texnologiya slaydı · 0:39–0:49 (6 s danışıq + 4 s boşluq)
+
+**Ekranda:** Mansur Mustafayev-in workshop slaydlarının formatında — böyük
+başlıq, **Problem:** / **Build:** iki sətir, sağda onun "How money moves in a
+game" hunisi (bizim yerimiz 7-ci və 8-ci pillə arasında), altda stack sətri.
+Dəqiq məzmun [`deck-design-prompt.md`](./deck-design-prompt.md) §5 / 03.
+
+**De (EN):**
+> "Four signals per account: tainted value, velocity, degree imbalance, community. Louvain finds the ring."
+
+*(14 söz · ~6 s)*
+
+**Niyə belə:** Köhnə versiyada Slayd 3 qara "▶ live" kartı idi və texnologiya
+heç yerdə deyilmirdi — Technical Feasibility meyarında boş xana. Cümlə koddan
+gəlir: `risk_scoring.py` çəkiləri taint 0.40 · velocity 0.25 · imbalance 0.20 ·
+community 0.15 (slaydda yazılır, səhnədə deyilmir), `community.py` Louvain.
+Söz xərci Slayd 2-nin threat-model cümləsi ilə ödənildi.
+
+**Xoreoqrafiya:** cümlə deyilərkən spiker artıq laptopa doğru gedir. Son söz
+"ring" → klik → ekran dashboard-a → əl siçana. 0:45–0:49, danışma.
+
+### 3a · Sıfır quraşdırma — canlı CSV upload · 0:49–1:00 (8 s danışıq + 3 s boşluq)
 
 **Ekranda:** Boş dashboard → fayl sürüşdürülür → qraf gözün qabağında qurulur.
 **Gözlənilən nəticə (ölçülüb):** 388 hadisə, 122 hesab, $26,814 dövriyyə.
@@ -170,17 +198,17 @@ gözlənilən ekran vəziyyəti [`demo-script.md`](./demo-script.md)-dədir.
 
 *(17 söz)*
 
-### 3b · Halqa özü çıxır · 0:59–1:07 (8 s)
+### 3b · Halqa özü çıxır · 1:00–1:08 (8 s)
 
 **Ekranda:** Bir halqa bayraqlanır (`ring_3`, UI risk **0.59**, 35 hesab,
 $6,616, 26 bayraqlanmış alış). Hub konturlu və daha iri node kimi görünür.
 
 **De (EN):**
-> "The graph builds itself. Louvain pulls the ring out of the noise: 94.9 percent measured purity, five seeds."
+> "The graph builds itself and pulls the ring out of the noise: 94.9 percent measured purity, five seeds."
 
 *(18 söz)*
 
-### 3c · **"Ödəniş anı görünüşü" + miqyas körpüsü — ƏSAS AN** · 1:07–1:40 (30 s + 3 s)
+### 3c · **"Ödəniş anı görünüşü" + miqyas körpüsü — ƏSAS AN** · 1:08–1:41 (30 s + 3 s)
 
 **Ekranda:** Toggle basılır. Yalnız bayraqlanmış ödənişin `to` tərəfindəki
 hesablar işıqlı qalır, köçürmə kənarları tamamilə sönür, sağda callout açılır.
@@ -189,9 +217,9 @@ hesablar işıqlı qalır, köçürmə kənarları tamamilə sönür, sağda cal
 **$7,607** · gözdən qaçan hub **1 / 1** (`hub_1`).
 
 **De (EN):**
-> "Now the differentiator. This toggle shows a payment-moment tool's entire view: the receiving end of a flagged card. It sees 33 accounts. It misses 9, holding seven thousand six hundred dollars, including a cash-out hub that never touched a card. Twenty-eight percent of every dollar here lands in accounts a payment-time tool cannot see. The file is small. The blind spot behind Roblox's 149 million is not."
+> "The differentiator. This toggle shows a payment-moment tool's entire view: the receiving end of a flagged card. It sees 33 accounts. It misses 9, holding seven thousand six hundred dollars, including a cash-out hub that never touched a card. Twenty-eight percent of every dollar here lands in accounts a payment-time tool cannot see. The file is small. The blind spot behind Roblox's 149 million is not."
 
-*(67 söz · ~30 s)*
+*(66 söz · ~30 s)*
 
 > **Rəqəmləri ekrandan oxu.** Callout həmişə yüklənmiş datadan hesablayır —
 > hardcode yoxdur. Jüri öz faylını yükləsə, öz rəqəmlərini görür. Bu faktı Q&A
@@ -221,7 +249,7 @@ atılır, Slayd 5-in hələ deyilməmiş $1B-nə yox. $1B Slayd 5-də təzə qal
 **"Never touched a card" (flagged yox):** ölçülüb — `hub_1` və `hub_2`
 STORE-dan heç bir alış etməyib. Hub heç bir karta toxunmur, bayraqlısına da yox.
 
-### 3d · Həddi qaldır — ikinci halqa · 1:40–1:56 (12 s + 4 s)
+### 3d · Həddi qaldır — ikinci halqa · 1:41–1:57 (12 s + 4 s)
 
 **Ekranda:** Toggle söndürülür, slider 0.5-dən 0.8-ə çəkilir.
 **Gözlənilən nəticə (ölçülüb):** bayraqlanmış halqa **1 → 2**; ikinci halqa
@@ -259,7 +287,7 @@ sonradan alətlə oynasa, "səhnədə 100% dedilər" kimi xatırlamasın deyə �
 > "hub-lar işıqlanır" yox, **ikinci halqa (və onun hub-u) peyda olur**.
 > Səhnədə "hub-lar işıqlanır" DEMƏ.
 
-### 3e · Claude izahatı + insan qərarı · 1:56–2:05 (6 s + 3 s)
+### 3e · Claude izahatı + insan qərarı · 1:57–2:06 (6 s + 3 s)
 
 **Ekranda:** Investigation panel açıq — ölçülmüş sübutlar, Claude izahatı,
 confidence, tövsiyə. Sonra **F** → **Enter**.
@@ -271,7 +299,7 @@ confidence, tövsiyə. Sonra **F** → **Enter**.
 
 ---
 
-## Slayd 4 — Features & users · 2:05–2:18
+## Slayd 4 — Features & users · 2:06–2:18
 
 **Ekranda:** Üç sətir, iki sütun — **maksimum 3 element** (köhnə 5 sətirlik
 cədvəl kəsildi; dinlənilən slaydda oxunacaq şey 3-dən çox olmamalıdır).
@@ -283,9 +311,9 @@ cədvəl kəsildi; dinlənilən slaydda oxunacaq şey 3-dən çox olmamalıdır)
 | Drag-and-drop CSV today · same `/events` API in production | **Game economy / live-ops lead** |
 
 **De (EN):**
-> "Built for a Trust and Safety analyst; Rockstar is hiring that role now. Drag-and-drop is the trial door; production pushes the same events to our API."
+> "Built for a Trust and Safety analyst; Rockstar is hiring one now. Drag-and-drop is the trial door; production pushes the same events to our API."
 
-*(26 söz · ~12 s)*
+*(25 söz · ~11 s)*
 
 **Niyə belə:** Rockstar-ın açıq vakansiyası personanın uydurma olmadığının
 sübutudur. Fayl yükləmənin "production yolu deyil" olduğunu özümüz deməsək,
@@ -305,9 +333,9 @@ açılışda, 13× Slayd 2-də deyilib — təkrar idi):
    ssenaridə 7.1 ay)*
 
 **De (EN):**
-> "Xsolla published a billion dollars of PC direct-to-consumer volume. A one percent dispute rate, our assumption inside a sourced 0.26 to 3.41 band, is ten million a year. We charge 60 thousand. A 50-million-bookings studio pays that back in 2.4 months."
+> "Xsolla published a billion dollars of direct-to-consumer volume. A one percent dispute rate, our assumption inside a sourced 0.26 to 3.41 band, is ten million a year. We charge 60 thousand. A 50-million-bookings studio pays that back in 2.4 months."
 
-*(41 söz · ~18 s)*
+*(40 söz · ~18 s)*
 
 **Niyə belə:** "our assumption, inside a sourced band" — bu altı söz bizi "rəqəm
 uyduran komanda" kateqoriyasından çıxarır. **Onları udma.** Downside case
@@ -319,10 +347,10 @@ yerini alırdı. Vaxt artıq qalsa deyilir (bax `demo-script.md` §8).
 
 ## Slayd 6 — Team + **ASK** · 2:37–3:00
 
-**Ekranda:** İki element. Üstdə komanda — bir sətir, 4 ad + rol, kiçik. Altda
-**slaydın ən böyük mətni**:
+**Ekranda:** Başlıq = ask (slaydın ən böyük mətni, narıncı), altda komanda —
+4 şəkil + ad + rol:
 
-> **$5,000 · 90 days · one labelled dataset**
+> **One labelled dataset. Ninety days.**
 
 | Ad | Rol |
 |---|---|
@@ -337,9 +365,9 @@ yerini alırdı. Vaxt artıq qalsa deyilir (bax `demo-script.md` §8).
 *(18 söz · ~8 s)*
 
 **De (EN) — ASK, pitch-in son cümləsi (2:45–2:59), yavaş:**
-> "We're not asking you to believe synthetic numbers. Give us one labelled dataset from a live economy, ninety days, five thousand dollars, and we'll show you where your money went."
+> "We're not asking you to believe synthetic numbers. Give us one labelled dataset from a live economy, ninety days, and we'll show you where your money went."
 
-*(30 söz · ~13 s)*
+*(27 söz · ~12 s)*
 
 **Niyə belə — komanda cümləsi:** "hub recall is zero at default" QALIR. Best
 Code münsifi üçün bu dəvətdir: "repo-nu aç, nəyi gizlətdiyimizi yox, nəyi
@@ -355,8 +383,9 @@ meyarında birbaşa itki. İndi son cümlə:
   bağlanışa daşıyır; №4-ün ("is this real data?") cavabını sual gəlməmiş verir;
 - **"one labelled dataset from a live economy"** — istədiyimiz şey pul deyil,
   datadır; Xsolla üçün bu ucuz, bizim üçün yeganə çatışmayan şeydir;
-- **"ninety days, five thousand dollars"** — `business-case.md` §4 giriş
-  təklifi, komitəsiz imzalanacaq ölçüdə;
+- **"ninety days"** — vaxt-məhdud pilot; **dollar rəqəmi qəsdən yoxdur**: hackathon
+  jürisi müqavilə imzalamır, "five thousand dollars" səhnədə "bizə pul verin" kimi
+  səslənirdi. Qiymət soruşulsa Q&A №10-dadır;
 - **"where your money went"** — Slayd 1-in "traces where in-game value goes"
   cümləsinə qayıdır; merchant of record üçün chargeback *onların* puludur.
 
@@ -375,12 +404,14 @@ meyarında birbaşa itki. İndi son cümlə:
 | 1% dispute rate → $10M | **bizim fərziyyəmiz**, 0.26–3.41 aralığında | ASSUMPTION |
 | $60K/il · Sift median $150K (slaydda) | Vendr (anonim müqavilə datası) | SOURCED (secondary) |
 | 2.4 ay · 7.1 ay downside (slaydda) | `business-case.md` §5 ROI modeli | arithmetic |
-| **$5,000 · 90 gün pilot** | `business-case.md` §4 "Land" | our offer |
+| **90 gün pilot** (dollar rəqəmi deyilmir, slaydda da yoxdur) | `business-case.md` §4 "Land" | our offer |
 | 94.9% ring purity · hub recall 0% (default) → 100% (0.8) · precision 100% | `accuracy.md`, 5 seed, hesab-səviyyəli, sintetik | MEASURED |
 | 122 hesab · 388 hadisə · $26,814 | demo faylı, engine ölçüsü, 10.09.2026 | MEASURED |
 | görür 33 · görmür 9 · $7,607 · 1 hub | həmin fayl, sensitivity 0.5 | MEASURED |
 | **28% ("twenty-eight")** | $7,607 ÷ $26,814 = 28.4%, aşağı yuvarlaqlanıb | arithmetic |
 | hub STORE-dan alış etməyib ("never touched a card") | həmin fayl, `hub_1`/`hub_2` üçün 0 alış | MEASURED |
+| 4 siqnal · çəkilər 0.40 / 0.25 / 0.20 / 0.15 (slaydda) · Louvain | `engine/app/risk_scoring.py` WEIGHTS, `community.py` | CODE |
+| "detect it from the money flow between players, not from the client" · 9 pilləli huni (slaydda) | Mansur Mustafayev, GameTech Bootcamp workshop, 9 sentyabr 2026 | SOURCED (bootcamp slaydı) |
 | Rockstar T&S vakansiyası | themuse.com elanı | SOURCED |
 
 **Qayda:** bu cədvəldə olmayan heç bir rəqəmi səhnədə demə. Jüri mənbə soruşsa,
