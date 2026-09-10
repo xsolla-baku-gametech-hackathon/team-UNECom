@@ -2,6 +2,7 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { config } from "./config.js";
 import { eventRoutes } from "./routes/events.js";
+import { accountRoutes } from "./routes/accounts.js";
 
 async function main() {
   const app = Fastify({ logger: true });
@@ -11,6 +12,7 @@ async function main() {
   app.get("/health", async () => ({ status: "ok" }));
 
   await app.register(eventRoutes);
+  await app.register(accountRoutes);
 
   await app.listen({ port: config.port, host: config.host });
 }

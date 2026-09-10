@@ -1,5 +1,6 @@
 import { prisma } from "../db/prisma.js";
 import type { EventInput } from "../types/event.js";
+import type { EngineEvent } from "../clients/engineClient.js";
 
 function toRow(event: EventInput) {
   return {
@@ -35,5 +36,24 @@ export const eventRepository = {
 
     const result = await prisma.event.createMany({ data: newEvents.map(toRow) });
     return result.count;
+  },
+
+  // All stored events, reshaped back into the shared contract, for handing
+  // to the /engine analyzer.
+  async findAllAsContract(): Promise<EngineEvent[]> {
+    const rows = await prisma.event.findMany({ orderBy: { timestamp: "asc" } });
+    return rows.map((r) => ({
+      event_id: r.eventId,
+      type: r.type,
+      timestamp: r.timestamp.toISOString(),
+      from_account_id: r.fromAccountId,
+      to_account_id: r.toAccountId,
+      asset_type: r.assetType,
+      asset_id: r.assetId,
+      quantity: r.quantity,
+      value_usd_estimate: r.valueUsdEstimate,
+      payment_flagged: r.paymentFlagged,
+      account_created_at: r.accountCreatedAt ? r.accountCreatedAt.toISOString() : null,
+    }));
   },
 };
