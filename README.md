@@ -88,11 +88,7 @@ drag it onto the upload panel.
 
 ## Team
 
-| Name | Role |
-|---|---|
-| _(fill in)_ | AI / Graph Engineer (`/engine`) |
-| _(fill in)_ | Full-stack (`/api`) |
-| _(fill in)_ | Game Designer / Dashboard (`/web`) |
+Nezrin Ceferova · Aslan Musayev · Sardar Soltanzade · Hamid Aslanov · Matin Mehdi
 
 ## Hackathon ground rules (from the organizers)
 

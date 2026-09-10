@@ -1,32 +1,62 @@
-# React + TypeScript + Vite
+# Fraud Radar dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React + TypeScript + Vite + Tailwind dashboard for investigating post-purchase value flow.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Start the Python engine on port 8000 and the API on port 3001, then:
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Open http://localhost:5173. Vite proxies `/api` to http://localhost:3001.
+Set `VITE_API_PROXY_TARGET` to change the development proxy, or
+`VITE_API_BASE_URL` at build time for a separately hosted production API.
+
+## Investigation flow
+
+Upload CSV or JSON, select a case, inspect its evidence, then press F (fraud)
+or R (real player) followed by Enter. J/K navigate, / searches, Escape closes
+the current action. No accounts are automatically blocked.
+
+Counters show all loaded events and estimated volume, including purchases,
+regardless of date. Sensitivity controls the ring risk threshold. Per-case
+overrides currently last only for the browser session.
+
+Flagged-ring explanations are prefetched and shared with the panel. The web
+request allows 35 seconds; the API explanation request allows 30 seconds.
+The panel distinguishes Claude, template, and demo explanations. Live failures
+do not substitute demo explanations or pretend decisions were saved.
+An initial graph failure opens labelled demo mode; uploads require the API.
+
+`public/sample-events.json` is the canonical 388-event pitch dataset. Uploading
+it after its matching CSV skips existing IDs. The generator's default output
+is a larger evaluation dataset.
+
+## Checks
+
+```bash
+npm run build
+npm run lint
+```
+
+See `../engine/README.md` for engine tests and `../docs/accuracy.md` for evaluation.
+
+## Browser regression rehearsal
+
+`tests/rehearsal.mjs` drives real Chrome through its debugging protocol,
+including CSV upload, prefetch, decisions, and simulated connection failures.
+It requires a running web/API/engine stack with an **isolated empty database**;
+it asserts the database is empty and never resets it. It leaves test data in
+that isolated database. Run from the repository root:
+
+```bash
+google-chrome --headless --remote-debugging-port=9227 --user-data-dir=/tmp/unecom-browser-test
+REHEARSAL_URL=http://localhost:5173 node web/tests/rehearsal.mjs
+```
+
+The local canonical `data-generator/output/events.csv` must be present.
+`CHROME_DEBUG_URL` defaults to `http://127.0.0.1:9227`.
+Screenshots are written to `/tmp/unecom-rehearsal*.png`.
