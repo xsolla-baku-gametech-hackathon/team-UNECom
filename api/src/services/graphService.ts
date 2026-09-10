@@ -3,8 +3,6 @@ import { eventRepository } from "../repositories/eventRepository.js";
 import { ringDecisionRepository } from "../repositories/ringDecisionRepository.js";
 import type { GraphAccount, GraphAccountEvent, GraphRing, GraphSnapshot, RingStatus } from "../types/graph.js";
 
-const DAY_MS = 24 * 60 * 60 * 1000;
-
 function toGraphEvent(e: EngineEvent): GraphAccountEvent {
   return {
     id: e.event_id,
@@ -80,7 +78,7 @@ export const graphService = {
         accounts: [],
         events: [],
         rings: [],
-        stats: { activeAccounts: 0, dailyEvents: 0, dailyVolumeUsd: 0, ringsAtRisk: 0 },
+        stats: { activeAccounts: 0, totalEvents: 0, totalVolumeUsd: 0, ringsAtRisk: 0 },
       };
     }
 
@@ -112,8 +110,6 @@ export const graphService = {
     }));
 
     const events = contractEvents.map(toGraphEvent);
-    const now = Date.now();
-    const dailyEvents = events.filter((e) => now - new Date(e.timestamp).getTime() <= DAY_MS);
 
     return {
       generatedAt: analysis.generated_at,
@@ -122,8 +118,8 @@ export const graphService = {
       rings,
       stats: {
         activeAccounts: accounts.length,
-        dailyEvents: dailyEvents.length,
-        dailyVolumeUsd: Math.round(dailyEvents.reduce((sum, e) => sum + e.valueUsdEstimate, 0) * 100) / 100,
+        totalEvents: events.length,
+        totalVolumeUsd: Math.round(events.reduce((sum, e) => sum + e.valueUsdEstimate, 0) * 100) / 100,
         ringsAtRisk: rings.length,
       },
     };

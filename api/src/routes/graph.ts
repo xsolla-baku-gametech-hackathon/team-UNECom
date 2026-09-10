@@ -10,7 +10,7 @@ export async function graphRoutes(app: FastifyInstance) {
       return await graphService.buildSnapshot();
     } catch (err) {
       if (err instanceof EngineError) {
-        return reply.status(502).send({ error: "engine_unreachable", message: err.message });
+        return reply.status(err.statusCode).send({ error: err.statusCode === 504 ? "engine_timeout" : err.statusCode === 502 ? "engine_unreachable" : "engine_request_failed", message: err.message });
       }
       throw err;
     }

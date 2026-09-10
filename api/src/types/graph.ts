@@ -41,8 +41,8 @@ export interface GraphSnapshot {
   rings: GraphRing[];
   stats: {
     activeAccounts: number;
-    dailyEvents: number;
-    dailyVolumeUsd: number;
+    totalEvents: number;
+    totalVolumeUsd: number;
     ringsAtRisk: number;
   };
 }

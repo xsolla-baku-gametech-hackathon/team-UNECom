@@ -8,6 +8,7 @@ export const ringService = {
   // sensitivity override (null if the designer hasn't tuned it yet).
   async listRings() {
     const events = await eventRepository.findAllAsContract();
+    if (events.length === 0) return [];
     const [analysis, overrides] = await Promise.all([
       engineClient.analyze(events),
       ringSensitivityRepository.findAll(),

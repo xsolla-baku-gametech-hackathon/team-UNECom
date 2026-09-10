@@ -20,7 +20,7 @@ export async function ringRoutes(app: FastifyInstance) {
       return await ringService.listRings();
     } catch (err) {
       if (err instanceof EngineError) {
-        return reply.status(502).send({ error: "engine_unreachable", message: err.message });
+        return reply.status(err.statusCode).send({ error: err.statusCode === 504 ? "engine_timeout" : err.statusCode === 502 ? "engine_unreachable" : "engine_request_failed", message: err.message });
       }
       throw err;
     }
@@ -33,7 +33,7 @@ export async function ringRoutes(app: FastifyInstance) {
       return await explanationService.getExplanation(request.params.id);
     } catch (err) {
       if (err instanceof EngineError) {
-        return reply.status(502).send({ error: "engine_unreachable", message: err.message });
+        return reply.status(err.statusCode).send({ error: err.statusCode === 504 ? "engine_timeout" : err.statusCode === 502 ? "engine_unreachable" : "engine_request_failed", message: err.message });
       }
       throw err;
     }

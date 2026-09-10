@@ -6,6 +6,7 @@ export const riskService = {
   // account has no events / wasn't part of the analyzed graph.
   async getAccountRisk(accountId: string) {
     const events = await eventRepository.findAllAsContract();
+    if (events.length === 0) return null;
     const analysis = await engineClient.analyze(events);
     return analysis.accounts.find((a) => a.account_id === accountId) ?? null;
   },

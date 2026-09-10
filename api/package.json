@@ -10,7 +10,8 @@
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "test": "npm run build && node --test tests/*.test.mjs"
   },
   "dependencies": {
     "@fastify/cors": "^10.0.1",

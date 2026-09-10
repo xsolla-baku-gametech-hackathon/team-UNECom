@@ -1,4 +1,4 @@
-import { engineClient, type EngineExplainResponse } from "../clients/engineClient.js";
+import { engineClient, EngineError, type EngineExplainResponse } from "../clients/engineClient.js";
 import { eventRepository } from "../repositories/eventRepository.js";
 
 // evidence shape is engine/app/explain.py's build_evidence() output —
@@ -33,7 +33,8 @@ function toRingExplanation(res: EngineExplainResponse) {
 
   return {
     ringId: res.ring_id,
-    summary: res.explanation,
+    source: res.ai_generated ? "ai" : "template",
+    summary: res.explanation.replace(/\*\*(.*?)\*\*/gs, "$1").replace(/`([^`]+)`/g, "$1"),
     signals,
     recommendedAction: recommendedActionFor(e.risk_score),
   };
@@ -47,6 +48,7 @@ export const explanationService = {
   // caller last ran.
   async getExplanation(ringId: string) {
     const events = await eventRepository.findAllAsContract();
+    if (events.length === 0) throw new EngineError("ring not found", undefined, 404);
     const analysis = await engineClient.analyze(events);
     const res = await engineClient.explain(ringId, analysis.analysis_id);
     return toRingExplanation(res);

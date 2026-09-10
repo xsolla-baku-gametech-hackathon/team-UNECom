@@ -61,30 +61,28 @@ export interface EngineExplainResponse {
 }
 
 export class EngineError extends Error {
-  constructor(message: string, public readonly cause?: unknown) {
+  constructor(message: string, public readonly cause?: unknown, public readonly statusCode = 502) {
     super(message);
     this.name = "EngineError";
   }
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+async function request<T>(path: string, init?: RequestInit, timeoutMs = config.engineTimeoutMs): Promise<T> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), config.engineTimeoutMs);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
-  let res: Response;
   try {
-    res = await fetch(`${config.engineUrl}${path}`, { ...init, signal: controller.signal });
+    const res = await fetch(`${config.engineUrl}${path}`, { ...init, signal: controller.signal });
+    if (!res.ok) {
+      throw new EngineError(`engine responded with ${res.status}`, undefined, res.status);
+    }
+    return await res.json() as T;
   } catch (err) {
-    throw new EngineError("failed to reach engine service", err);
+    if (err instanceof EngineError) throw err;
+    throw new EngineError(controller.signal.aborted ? "engine request timed out" : "failed to reach engine service", err, controller.signal.aborted ? 504 : 502);
   } finally {
     clearTimeout(timeout);
   }
-
-  if (!res.ok) {
-    throw new EngineError(`engine responded with ${res.status}`);
-  }
-
-  return (await res.json()) as T;
 }
 
 // Talks to the Python fraud-detection engine (/engine). Contract per
@@ -107,6 +105,6 @@ export const engineClient = {
   // stale/unrelated dataset another caller last analyzed.
   explain(ringId: string, analysisId: string): Promise<EngineExplainResponse> {
     const query = new URLSearchParams({ analysis_id: analysisId });
-    return request(`/explain/${encodeURIComponent(ringId)}?${query}`);
+    return request(`/explain/${encodeURIComponent(ringId)}?${query}`, undefined, config.engineExplainTimeoutMs);
   },
 };

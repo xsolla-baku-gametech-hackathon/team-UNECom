@@ -30,3 +30,5 @@ services:
         sync: false # set to the fraud-radar-engine service's Render URL after it deploys
       - key: ENGINE_TIMEOUT_MS
         value: 5000
+      - key: ENGINE_EXPLAIN_TIMEOUT_MS
+        value: 30000
