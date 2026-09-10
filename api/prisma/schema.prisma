@@ -47,3 +47,15 @@ model RingSensitivity {
 
   @@map("ring_sensitivity")
 }
+
+// The analyst's real/fraud verdict on a ring, from /web's InvestigationPanel.
+// Distinct from RingSensitivity: this is a final decision, not a threshold
+// knob. Rings with no row here are "pending" in GET /graph.
+model RingDecision {
+  id        String   @id @default(cuid())
+  ringId    String   @unique @map("ring_id")
+  status    String // confirmed_real | confirmed_fraud
+  decidedAt DateTime @updatedAt @map("decided_at")
+
+  @@map("ring_decision")
+}
