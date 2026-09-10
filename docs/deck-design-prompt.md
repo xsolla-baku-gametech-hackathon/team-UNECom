@@ -1,5 +1,14 @@
 # Design brief — pitch deck for "Fraud Radar" (Team UNECom)
 
+> **Status, 11 Sep 2026 01:00 — the deck is built.** Files: `~/Desktop/UNECom-pitch-deck.pdf` (stage copy, fonts embedded) and `~/Desktop/UNECom-pitch-deck.html` (same deck, arrow keys, F = fullscreen, works offline). Not in the repo: it carries team photos and the repo is public.
+> The built deck follows this brief with these deliberate departures, all made after rendering at 1920×1080 and after re-reading the bootcamp decks (31–57 words per page):
+> - word budget per slide is ≤ 60 (was 90–143); captions are one line, the weights list and the four-row feature table are gone (weights stay in `qa-defence.md` №12 for Q&A);
+> - 03 shows our own value-flow diagram (`stolen card → purchase ┆ mule accounts → cash-out hub → resale`, divider labelled "payment-time tools see this / Fraud Radar sees this") instead of the nine-step funnel; the headline is still attributed to M. Mustafayev on the source line; stack shown as three pills;
+> - 04 is one feature line plus three numbered user cards (Nikita's card style), not a table;
+> - 02 sets `3.41%` at 200 px as hero and the other two numbers at 120 px stacked on the right; 05 numbers are 96 px;
+> - every slide from 01b on names the judging criterion it answers, top-right, in the eyebrow style (01b → 2, 02 → 1, 03 → 4, 04 and 05 → 5, 06 → 6; the live demo covers 3 and 7);
+> - 06 adds one line for criterion 6: `Five people · 48 hours · one shared event schema · four parallel builds`; roles are one line each.
+
 You are designing a 3-minute hackathon pitch deck for a jury of payments-industry professionals. Read the whole brief before you draw. Every word of on-slide copy and every number is given here verbatim. Your job is layout, typography and rhythm. **If a word or a number is not in this brief, it does not go on a slide.**
 
 ---
