@@ -103,7 +103,7 @@ Values are taken from the product's stylesheet and components. Use them as the c
 | Secondary number | 120 | Plex Mono 600 |
 | Hero number | 200 | Plex Mono 600 |
 
-**The headline rule.** Every artboard except 01a has one headline at 96 px, top-left of the content zone, on the same baseline on every slide. It is a full sentence with a full stop, never a label. One phrase inside it may be set in Hot `#e0913f`; that is the slide's single hot use. No other text on the slide is larger than 40 px except the number blocks named in §5.
+**The headline rule.** Every artboard except 01a has one headline at 96 px, top-left of the content zone, on the same baseline on every slide. At least 64 px of clear space separates the headline's last line from the first content element. The hot phrase never breaks across lines and carries no extra space before the following punctuation or word (`the analyst, not` — not `the analyst , not`). It is a full sentence with a full stop, never a label. One phrase inside it may be set in Hot `#e0913f`; that is the slide's single hot use. No other text on the slide is larger than 40 px except the number blocks named in §5.
 
 **Grid.** 12 columns, 96 px margin on all four sides, 32 px gutter. Left-aligned. Three fixed horizontal zones on every slide except 01a:
 
@@ -179,7 +179,7 @@ Top band: pill `SOURCED` · eyebrow `02 · THE PROBLEM`.
 
 **Headline:** `A tradeable economy is 13× more exposed than normal e-commerce.` — hot phrase: `13×` (set in Plex Mono inside the headline).
 
-Content zone: three numbers in one row, equal columns, baselines aligned, tabular:
+Content zone: three numbers in one row, equal columns, baselines aligned, tabular, with the same caption height in all three columns (the first caption is the longest; align the other two to its top, not its bottom):
 
 | Number — Plex Mono 200 `#e8e6e1` | Caption — Plex Sans 36 `#c3c7cc`, max 2 lines |
 |---|---|
@@ -210,9 +210,10 @@ Left column, in the speaker's Problem/Build format:
   community risk    0.15
   ```
 
-- One grey line, Plex Sans 32 `#9aa0a8`: `Nothing is auto-banned. Be honest about false positives.`
+- Below the weights (never beside them), 32 px gap above: one grey line, Plex Sans 32 `#9aa0a8`: `Nothing is auto-banned. Be honest about false positives.`
+- Below that, the stack line, Plex Mono 28 `#9aa0a8`: `Python · FastAPI · networkx · Node · Fastify · Prisma · React · Vite`
 
-Right column, the funnel: nine horizontal bars stacked top to bottom, each narrower than the one above (top bar full column width, bottom bar about 55 %), 40 px tall, 12 px apart, fill `#0d0f12` with a 1 px `#24282f` border, label in Plex Sans 28 `#c3c7cc` left-inside. Bars 5 and 8 are filled `#b0473f` with `#e8e6e1` text. Labels, verbatim:
+Right column, the funnel: nine horizontal bars stacked top to bottom, each narrower than the one above (top bar 100 % of the column, bottom bar 55 %, linear taper, bars centred on the column so it reads as a funnel), 44 px tall, 10 px apart, fill `#0d0f12` with a 1 px `#24282f` border, label in Plex Sans 28 `#c3c7cc` left-inside. Bars 5 and 8 are filled `#b0473f` with `#e8e6e1` text. Labels, verbatim:
 
 ```
 1. Player wants to buy
@@ -228,7 +229,7 @@ Right column, the funnel: nine horizontal bars stacked top to bottom, each narro
 
 A 2 px `#e8e6e1` bracket spans the gap between bars 7 and 8 on the right side, with the label `Fraud Radar works here` in Plex Mono 28 `#e8e6e1`. No percentages on the funnel.
 
-Source line: `"money flow" and funnel after Mansur Mustafayev, GameTech Bootcamp workshop, 9 Sep 2026 · weights: engine/app/risk_scoring.py · Python · FastAPI · networkx · Node · Fastify · Prisma · React · Vite`
+Source line, one line only: `Funnel and "money flow" after M. Mustafayev, GameTech Bootcamp workshop, 9 Sep 2026`
 
 ### 04 · Features & users
 
@@ -276,7 +277,7 @@ Content zone: the team, four equal columns. In each column, top to bottom:
 
 - **Photo** — square, 240×240, radius 4 px, 2 px `#24282f` border, no filter, no crop tricks, no grayscale. If the user attaches four photos, place them in the order given. If not, draw a `#0d0f12` square of the same size with `(photo)` in Plex Mono 28 `#4b5058` centred; the team will replace it.
 - **Name** — Plex Sans 36 weight 600. Use the literal placeholder `(name)` for all four.
-- **Role** — Plex Sans 28 `#c3c7cc`, one line each, verbatim:
+- **Role** — Plex Sans 28 `#c3c7cc`, two lines in every column (role on line one, stack on line two; the fourth column's second line is empty), verbatim:
   - `Engine / detection · Python · FastAPI`
   - `API / data layer · Node · Fastify · Prisma`
   - `Dashboard / UX · React · Vite`
