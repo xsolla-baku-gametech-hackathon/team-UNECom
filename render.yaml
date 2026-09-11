@@ -37,3 +37,5 @@ services:
         value: 60000 # a free-tier engine takes up to a minute to wake from sleep
       - key: ENGINE_EXPLAIN_TIMEOUT_MS
         value: 30000
+      - key: ALLOW_DEMO_RESET
+        value: "true" # team-only demo reset button; database is shared, keep this deliberate
