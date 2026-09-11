@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import logging
 import uuid
+from collections import OrderedDict
 from datetime import datetime, timezone
 
 from dotenv import load_dotenv
@@ -36,8 +37,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Analiz nəticələri sadəcə proses yaddaşında saxlanılır (hakaton prototipi ucun kifayetdir).
-ANALYSES: dict[str, dict] = {}
+# Analysis results live in process memory only (enough for the prototype).
+# The API calls /analyze on every GET /graph and before every explanation, so
+# an unbounded dict grows for as long as the process lives; keep the most
+# recent MAX_ANALYSES and drop the oldest. /explain only ever needs the one
+# the API just created.
+MAX_ANALYSES = 32
+ANALYSES: "OrderedDict[str, dict]" = OrderedDict()
 LATEST_ANALYSIS_ID: str | None = None
 
 
@@ -82,6 +88,8 @@ def analyze(req: AnalyzeRequest):
         "account_created_at": account_created_at,
     }
     LATEST_ANALYSIS_ID = analysis_id
+    while len(ANALYSES) > MAX_ANALYSES:
+        ANALYSES.popitem(last=False)
 
     account_results = [
         AccountResult(

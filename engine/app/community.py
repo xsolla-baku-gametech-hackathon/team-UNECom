@@ -24,7 +24,8 @@ def community_avg_risk(
     node_to_community: dict[str, int],
     account_scores: dict[str, dict],
 ) -> dict[str, float]:
-    """Her node ucun oz icmasinin ORTA (ozu istisna) risk skorunu qaytarir.
+    """Her node ucun oz icmasinin ORTA risk skorunu qaytarir (node-un oz skoru da
+    ortalamaya daxildir).
 
     Bu, "ferdi hesab riski" ile "icma riski"nin bir-birini gucledirmesi ucun
     combine_scores-a geri verilen ayri bir sinyaldir.
