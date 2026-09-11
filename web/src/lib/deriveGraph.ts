@@ -37,16 +37,24 @@ export function deriveGraph(
     };
   });
 
-  const nodeIds = new Set(nodes.map((n) => n.id));
+  const nodeById = new Map(nodes.map((n) => [n.id, n]));
   const links: GraphLink[] = snapshot.events
-    .filter((e) => e.from !== "STORE" && nodeIds.has(e.from) && nodeIds.has(e.to))
-    .map((e) => ({
-      source: e.from,
-      target: e.to,
-      type: e.type,
-      valueUsdEstimate: e.valueUsdEstimate,
-      paymentFlagged: e.paymentFlagged,
-    }));
+    .filter((e) => e.from !== "STORE" && nodeById.has(e.from) && nodeById.has(e.to))
+    .map((e) => {
+      const from = nodeById.get(e.from)!;
+      const to = nodeById.get(e.to)!;
+      const ringId = from.ringId && from.ringId === to.ringId ? from.ringId : null;
+      return {
+        source: e.from,
+        target: e.to,
+        type: e.type,
+        timestamp: e.timestamp,
+        valueUsdEstimate: e.valueUsdEstimate,
+        paymentFlagged: e.paymentFlagged,
+        ringId,
+        flagged: ringId != null && flaggedRingIds.has(ringId),
+      };
+    });
 
   return { nodes, links, flaggedRingIds, ringById };
 }

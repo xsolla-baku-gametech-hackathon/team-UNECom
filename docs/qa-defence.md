@@ -168,6 +168,39 @@ datasından hesablanır. Halqa tapılmasa, qələbə kimi çərçivələ:
 > "If it finds nothing, that's the system being right — it doesn't flag
 > everything."
 
+### 🟢 "Blind test" — Q&A-nın əsas silahı (header-dəki düymə)
+
+"Is this real data / is this canned?" gələn kimi faylı müdafiə etmə — **münsifə
+öz halqasını qurdur.** Header → **Blind test**:
+
+1. "Give me any number." Münsifin dediyi rəqəmi *Your number*-a yaz.
+2. Parametrlərə toxunma (30 mule · 1 hub · a little · 40 players). Vaxt varsa
+   *How careful is the fraudster* → **very careful** — ən güclü hekayə budur.
+3. **Generate & run.** Brauzer jurnalı yaradır, hər hesab `p_####` (mule/hub
+   sözü yoxdur), bazanı sıfırlayır, yalnız jurnalı göndərir. Replay gedir;
+   Space ilə keç.
+4. Sağ üstdə **hesab kartı**: tutulan halqa hesabları, tutulan hub-lar, səhv
+   bayraqlanan real oyunçular, bayraqlanmış case-lərdəki halqa dəyəri. Slider
+   ilə canlı dəyişir.
+
+**De (EN):**
+> "Pick any number. The browser builds a ring with that seed — every account
+> is just p-something, no labels — wipes the database and sends the log
+> alone. Who is a mule and who is a hub never leaves this browser. Now we
+> compare what the engine flagged with what was planted."
+
+**Ölçülmüş (11.09, lokal):** defolt parametrlərlə seed 1 / 777 / 2026 / 4821 →
+0.5-də **87–94 %** halqa hesabı, hub **1/1**, yalan pozitiv **0–1 / 40**.
+*Very careful* + seed 4821 → 0.5-də **10 %**, hub 0/1; slider 0.8 → **100 %**,
+hub 1/1, yalan pozitiv 1/40. Bunu gizlətmə, göstər:
+> "At the default bar a careful ring hides — three accounts, no hub. This is
+> what the slider is for: at eighty, the whole ring and the hub, one real
+> player wrongly flagged out of forty. That one is why an analyst decides,
+> not the model."
+
+**Qayda:** kartda 0 % görünsə panikə yox — kartın öz düyməsi var:
+**Raise sensitivity →**. Bir klik = +10 %.
+
 ---
 
 ## 5 · "Why hasn't Xsolla built this already?"
