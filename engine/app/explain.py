@@ -20,8 +20,17 @@ SYSTEM_PROMPT = (
     "QISA (2-4 cumle), konkret ededleri isteyen, insanlarin asanliqla basa "
     "dusdugu Azerbaycan dilinde izah yaz. Cumlelerin sonunda ehtimal seviyyesini "
     "(yuksek/orta/asagi ehtimal) aciq qeyd et. Uydurma fakt elave etme, yalniz "
-    "verilen subutlardan istifade et."
+    "verilen subutlardan istifade et. hub_candidate_details her hub namizedinin "
+    "oz olculmus gostericilerini verir (in/out-degree, gelen/geden deyer, taint, "
+    "oz adina bayraqlanmis alis sayi) - hub-un rolunu bunlarla esaslandir. "
+    "top_risk_accounts_creation_window yalniz en riskli hesablara aiddir, butun "
+    "halqaya aid etme. JSON sahe adlarini (field names) metnde yazma."
 )
+
+# One retry: an empty completion was seen ~1 in 5 calls in rehearsal, and a
+# template on screen reads as "Claude is down". Two attempts of ~13 s still
+# fit the API's 30 s explanation timeout.
+CLAUDE_ATTEMPTS = 2
 
 
 def build_evidence(
@@ -44,6 +53,24 @@ def build_evidence(
         account_created_at[m] for m in top_accounts if account_created_at.get(m)
     ]
 
+    # Hubs are usually NOT among the top-risk accounts (aged, low velocity -
+    # see docs/accuracy.md), so without their own numbers the model can only
+    # say the hub's role is unconfirmed. Give it the measurements that make
+    # the case: value in vs out, degree, and zero flagged purchases of its own.
+    hub_candidate_details = [
+        {
+            "account_id": h,
+            "in_degree": account_scores.get(h, {}).get("in_degree"),
+            "out_degree": account_scores.get(h, {}).get("out_degree"),
+            "in_value_usd": account_scores.get(h, {}).get("in_value_usd"),
+            "out_value_usd": account_scores.get(h, {}).get("out_value_usd"),
+            "taint_score": taint.get(h, {}).get("taint_score"),
+            "own_flagged_purchase_count": taint.get(h, {}).get("flagged_purchase_count", 0),
+            "account_created_at": account_created_at[h].isoformat() if account_created_at.get(h) else None,
+        }
+        for h in ring["hub_candidates"]
+    ]
+
     return {
         "ring_id": ring["ring_id"],
         "account_count": ring["size"],
@@ -52,7 +79,10 @@ def build_evidence(
         "flagged_purchase_count": ring["flagged_purchase_count"],
         "total_value_usd": ring["total_value_usd"],
         "hub_candidates": ring["hub_candidates"],
-        "account_creation_window": {
+        "hub_candidate_details": hub_candidate_details,
+        # Computed over the top-risk accounts only (see above), so it is named
+        # that way: otherwise the model reports it as the whole ring's window.
+        "top_risk_accounts_creation_window": {
             "earliest": min(ages_hours).isoformat() if ages_hours else None,
             "latest": max(ages_hours).isoformat() if ages_hours else None,
         },
@@ -99,28 +129,29 @@ def call_claude(evidence: dict) -> tuple[str, bool]:
         logger.info("ANTHROPIC_API_KEY yoxdur, sablon izaha keçilir")
         return fallback_template(evidence), False
 
-    try:
-        import anthropic
+    import anthropic
 
-        client = anthropic.Anthropic(api_key=api_key)
-        response = client.messages.create(
-            model=CLAUDE_MODEL,
-            max_tokens=700,
-            system=SYSTEM_PROMPT,
-            messages=[{
-                "role": "user",
-                "content": (
-                    "Bu bayraqlanmış halqa üçün izah yaz:\n\n"
-                    + json.dumps(evidence, ensure_ascii=False, indent=2)
-                ),
-            }],
-        )
-        text = "".join(
-            block.text for block in response.content if getattr(block, "type", None) == "text"
-        ).strip()
-        if not text:
-            raise ValueError("Claude bos cavab qaytardi")
-        return text, True
-    except Exception:
-        logger.exception("Claude API cagirisi ugursuz oldu, sablon izaha kecilir")
-        return fallback_template(evidence), False
+    client = anthropic.Anthropic(api_key=api_key)
+    for attempt in range(1, CLAUDE_ATTEMPTS + 1):
+        try:
+            response = client.messages.create(
+                model=CLAUDE_MODEL,
+                max_tokens=700,
+                system=SYSTEM_PROMPT,
+                messages=[{
+                    "role": "user",
+                    "content": (
+                        "Bu bayraqlanmış halqa üçün izah yaz:\n\n"
+                        + json.dumps(evidence, ensure_ascii=False, indent=2)
+                    ),
+                }],
+            )
+            text = "".join(
+                block.text for block in response.content if getattr(block, "type", None) == "text"
+            ).strip()
+            if not text:
+                raise ValueError(f"Claude bos cavab qaytardi (stop_reason={response.stop_reason})")
+            return text, True
+        except Exception:
+            logger.exception("Claude API cagirisi ugursuz oldu (cehd %d/%d)", attempt, CLAUDE_ATTEMPTS)
+    return fallback_template(evidence), False
