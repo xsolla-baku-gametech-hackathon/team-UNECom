@@ -88,7 +88,7 @@ güclüdür.
 hub konstruksiyaya görə orada sıfır alır (80–120 günlük hesabdır). Üstəlik hub-un
 cash-out satışları in/out balansını normallaşdırır — yəni **fırıldağın özü hub-un
 risk skorunu aşağı salır**. Amma halqa üzvlüyü hədddən asılı deyil: Louvain
-`hub_1`-i **0.5-də də** halqanın içində saxlayır.
+`acct_0044`-i **0.5-də də** halqanın içində saxlayır.
 
 **De (EN):**
 > **"Correct — at the default threshold our harness catches zero percent of hubs,
@@ -127,7 +127,7 @@ sintetik təmiz populyasiyada power trader, reseller, guild bank yoxdur.
 ### 🔴 False-positive power move — yalnız təkid edilsə
 
 Jüri "göstərin" desə: slider-i **0.8**-ə çək, toggle-ı aç. Callout **4 hub**
-sayacaq — onlardan **`acct_0000` və `acct_0026` təmiz hesablardır**
+sayacaq — onlardan **`acct_0095` və `acct_0089` təmiz hesablardır**
 (`hub_candidates` sırf degree-imbalance evristikasıdır, halqa üzvlüyü deyil).
 Bunu gizlətmə, **özün göstər**:
 
@@ -322,7 +322,7 @@ olmadan** — hackathon jürisi müqavilə imzalamır, səhnədə "five thousand
 
 Fərqin mənbəyi, çəkisinə görə: (1) gözdən qaçan mule-ların **bayraqlanmamış**
 STORE alışları — kart bayraqlanmayıb, ona görə ödəniş anı aləti onları
-görməyib, amma pul həmin hesaba düşüb; (2) halqadan kənar hesabların `hub_1`-ə
+görməyib, amma pul həmin hesaba düşüb; (2) halqadan kənar hesabların `acct_0044`-ə
 ticarəti. Halqanın köçürmə dəyərinin böyük hissəsi onsuz da bu 9 hesabda —
 əsasən hub-da — bitir: hub məhz dəyərin toplandığı yerdir.
 

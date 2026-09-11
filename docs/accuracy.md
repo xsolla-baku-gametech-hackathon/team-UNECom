@@ -15,18 +15,22 @@ reimplementation.
 
 ## Method
 
-**Ground truth.** The generator plants a fraud ring using a naming convention,
-which gives us labels for free:
+**Ground truth.** The generator plants a fraud ring and records which accounts
+it planted in `ground_truth.json`. Account ids carry no label: every account,
+planted or clean, is an opaque `acct_NNNN` with the numbers shuffled, so
+nothing on screen, in the engine, or in the Claude explanation layer can read
+the answer off a name.
 
-| Account pattern | Label | Behaviour |
+| Class in `ground_truth.json` | Label | Behaviour |
 |---|---|---|
-| `mule_XXX` | positive | buys from STORE with a (usually) flagged card, forwards the value within minutes |
-| `hub_N` | positive | cash-out hub; only ever *receives* ring value, never flags a purchase itself |
+| `mule_accounts` | positive | buys from STORE with a (usually) flagged card, forwards the value within minutes |
+| `hub_accounts` | positive | cash-out hub; only ever *receives* ring value, never flags a purchase itself |
 | everything else | negative | background trade/gift/marketplace activity, ~1% random flag rate |
 
-The harness derives labels from account names and then cross-checks them
-against the generator's own `ground_truth.json`; a disagreement fails the run
-and is reported as an integrity warning rather than silently averaged away.
+The harness takes labels only from `ground_truth.json`. Renaming every account
+left every metric below unchanged to the last decimal, which is the direct
+check that scoring does not depend on ids. A planted account missing from the
+event log is reported as an integrity warning rather than silently averaged away.
 
 **Threshold.** The UI sensitivity slider maps to a risk cut-off by
 `threshold = 100 × (0.92 − 0.72 × sensitivity)` (`web/src/lib/colors.ts`). The
@@ -120,8 +124,8 @@ The mechanism is visible in the score components (seed 42):
 
 | Account | risk | taint | velocity | imbalance | in/out degree |
 |---|---|---|---|---|---|
-| `hub_1` | 45.6 | 0.630 | 0.005 | 0.689 | 38 / 7 |
-| `hub_2` | 41.0 | 0.792 | 0.004 | 0.200 | 12 / 8 |
+| hub A | 45.6 | 0.630 | 0.005 | 0.689 | 38 / 7 |
+| hub B | 41.0 | 0.792 | 0.004 | 0.200 | 12 / 8 |
 
 Two structural reasons, both in the scoring design rather than in any bug:
 
@@ -132,7 +136,7 @@ Two structural reasons, both in the scoring design rather than in any bug:
    quarter of the available score before anything else is considered. The
    maximum a hub can reach is 75, and in practice it lands in the low 40s.
 2. **Hub cash-out sales erode the very signal meant to identify hubs.**
-   `hub_2` has an imbalance of 0.200, below the 0.3 `IMBALANCE_HUB_THRESHOLD`,
+   Hub B has an imbalance of 0.200, below the 0.3 `IMBALANCE_HUB_THRESHOLD`,
    so it does not even earn the `hub-pattern` flag. Its outgoing marketplace
    sales — the cash-out step, i.e. the fraudulent behaviour itself — push
    in/out degree back toward balance and *lower* its risk score.

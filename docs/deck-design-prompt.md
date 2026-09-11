@@ -97,7 +97,7 @@ Values are taken from the product's stylesheet and components. Use them as the c
 **Typefaces** (Google Fonts; all three are already used by the product):
 
 - **IBM Plex Sans** — headlines, body, captions. Weights 400, 600, 700.
-- **IBM Plex Mono** — every number, every source line, every code token (`/events`, `events.csv`, `hub_1`). Weights 400, 600. Always tabular figures.
+- **IBM Plex Mono** — every number, every source line, every code token (`/events`, `events.csv`, `acct_0044`). Weights 400, 600. Always tabular figures.
 - **Barlow Semi Condensed** — uppercase labels only: eyebrows and pills. Weight 600–700, letter-spacing 0.15em. This is the product's label style and the one detail that ties deck to dashboard.
 
 **Type scale, px at 1920×1080. Use these values and nothing between them.**

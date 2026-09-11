@@ -214,7 +214,7 @@ $6,616, 26 bayraqlanmış alış). Hub konturlu və daha iri node kimi görünü
 hesablar işıqlı qalır, köçürmə kənarları tamamilə sönür, sağda callout açılır.
 
 **Gözlənilən callout (0.5-də ölçülüb):** görür **33** · görmür **9** ·
-**$7,607** · gözdən qaçan hub **1 / 1** (`hub_1`).
+**$7,607** · gözdən qaçan hub **1 / 1** (`acct_0044`).
 
 **De (EN):**
 > "The differentiator. This toggle shows a payment-moment tool's entire view: the receiving end of a flagged card. It sees 33 accounts. It misses 9, holding seven thousand six hundred dollars, including a cash-out hub that never touched a card. Twenty-eight percent of every dollar here lands in accounts a payment-time tool cannot see. The file is small. The blind spot behind Roblox's 149 million is not."
@@ -246,14 +246,14 @@ sintetik faylda 122 hesabın 50-si mule-dur — real iqtisadiyyatın sıxlığı
 Nisbət *bizim faylın* nisbətidir; körpü isə Slayd 2-nin artıq deyilmiş 149M-inə
 atılır, Slayd 5-in hələ deyilməmiş $1B-nə yox. $1B Slayd 5-də təzə qalır.
 
-**"Never touched a card" (flagged yox):** ölçülüb — `hub_1` və `hub_2`
+**"Never touched a card" (flagged yox):** ölçülüb — `acct_0044` və `acct_0025`
 STORE-dan heç bir alış etməyib. Hub heç bir karta toxunmur, bayraqlısına da yox.
 
 ### 3d · Həddi qaldır — ikinci halqa · 1:41–1:57 (12 s + 4 s)
 
 **Ekranda:** Toggle söndürülür, slider 0.5-dən 0.8-ə çəkilir.
 **Gözlənilən nəticə (ölçülüb):** bayraqlanmış halqa **1 → 2**; ikinci halqa
-(`ring_5`, UI risk 0.42, 16 hesab) peyda olur və **içində `hub_2` var**.
+(`ring_5`, UI risk 0.42, 16 hesab) peyda olur və **içində `acct_0025` var**.
 
 **De (EN):**
 > "A hub is aged, low-velocity, never flagged: invisible to per-account scoring. Raise the threshold: a second ring surfaces, hub inside, precision still one hundred at the account level."
@@ -410,7 +410,7 @@ meyarında birbaşa itki. İndi son cümlə:
 | 122 hesab · 388 hadisə · $26,814 | demo faylı, engine ölçüsü, 10.09.2026 | MEASURED |
 | görür 33 · görmür 9 · $7,607 · 1 hub | həmin fayl, sensitivity 0.5 | MEASURED |
 | **28% ("twenty-eight")** | $7,607 ÷ $26,814 = 28.4%, aşağı yuvarlaqlanıb | arithmetic |
-| hub STORE-dan alış etməyib ("never touched a card") | həmin fayl, `hub_1`/`hub_2` üçün 0 alış | MEASURED |
+| hub STORE-dan alış etməyib ("never touched a card") | həmin fayl, `acct_0044`/`acct_0025` üçün 0 alış | MEASURED |
 | 4 siqnal · çəkilər 0.40 / 0.25 / 0.20 / 0.15 (slaydda) · Louvain | `engine/app/risk_scoring.py` WEIGHTS, `community.py` | CODE |
 | "detect it from the money flow between players, not from the client" · 9 pilləli huni (slaydda) | Mansur Mustafayev, GameTech Bootcamp workshop, 9 sentyabr 2026 | SOURCED (bootcamp slaydı) |
 | Rockstar T&S vakansiyası | themuse.com elanı | SOURCED |

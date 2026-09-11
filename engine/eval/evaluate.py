@@ -7,10 +7,13 @@ called as-is, through the exact same entry point the HTTP API uses
 (`app.main.analyze`), so the numbers reported are the numbers the demo
 produces. If a metric looks bad, the fix belongs in `app/`, never here.
 
-Ground truth convention (from data-generator/generate.py, DO NOT CHANGE):
-  mule_XXX -> planted ring member (buys with a flagged card, forwards value)
-  hub_N    -> planted cash-out hub (receives only; never flags a purchase)
-  *        -> clean / legitimate background account
+Ground truth comes only from the generator's ground_truth.json:
+  mule_accounts -> planted ring members (buy with a flagged card, forward value)
+  hub_accounts  -> planted cash-out hubs (receive only; never flag a purchase)
+  anything else -> clean / legitimate background account
+Account ids themselves are opaque (acct_NNNN for everyone), so nothing about
+an id says which class it is in — the engine could not cheat off the names
+even if it tried, and neither can this harness.
 
 Usage:
   python -m eval.evaluate                     # 5 seeds, human-readable report
@@ -29,7 +32,7 @@ import sys
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import AbstractSet as Set, Iterable, Sequence
 
 ENGINE_DIR = Path(__file__).resolve().parent.parent
 REPO_ROOT = ENGINE_DIR.parent
@@ -58,16 +61,18 @@ def threshold_for(sensitivity: float) -> float:
 
 
 # --------------------------------------------------------------- ground truth
-def is_positive(account_id: str) -> bool:
-    return account_id.startswith("mule_") or account_id.startswith("hub_")
+@dataclass(frozen=True)
+class GroundTruth:
+    hubs: frozenset[str]
+    mules: frozenset[str]
 
+    @property
+    def positives(self) -> frozenset[str]:
+        return self.hubs | self.mules
 
-def is_hub(account_id: str) -> bool:
-    return account_id.startswith("hub_")
-
-
-def is_mule(account_id: str) -> bool:
-    return account_id.startswith("mule_")
+    @classmethod
+    def from_file(cls, data: dict) -> "GroundTruth":
+        return cls(hubs=frozenset(data["hub_accounts"]), mules=frozenset(data["mule_accounts"]))
 
 
 # ------------------------------------------------------------------- dataset
@@ -124,14 +129,14 @@ class ConfusionMatrix:
         }
 
 
-def confusion_at(scores: dict[str, float], threshold: float,
+def confusion_at(scores: dict[str, float], threshold: float, positives: Set[str],
                  subset: Iterable[str] | None = None) -> ConfusionMatrix:
     """Confusion matrix over `subset` of accounts (default: all scored accounts)."""
     accounts = list(subset) if subset is not None else list(scores)
     cm = ConfusionMatrix()
     for acc in accounts:
         predicted = scores.get(acc, 0.0) >= threshold
-        actual = is_positive(acc)
+        actual = acc in positives
         if predicted and actual:
             cm.tp += 1
         elif predicted and not actual:
@@ -153,25 +158,26 @@ def recall_for(scores: dict[str, float], threshold: float,
 
 
 # ---------------------------------------------------------------- ring metrics
-def ring_metrics(response: AnalyzeResponse, positives: set[str]) -> dict:
+def ring_metrics(response: AnalyzeResponse, truth: GroundTruth) -> dict:
     """How well did Louvain + ring ranking recover the planted ring?
 
     purity   = share of the top-ranked reported ring that is truly mule/hub
     coverage = share of all planted ring accounts sitting in that one ring
     """
+    positives = truth.positives
+    hubs = truth.hubs
     rings = response.rings  # already sorted by risk_score desc in build_rings
     if not rings:
         return {
             "num_rings": 0, "top_ring_id": None, "top_ring_size": 0,
             "purity": 0.0, "coverage": 0.0, "hub_in_top_ring": 0,
-            "hubs_total": sum(1 for p in positives if is_hub(p)),
+            "hubs_total": len(hubs),
             "communities_spanned": 0, "top_ring_risk": 0.0,
         }
 
     top = rings[0]
     members = set(top.account_ids)
     hit = members & positives
-    hubs = {p for p in positives if is_hub(p)}
 
     # How many distinct communities the planted accounts were scattered across:
     # 1 = the ring was recovered as a single cluster.
@@ -220,22 +226,21 @@ def evaluate_seed(seed: int, gen_args: dict | None = None) -> SeedResult:
     response = analyze(AnalyzeRequest(events=events))
     scores = {a.account_id: a.risk_score for a in response.accounts}
 
-    # Cross-check the name-based labels against the generator's own
-    # ground_truth.json — if they disagree, every number below is suspect.
-    declared = set(truth_file["hub_accounts"]) | set(truth_file["mule_accounts"])
-    derived = {acc for acc in scores if is_positive(acc)}
-    mismatch = sorted(declared.symmetric_difference(derived))
-
-    positives = declared | derived
-    hubs = sorted(p for p in positives if is_hub(p))
-    mules = sorted(p for p in positives if is_mule(p))
+    truth = GroundTruth.from_file(truth_file)
+    positives = truth.positives
+    hubs = sorted(truth.hubs)
+    mules = sorted(truth.mules)
+    # Every account the generator declares must appear in the event log;
+    # if one is missing from the scores, the labels and the data disagree.
+    all_ids = {e.from_account_id for e in events} | {e.to_account_id for e in events}
+    mismatch = sorted(p for p in positives if p not in all_ids)
 
     thr = threshold_for(DEFAULT_SENSITIVITY)
     sweep = []
     for i in range(SWEEP_POINTS):
         s = i / (SWEEP_POINTS - 1)
         t = threshold_for(s)
-        cm = confusion_at(scores, t)
+        cm = confusion_at(scores, t, positives)
         sweep.append({
             "sensitivity": round(s, 2),
             "threshold": round(t, 1),
@@ -253,11 +258,11 @@ def evaluate_seed(seed: int, gen_args: dict | None = None) -> SeedResult:
         hubs=hubs,
         mules=mules,
         scores=scores,
-        default=confusion_at(scores, thr),
+        default=confusion_at(scores, thr, positives),
         hub_recall=recall_for(scores, thr, hubs),
         mule_recall=recall_for(scores, thr, mules),
         sweep=sweep,
-        rings=ring_metrics(response, set(positives)),
+        rings=ring_metrics(response, truth),
         unscored_positives=sorted(p for p in positives if p not in scores),
         ground_truth_mismatch=mismatch,
     )
@@ -421,7 +426,7 @@ def render_markdown(agg: dict) -> str:
         for seed, accs in integrity["unscored_positives"].items():
             L.append(f"- Seed {seed}: planted accounts missing from engine output: {accs}")
         for seed, accs in integrity["ground_truth_mismatch"].items():
-            L.append(f"- Seed {seed}: name-derived labels disagree with ground_truth.json: {accs}")
+            L.append(f"- Seed {seed}: ground_truth.json declares accounts absent from the event log: {accs}")
     return "\n".join(L)
 
 
@@ -469,7 +474,7 @@ def render_text(agg: dict) -> str:
         for seed, accs in integrity["unscored_positives"].items():
             L.append(f"  seed {seed}: planted accounts absent from output: {accs}")
         for seed, accs in integrity["ground_truth_mismatch"].items():
-            L.append(f"  seed {seed}: label mismatch vs ground_truth.json: {accs}")
+            L.append(f"  seed {seed}: declared in ground_truth.json but absent from events: {accs}")
     return "\n".join(L)
 
 

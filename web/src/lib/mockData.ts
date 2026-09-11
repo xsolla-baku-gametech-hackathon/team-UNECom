@@ -30,6 +30,12 @@ function newEvent(partial: Omit<AccountEvent, "id">): AccountEvent {
   return { id: `evt_${eventCounter.toString().padStart(5, "0")}`, ...partial };
 }
 
+// Every account gets the same opaque acct_NNNN shape, scattered rather than
+// sequential, so neither the graph nor the case panel gives away which
+// accounts were planted — the same rule data-generator/generate.py follows.
+// 37 is coprime with 997, so n = 0..996 maps to distinct ids.
+const opaqueId = (n: number) => `acct_${((n * 37 + 11) % 997).toString().padStart(4, "0")}`;
+
 const NOW = Date.now();
 const hoursAgo = (h: number) => new Date(NOW - h * 3600_000).toISOString();
 const daysAgo = (d: number) => hoursAgo(d * 24);
@@ -42,7 +48,7 @@ export function buildMockSnapshot(): GraphSnapshot {
   const CLEAN_N = 70;
   const clean: string[] = [];
   for (let i = 0; i < CLEAN_N; i++) {
-    const id = `acct_${i.toString().padStart(4, "0")}`;
+    const id = opaqueId(i);
     accountCreatedAt.set(id, daysAgo(between(1, 180)));
     clean.push(id);
   }
@@ -86,10 +92,10 @@ export function buildMockSnapshot(): GraphSnapshot {
   }
 
   // ---- farm ring: 50 mules -> 2 hubs ---------------------------------
-  const HUBS = ["hub_1", "hub_2"];
+  const HUBS = [opaqueId(CLEAN_N), opaqueId(CLEAN_N + 1)];
   HUBS.forEach((h) => accountCreatedAt.set(h, daysAgo(between(80, 120))));
 
-  const MULES = Array.from({ length: 50 }, (_, i) => `mule_${i.toString().padStart(3, "0")}`);
+  const MULES = Array.from({ length: 50 }, (_, i) => opaqueId(CLEAN_N + 2 + i));
   MULES.forEach((m) => accountCreatedAt.set(m, hoursAgo(between(0, 66))));
 
   MULES.forEach((mule) => {
@@ -147,7 +153,7 @@ export function buildMockSnapshot(): GraphSnapshot {
   // ---- legit whale: a real, long-time high-spender -------------------
   // Trades big volumes with many peers, no flagged payments, account is
   // old — but raw volume alone makes it look "ring-like" at high sensitivity.
-  const WHALE = "acct_whale_01";
+  const WHALE = opaqueId(CLEAN_N + 52);
   accountCreatedAt.set(WHALE, daysAgo(320));
   const whalePeers = clean.slice(0, 12);
   whalePeers.forEach((peer) => {
