@@ -162,6 +162,11 @@ class Generator:
             self.hub_accounts.add(h)
             self.ring_accounts.add(h)
 
+        # The first hub is the main collection point (3x weight); any further
+        # hubs share the rest. Must be sized to n_hubs — a fixed [3, 1] list
+        # crashed random.choices() for --hubs 3 or more.
+        hub_weights = [3] + [1] * (n_hubs - 1)
+
         mules = [f"mule_{i:03d}" for i in range(n_mules)]
         ring_window_start = self.now - timedelta(hours=72)
 
@@ -206,7 +211,7 @@ class Generator:
                     account_created_at=iso(created),
                 ))
                 relay_ts = send_ts + timedelta(minutes=random.uniform(5, 60))
-                hub = random.choices(hubs, weights=[3, 1] if n_hubs > 1 else [1])[0]
+                hub = random.choices(hubs, weights=hub_weights)[0]
                 self.events.append(Event(
                     event_id=new_event_id(), type=out_type, timestamp=iso(relay_ts),
                     from_account_id=layer_peer, to_account_id=hub,
@@ -216,7 +221,7 @@ class Generator:
                     account_created_at=iso(self.account_created_at[layer_peer]),
                 ))
             else:
-                hub = random.choices(hubs, weights=[3, 1] if n_hubs > 1 else [1])[0]
+                hub = random.choices(hubs, weights=hub_weights)[0]
                 self.events.append(Event(
                     event_id=new_event_id(), type=out_type, timestamp=iso(send_ts),
                     from_account_id=mule, to_account_id=hub,
