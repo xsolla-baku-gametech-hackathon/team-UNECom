@@ -59,9 +59,12 @@ fi
 npm install --silent
 npx prisma generate --silent 2>/dev/null || npx prisma generate
 
-# Lokal engine-ə göstər (Render-dəki canlıya yox), qalanını .env-dən götür
+# Lokal engine-ə göstər (Render-dəki canlıya yox), qalanını .env-dən götür.
+# --env-file-if-exists vacibdir: onsuz api/.env-dən yalnız DATABASE_URL oxunur
+# (onu Prisma özü yükləyir), ALLOW_DEMO_RESET isə yüklənmir və logodan reset
+# 403 qaytarır. Komanda sətrindəki ENGINE_URL/PORT .env-dəkindən üstündür.
 ENGINE_URL="http://localhost:$ENGINE_PORT" PORT="$API_PORT" \
-  npx tsx watch src/server.ts \
+  npx tsx watch --env-file-if-exists=.env src/server.ts \
   > /tmp/fraud-radar-logs/api.log 2>&1 &
 PIDS+=($!)
 
