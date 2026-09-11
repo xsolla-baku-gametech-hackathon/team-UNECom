@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Briefing } from "./components/Briefing";
 import { CaseQueue, type QueueFilter } from "./components/CaseQueue";
 import { GraphCanvas } from "./components/GraphCanvas";
 import { InvestigationPanel } from "./components/InvestigationPanel";
@@ -8,6 +9,7 @@ import { SensitivitySlider } from "./components/SensitivitySlider";
 import { StatsBar } from "./components/StatsBar";
 import { UploadPanel } from "./components/UploadPanel";
 import { fetchGraph, getCachedSnapshot, isUsingMockData, prefetchExplanations, resetDemoData, submitDecision, type Decision } from "./lib/api";
+import { buildBriefing } from "./lib/briefing";
 import { deriveGraph } from "./lib/deriveGraph";
 import { computePaymentMomentView } from "./lib/paymentMomentView";
 import { riskColor } from "./lib/colors";
@@ -28,6 +30,8 @@ export default function App() {
   const [paymentMoment, setPaymentMoment] = useState(false);
   const [hoveredNode, setHoveredNode] = useState<GraphNode | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [briefingOpen, setBriefingOpen] = useState(false);
+  const [briefingIndex, setBriefingIndex] = useState(0);
   const [mock, setMock] = useState(false);
   const [resetState, setResetState] = useState<
     { kind: "idle" | "confirm" | "busy" } | { kind: "done" | "error"; message: string }
@@ -118,6 +122,24 @@ export default function App() {
     [snapshot, flaggedRings],
   );
 
+  // Guided walkthrough of what was just found, built from the live numbers.
+  const briefingSteps = useMemo(
+    () => (snapshot && derived && paymentView && snapshot.accounts.length > 0 ? buildBriefing(snapshot, derived, flaggedRings, paymentView, sensitivity) : []),
+    [snapshot, derived, flaggedRings, paymentView, sensitivity],
+  );
+  const briefingStep = briefingOpen ? briefingSteps[Math.min(briefingIndex, briefingSteps.length - 1)] : undefined;
+
+  function openBriefing() {
+    select(null);
+    setBriefingIndex(0);
+    setBriefingOpen(true);
+  }
+
+  async function loadAndBrief() {
+    await load();
+    openBriefing();
+  }
+
   const selectedRing = useMemo(
     () => snapshot?.rings.find((r) => r.id === selectedRingId) ?? null,
     [snapshot, selectedRingId],
@@ -185,6 +207,14 @@ export default function App() {
         document.getElementById("case-search")?.focus();
         return;
       }
+      if (briefingOpen) {
+        if (e.key === "Escape") setBriefingOpen(false);
+        else if (e.key === "ArrowRight" || e.key === " ") setBriefingIndex((i) => Math.min(briefingSteps.length - 1, i + 1));
+        else if (e.key === "ArrowLeft") setBriefingIndex((i) => Math.max(0, i - 1));
+        else return;
+        e.preventDefault();
+        return;
+      }
       if (e.key === "Escape") {
         if (resetState.kind === "confirm") setResetState({ kind: "idle" });
         else if (armed) setArmed(null);
@@ -210,7 +240,7 @@ export default function App() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [armed, committing, uploadOpen, selectedRingId, filter, query, flaggedRings, resetState]);
+  }, [armed, committing, uploadOpen, selectedRingId, filter, query, flaggedRings, resetState, briefingOpen, briefingSteps.length]);
 
   const hoverRing = hoveredNode?.ringId ? snapshot?.rings.find((r) => r.id === hoveredNode.ringId) : null;
   const isEmpty = !mock && !!snapshot && snapshot.accounts.length === 0;
@@ -327,6 +357,17 @@ export default function App() {
 
         <div style={{ width: 1, height: 26, background: "#24282f" }} />
 
+        {briefingSteps.length > 0 && (
+          <div
+            onClick={openBriefing}
+            className="flex cursor-pointer items-center gap-2 rounded uppercase"
+            style={{ height: 28, padding: "0 12px", border: "1px solid #5c3a17", background: briefingOpen ? "#1a1509" : "#0d0f12", color: "#e0913f", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12, letterSpacing: ".1em" }}
+          >
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#c8792e", animation: "fr-pulse 1.6s infinite" }} />
+            AI briefing
+          </div>
+        )}
+
         <div
           onClick={() => setUploadOpen(true)}
           className="flex cursor-pointer items-center rounded uppercase"
@@ -356,7 +397,9 @@ export default function App() {
               links={derived.links}
               selectedRingId={selectedRingId}
               flaggedOnly={flaggedOnly}
-              paymentVisibleIds={paymentMoment && paymentView ? paymentView.visibleIds : null}
+              paymentVisibleIds={(paymentMoment || briefingStep?.paymentMoment) && paymentView ? paymentView.visibleIds : null}
+              spotlightIds={briefingStep?.spotlightIds ?? null}
+              spotlightHubIds={briefingStep?.spotlightHubIds ?? null}
               onSelectNode={handleSelectNode}
               onHoverNode={setHoveredNode}
               width={size.width}
@@ -405,7 +448,7 @@ export default function App() {
                     Ödəniş anı görünüşü
                   </div>
                 </div>
-                {paymentMoment && paymentView && (
+                {(paymentMoment || briefingStep?.paymentMoment) && paymentView && (
                   <PaymentMomentCallout view={paymentView} flaggedRingCount={flaggedRings.length} />
                 )}
               </div>
@@ -506,7 +549,21 @@ export default function App() {
             </div>
           )}
 
-          <UploadPanel open={uploadOpen} mock={mock} onClose={() => setUploadOpen(false)} onUploaded={load} />
+          {briefingOpen && briefingSteps.length > 0 && (
+            <Briefing
+              key={briefingIndex}
+              steps={briefingSteps}
+              index={Math.min(briefingIndex, briefingSteps.length - 1)}
+              onIndexChange={setBriefingIndex}
+              onClose={() => setBriefingOpen(false)}
+              onAction={(ringId) => {
+                setBriefingOpen(false);
+                select(ringId);
+              }}
+            />
+          )}
+
+          <UploadPanel open={uploadOpen} mock={mock} onClose={() => setUploadOpen(false)} onUploaded={loadAndBrief} />
         </div>
         {selectedRing && derived && (
           <InvestigationPanel

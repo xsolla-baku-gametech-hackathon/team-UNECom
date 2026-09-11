@@ -10,6 +10,10 @@ interface Props {
   flaggedOnly: boolean;
   /** Non-null => payment-moment view: only these accounts stay lit. */
   paymentVisibleIds: Set<string> | null;
+  /** Briefing spotlight: only these accounts stay lit (outermost mask). */
+  spotlightIds?: Set<string> | null;
+  /** Briefing spotlight: hubs drawn with an orange halo. */
+  spotlightHubIds?: Set<string> | null;
   onSelectNode: (node: GraphNode) => void;
   onHoverNode: (node: GraphNode | null) => void;
   width: number;
@@ -24,6 +28,8 @@ export function GraphCanvas({
   selectedRingId,
   flaggedOnly,
   paymentVisibleIds,
+  spotlightIds = null,
+  spotlightHubIds = null,
   onSelectNode,
   onHoverNode,
   width,
@@ -72,6 +78,7 @@ export function GraphCanvas({
     // Payment-moment view is an outer mask: anything a payment processor
     // never sees drops out first, whatever the other filters say.
     if (paymentVisibleIds && !paymentVisibleIds.has(node.id)) return 0.06;
+    if (spotlightIds && !spotlightIds.has(node.id)) return 0.08;
     if (selectedRingId) return node.ringId === selectedRingId ? 1 : 0.13;
     if (flaggedOnly && !node.flagged) return 0.09;
     if (!node.flagged) return 0.55;
@@ -114,6 +121,19 @@ export function GraphCanvas({
         if (node.isHub) {
           ctx.lineWidth = 2 / Math.sqrt(globalScale);
           ctx.strokeStyle = isSelected || !selectedRingId ? "#e8e6e1" : "#8d9299";
+          ctx.stroke();
+        }
+        if (spotlightHubIds?.has(node.id)) {
+          // Briefing halo: two concentric orange rings around the hub so the
+          // eye lands on it even on a projector.
+          ctx.lineWidth = 1.5 / Math.sqrt(globalScale);
+          ctx.strokeStyle = "#e0913f";
+          ctx.beginPath();
+          ctx.arc(node.x ?? 0, node.y ?? 0, r + 5 / Math.sqrt(globalScale), 0, 2 * Math.PI);
+          ctx.stroke();
+          ctx.globalAlpha = o * 0.45;
+          ctx.beginPath();
+          ctx.arc(node.x ?? 0, node.y ?? 0, r + 11 / Math.sqrt(globalScale), 0, 2 * Math.PI);
           ctx.stroke();
         } else if (isSelected) {
           ctx.lineWidth = 2 / Math.sqrt(globalScale);
