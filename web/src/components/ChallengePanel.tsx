@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import { resetDemoData, uploadEvents } from "../lib/api";
 import { generateChallenge, randomSeed, type ChallengeParams, type ChallengeTruth } from "../lib/challenge";
 
@@ -35,7 +35,10 @@ function Slider({ value, min, max, step = 1, onChange, render }: { value: number
 export function ChallengePanel({ open, mock, onClose, onDone }: Props) {
   const [params, setParams] = useState<ChallengeParams>({ seed: randomSeed(), players: 40, mules: 30, hubs: 1, care: 0.2 });
   const [status, setStatus] = useState<Status>({ kind: "idle" });
-  const preview = useMemo(() => generateChallenge(params), [params]);
+  // The preview regenerates the whole log; deferring it keeps the sliders
+  // smooth while dragging instead of rebuilding hundreds of events per frame.
+  const deferredParams = useDeferredValue(params);
+  const preview = useMemo(() => generateChallenge(deferredParams), [deferredParams]);
 
   if (!open) return null;
   const busy = status.kind === "busy";
