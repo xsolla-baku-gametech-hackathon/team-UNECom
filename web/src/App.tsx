@@ -147,6 +147,12 @@ export default function App() {
     [snapshot, selectedRingId],
   );
 
+  // What the camera frames: a briefing spotlight wins, then the open case.
+  const focusIds = useMemo(
+    () => briefingStep?.spotlightIds ?? (selectedRing ? new Set(selectedRing.memberAccountIds) : null),
+    [briefingStep, selectedRing],
+  );
+
   function select(ringId: string | null) {
     setSelectedRingId(ringId);
     setArmed(null);
@@ -416,6 +422,7 @@ export default function App() {
               paymentVisibleIds={(paymentMoment || briefingStep?.paymentMoment) && paymentView ? paymentView.visibleIds : null}
               spotlightIds={briefingStep?.spotlightIds ?? null}
               spotlightHubIds={briefingStep?.spotlightHubIds ?? null}
+              focusIds={focusIds}
               onSelectNode={handleSelectNode}
               onHoverNode={setHoveredNode}
               width={size.width}
