@@ -100,8 +100,7 @@ export async function uploadEvents(events: RawEvent[]): Promise<{ inserted: numb
 // worked. Fails loudly instead, including the 403 when the backend has
 // ALLOW_DEMO_RESET off.
 export async function resetDemoData(): Promise<{ events: number; decisions: number }> {
-  const res = await timedFetch("/events/reset", { method: "POST" }, UPLOAD_TIMEOUT_MS);
-  const data: { deleted: { events: number; decisions: number } } = await res.json();
+  const data = await timedFetch<{ deleted: { events: number; decisions: number } }>("/events/reset", { method: "POST" }, UPLOAD_TIMEOUT_MS);
   // Ring ids are reassigned by community detection on the next ingest, so a
   // cached summary would end up describing a different cluster.
   explanations.clear();
