@@ -39,7 +39,7 @@ export function Briefing({ steps, index, onIndexChange, onClose, onAction }: Pro
   const step = steps[index];
   const [paused, setPaused] = useState(false);
   const [progress, setProgress] = useState(0);
-  const startRef = useRef(performance.now());
+  const startRef = useRef(0);
   const elapsedRef = useRef(0);
   const stat = useCountUp(step?.stat?.value ?? 0, step?.id ?? "");
 
@@ -48,6 +48,7 @@ export function Briefing({ steps, index, onIndexChange, onClose, onAction }: Pro
   // resets the timer and the count-up between steps.
   useEffect(() => {
     if (!step || step.action) return; // the last step waits for the human
+    startRef.current = performance.now();
     let raf = 0;
     const tick = () => {
       if (!paused) {

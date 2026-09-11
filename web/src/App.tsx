@@ -6,6 +6,7 @@ import { InvestigationPanel } from "./components/InvestigationPanel";
 import { Legend } from "./components/Legend";
 import { PaymentMomentCallout } from "./components/PaymentMomentCallout";
 import { SensitivitySlider } from "./components/SensitivitySlider";
+import { SessionSummary } from "./components/SessionSummary";
 import { StatsBar } from "./components/StatsBar";
 import { UploadPanel } from "./components/UploadPanel";
 import { fetchGraph, getCachedSnapshot, isUsingMockData, prefetchExplanations, resetDemoData, submitDecision, type Decision } from "./lib/api";
@@ -32,6 +33,7 @@ export default function App() {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [briefingOpen, setBriefingOpen] = useState(false);
   const [briefingIndex, setBriefingIndex] = useState(0);
+  const [summaryOpen, setSummaryOpen] = useState(false);
   const [mock, setMock] = useState(false);
   const [resetState, setResetState] = useState<
     { kind: "idle" | "confirm" | "busy" } | { kind: "done" | "error"; message: string }
@@ -187,9 +189,18 @@ export default function App() {
     }
   }
 
+  const openCaseCount = flaggedRings.filter((r) => r.status === "pending").length;
+
+  // The last "Next case" used to do nothing. Now an empty queue ends in the
+  // session summary: verdict tally, accounts for the payments team, report.
   function nextCase() {
     const list = pendingQueue().filter((r) => r.status === "pending" && r.id !== selectedRingId);
-    select(list[0]?.id ?? null);
+    if (list[0]) {
+      select(list[0].id);
+      return;
+    }
+    select(null);
+    setSummaryOpen(true);
   }
 
   // Global shortcuts: "/" focuses search, Esc backs out of the current
@@ -213,6 +224,10 @@ export default function App() {
         else if (e.key === "ArrowLeft") setBriefingIndex((i) => Math.max(0, i - 1));
         else return;
         e.preventDefault();
+        return;
+      }
+      if (summaryOpen) {
+        if (e.key === "Escape") setSummaryOpen(false);
         return;
       }
       if (e.key === "Escape") {
@@ -240,7 +255,7 @@ export default function App() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [armed, committing, uploadOpen, selectedRingId, filter, query, flaggedRings, resetState, briefingOpen, briefingSteps.length]);
+  }, [armed, committing, uploadOpen, selectedRingId, filter, query, flaggedRings, resetState, briefingOpen, briefingSteps.length, summaryOpen]);
 
   const hoverRing = hoveredNode?.ringId ? snapshot?.rings.find((r) => r.id === hoveredNode.ringId) : null;
   const isEmpty = !mock && !!snapshot && snapshot.accounts.length === 0;
@@ -387,6 +402,7 @@ export default function App() {
             query={query}
             onQueryChange={setQuery}
             onSelect={select}
+            onShowSummary={flaggedRings.length > 0 && openCaseCount === 0 ? () => setSummaryOpen(true) : undefined}
           />
         )}
 
@@ -563,6 +579,23 @@ export default function App() {
             />
           )}
 
+          {summaryOpen && snapshot && (
+            <SessionSummary
+              snapshot={snapshot}
+              flaggedRings={flaggedRings}
+              sensitivity={sensitivity}
+              onClose={() => setSummaryOpen(false)}
+              onRaiseSensitivity={() => {
+                setSummaryOpen(false);
+                setSensitivity((s) => Math.min(1, Math.round((s + 0.1) * 10) / 10));
+              }}
+              onOpenRing={(ringId) => {
+                setSummaryOpen(false);
+                select(ringId);
+              }}
+            />
+          )}
+
           <UploadPanel open={uploadOpen} mock={mock} onClose={() => setUploadOpen(false)} onUploaded={loadAndBrief} />
         </div>
         {selectedRing && derived && (
@@ -576,6 +609,7 @@ export default function App() {
             onCommit={commitDecision}
             onClose={() => select(null)}
             onNextCase={nextCase}
+            hasNext={flaggedRings.some((r) => r.status === "pending" && r.id !== selectedRing.id)}
             ringSensOverride={ringSensOverrides[selectedRing.id] ?? null}
             globalSensitivity={sensitivity}
             onSetRingSensOverride={(v) =>

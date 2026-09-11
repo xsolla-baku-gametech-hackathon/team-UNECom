@@ -14,6 +14,8 @@ interface Props {
   onCommit: () => void;
   onClose: () => void;
   onNextCase: () => void;
+  /** False when this was the last open case: the button leads to the summary. */
+  hasNext: boolean;
   ringSensOverride: number | null; // 0..1
   globalSensitivity: number; // 0..1
   onSetRingSensOverride: (v: number | null) => void;
@@ -35,6 +37,7 @@ export function InvestigationPanel({
   onCommit,
   onClose,
   onNextCase,
+  hasNext,
   ringSensOverride,
   globalSensitivity,
   onSetRingSensOverride,
@@ -304,7 +307,7 @@ export function InvestigationPanel({
                 className="flex items-center rounded uppercase"
                 style={{ height: 32, padding: "0 14px", background: "#c8792e", color: "#0a0b0d", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12, letterSpacing: ".11em" }}
               >
-                Növbəti case →
+                {hasNext ? "Növbəti case →" : "Yekun hesabat →"}
               </button>
             </div>
           </div>
