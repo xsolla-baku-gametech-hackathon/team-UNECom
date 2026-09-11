@@ -1,7 +1,8 @@
 # /api
 
 Node.js + TypeScript + Fastify backend for the post-purchase value flow fraud
-detection tool. Ingests events, stores them in SQLite (Prisma), and proxies
+detection tool. Ingests events, stores them in Postgres (Prisma, hosted on
+Neon in prod — local dev can point at any Postgres instance), and proxies
 risk/ring analysis to the Python `/engine` service.
 
 Layered as `routes/` (HTTP) → `services/` (business logic) →
@@ -13,8 +14,8 @@ engine).
 ```bash
 cd api
 npm install
-cp .env.example .env      # defaults are fine for local dev
-npm run prisma:push       # creates api/prisma/dev.db from prisma/schema.prisma
+cp .env.example .env      # set DATABASE_URL to a real Postgres connection string
+npm run prisma:push       # syncs prisma/schema.prisma to that database
 npm run dev                # http://localhost:3001, auto-reload
 ```
 
@@ -23,7 +24,7 @@ Env vars (`.env`):
 | Var | Default | Meaning |
 |---|---|---|
 | `PORT` | `3001` | API listen port |
-| `DATABASE_URL` | `file:./dev.db` | SQLite file |
+| `DATABASE_URL` | — | Postgres connection string (e.g. a Neon branch) |
 | `ENGINE_URL` | `http://localhost:8000` | Base URL of `/engine` |
 | `ENGINE_TIMEOUT_MS` | `5000` | Analysis request timeout (ms) |
 | `ENGINE_EXPLAIN_TIMEOUT_MS` | `30000` | Explanation request timeout (ms) |

@@ -23,7 +23,7 @@ services:
     startCommand: npm run start
     envVars:
       - key: DATABASE_URL
-        value: file:./dev.db
+        sync: false # Neon Postgres connection string — set manually in the Render dashboard
       - key: HOST
         value: 0.0.0.0
       - key: ENGINE_URL
