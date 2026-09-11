@@ -374,7 +374,7 @@ export default function App() {
               userSelect: "none",
             }}
           >
-            Fraud Radar
+            Fraud Tracker
           </span>
           <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 9.5, letterSpacing: ".17em", color: "#676d76" }}>
             Post-purchase value flow

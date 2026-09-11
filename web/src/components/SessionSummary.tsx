@@ -108,7 +108,7 @@ export function SessionSummary({ snapshot, flaggedRings, sensitivity, onClose, o
 
           <div className="mt-3.5 flex flex-wrap items-center gap-2">
             <button
-              onClick={() => downloadJson(`fraud-radar-report-${new Date().toISOString().slice(0, 10)}.json`, report)}
+              onClick={() => downloadJson(`fraud-tracker-report-${new Date().toISOString().slice(0, 10)}.json`, report)}
               className="flex items-center rounded uppercase"
               style={{ height: 34, padding: "0 14px", background: "#c8792e", color: "#0a0b0d", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12.5, letterSpacing: ".11em" }}
             >

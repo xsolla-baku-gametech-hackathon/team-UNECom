@@ -8,7 +8,7 @@ const Dashboard = lazy(() => import('./App.tsx'))
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Suspense fallback={<div style={{padding:40,color:'#e8e6e1'}}>Loading Fraud Radar…</div>}>
+    <Suspense fallback={<div style={{padding:40,color:'#e8e6e1'}}>Loading Fraud Tracker…</div>}>
       <Dashboard />
     </Suspense>
   </StrictMode>,
