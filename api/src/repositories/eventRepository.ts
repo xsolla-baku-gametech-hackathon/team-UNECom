@@ -18,24 +18,34 @@ function toRow(event: EventInput) {
   };
 }
 
+// Postgres caps a single statement at 65,535 bind parameters; an Event row
+// binds 11, so one createMany/IN list is kept well under that.
+const INSERT_CHUNK_SIZE = 2000;
+
 export const eventRepository = {
   // Duplicate event_ids (re-uploaded batches) are skipped rather than
-  // erroring, since ingestion is expected to be retried/replayed. SQLite's
-  // createMany has no skipDuplicates support, so pre-filter known IDs and
-  // bulk-insert the rest in one statement (fast even for thousand-row batches).
+  // erroring, since ingestion is expected to be retried/replayed: pre-filter
+  // known IDs and bulk-insert the rest. Duplicates *within* one upload are
+  // collapsed to the first occurrence, so `inserted + skipped` always equals
+  // what the client sent. Large uploads are written in chunks.
   async insertMany(events: EventInput[]) {
-    const ids = events.map((e) => e.event_id);
-    const existing = await prisma.event.findMany({
-      where: { eventId: { in: ids } },
-      select: { eventId: true },
-    });
-    const existingIds = new Set(existing.map((e) => e.eventId));
-    const newEvents = events.filter((e) => !existingIds.has(e.event_id));
+    const seen = new Set<string>();
+    const unique = events.filter((e) => (seen.has(e.event_id) ? false : (seen.add(e.event_id), true)));
 
-    if (newEvents.length === 0) return 0;
-
-    const result = await prisma.event.createMany({ data: newEvents.map(toRow) });
-    return result.count;
+    let inserted = 0;
+    for (let i = 0; i < unique.length; i += INSERT_CHUNK_SIZE) {
+      const chunk = unique.slice(i, i + INSERT_CHUNK_SIZE);
+      const existing = await prisma.event.findMany({
+        where: { eventId: { in: chunk.map((e) => e.event_id) } },
+        select: { eventId: true },
+      });
+      const existingIds = new Set(existing.map((e) => e.eventId));
+      const newEvents = chunk.filter((e) => !existingIds.has(e.event_id));
+      if (newEvents.length === 0) continue;
+      const result = await prisma.event.createMany({ data: newEvents.map(toRow) });
+      inserted += result.count;
+    }
+    return inserted;
   },
 
   // All stored events, reshaped back into the shared contract, for handing

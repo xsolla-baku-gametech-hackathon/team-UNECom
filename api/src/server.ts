@@ -7,7 +7,7 @@ import { ringRoutes } from "./routes/rings.js";
 import { graphRoutes } from "./routes/graph.js";
 
 async function main() {
-  const app = Fastify({ logger: true });
+  const app = Fastify({ logger: true, bodyLimit: config.bodyLimitBytes });
 
   await app.register(cors, { origin: true });
 

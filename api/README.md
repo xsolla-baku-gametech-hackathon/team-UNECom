@@ -28,6 +28,7 @@ Env vars (`.env`):
 | `ENGINE_URL` | `http://localhost:8000` | Base URL of `/engine` |
 | `ENGINE_TIMEOUT_MS` | `5000` | Analysis request timeout (ms) |
 | `ENGINE_EXPLAIN_TIMEOUT_MS` | `30000` | Explanation request timeout (ms) |
+| `BODY_LIMIT_BYTES` | `16777216` | Max POST body (16 MiB ≈ 50,000 events); Fastify's default 1 MiB rejects uploads above ~3,400 events |
 
 ## Engine contract
 
