@@ -48,11 +48,28 @@ məhz №2 və №10-a çəkir. №1 isə toggle-dan sonra hər halda gəlir.
 | "Hub recall 0% → 100%" | **burada doğrudur** | node rəngi sabit bantlardır, dəyişmir |
 | Datası | 5 seed, 352 hesab / 2,624 hadisə | demo faylı, 122 hesab / 388 hadisə |
 
-**Ona görə səhnədə "zero" yalnız bir dəfə, Slayd 6-da deyilir: "the doc that
-says our hub recall is zero at default"** — "the dashboard shows" yox. Demo
-beat-i (3d) isə "precision still one hundred **at the account level**" deyir —
-üç son söz məhz bu cədvəlin ekvivalentidir. Jüri fərqi qaldırsa, bu cədvəli
+**Səhnədə "zero" deyilmir**; hub recall yalnız Q&A-da, soruşulsa (№2).
+Demo beat-i (3d) 0.8-də ikinci halqanın içində **4 təmiz hesab** olduğunu özü
+deyir ("…and four real players with it"), çünki demo faylında o həddə
+precision artıq 100% deyil (37 bayraqdan 1-i təmiz). Harness-in 100%-i 5
+seed-lik generasiya olunmuş dataya aiddir. Jüri fərqi qaldırsa, bu cədvəli
 danış: bu, tutulmuş səhv deyil, ölçmə metodologiyasıdır.
+
+---
+
+## 0 · "That Roblox number is from 2024. What does their latest filing say?"
+
+**Fakt:** FY2024 10-K: *"total chargebacks to us from all fraud was approximately
+3.41% of bookings"*. FY2025 10-K (fevral 2026) metriki dəyişib: *"total
+chargebacks and refunds to us, some of which may have been related to fraud were
+approximately 2.5% of bookings"*. Q2 2026 10-Q: ~1.7%. $149M Roblox-un rəqəmi
+deyil, bizim hesabımızdır (4,369.1M × 3.41%) — "about" de.
+
+**De (EN):**
+> "Right — in 2025 Roblox stopped reporting fraud chargebacks separately and now
+> reports chargebacks and refunds together: 2.5 percent of bookings. That is still
+> about ten times the average merchant on Sift's network. We quote 2024 because it
+> is the last year they isolated fraud."
 
 ---
 
@@ -100,7 +117,7 @@ risk skorunu aşağı salır**. Amma halqa üzvlüyü hədddən asılı deyil: L
 > on the threshold at all: the hub sits inside the flagged ring at the default
 > setting, at 94.9 percent measured ring purity, even though its own score is
 > below the cut-off. Raise the threshold and the second ring and second hub
-> surface too, with precision still at one hundred."
+> surface too, along with a few real players, which is why an analyst decides."
 
 **Əlavə — "niyə düzəltmədiniz?"**
 > "Because changing the scoring to improve the metric would have invalidated the
@@ -274,8 +291,11 @@ oğurlanmış kartla edilməsi və dəyərin sonradan yuyulmasıdır.**
 **Fakt:** birinci hədəf **Persona B** — merchant of record / ödəniş
 platformasında risk lideri: chargeback birbaşa onların üzərinə düşür və bir
 inteqrasiya yüzlərlə oyunu əhatə edir. İkinci: ticarət edilə bilən iqtisadiyyatı
-olan orta studiolar. İstifadəçi isə **Persona A** — Rockstar-ın açıq "Trust &
-Safety Senior Enforcement Analyst" vakansiyası bu rolun real olduğunun sübutudur.
+olan orta studiolar. İstifadəçi isə **Persona A** — Rockstar-ın hazırda açıq
+"Senior Trust & Safety Analyst, Creator Platform" vakansiyası
+(rockstargames.com/careers/openings/position/7806748003) bu rolun real olduğunun
+sübutudur. Köhnə "Senior Enforcement Analyst" elanı artıq bağlanıb — onu
+**adla çəkmə**.
 
 **De (EN):**
 > "First customer is a merchant of record — Xsolla — because as merchant of
@@ -283,7 +303,7 @@ Safety Senior Enforcement Analyst" vakansiyası bu rolun real olduğunun sübutu
 > covers a thousand titles. Second is mid-size studios with a tradeable economy
 > and no in-house trust and safety team. The user inside both is an enforcement
 > analyst — an operator, not a data scientist, which is why the output is a
-> written case, not a risk vector. Rockstar has that exact job open right now."
+> written case, not a risk vector. Rockstar is hiring Trust and Safety analysts right now."
 
 ---
 

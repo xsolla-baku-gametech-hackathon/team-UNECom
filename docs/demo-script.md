@@ -155,9 +155,12 @@ Halqa səviyyəsində: purity 94.9%, coverage 80.0%.
 > görə ölçür. Dashboard isə **halqanı** halqa skoruna görə bayraqlayır və node
 > rəngi sabit bantlardır (`riskColor`, 0.75 / 0.5) — **slider node rəngini
 > dəyişmir**. Ekranda "hub-lar işıqlanır" baş vermir; **ikinci halqa peyda
-> olur, acct_0025 onun içindədir**. Səhnədə deyilən cümlə qəsdən "precision still
-> one hundred **at the account level**" formasındadır — son üç söz bu fərqin
-> özüdür. "Zero percent" demo beat-ində deyilmir, yalnız Slayd 6-da.
+> olur, acct_0025 onun içindədir** — və onunla birlikdə **4 təmiz hesab** (16-dan).
+> Bu faylda 0.8-də hesab səviyyəsində də 37 bayraqdan 1-i təmiz hesabdır
+> (skor 38.0), yəni "precision one hundred" bu ekranda doğru deyil. Ona görə
+> səhnə cümləsi false positive-i özü deyir: "…and four real players with it.
+> That is exactly why nothing here bans anyone." Harness-in 100%-i 5 seed-lik
+> generasiya olunmuş dataya aiddir, demo faylına yox.
 
 ---
 
@@ -253,14 +256,13 @@ tərpətmə. Toggle **sönük** olmalıdır.
 case peyda olur.
 
 **De (EN) — ikinci halqa görünəndə:**
-> "Raise the threshold: a second ring surfaces, hub inside, precision still one hundred at the account level."
+> "Raise the threshold: a second ring surfaces, the second hub inside, and four real players with it. That is exactly why nothing here bans anyone."
 
 > 🔴 **Bu demonun mərkəzi anıdır.** Vaxt daralsa belə kəsmə (bölmə 8).
-> "Zero percent" burada DEYİLMİR — Slayd 6-da "the doc that says our hub recall
-> is zero at default" cümləsi ilə bir dəfə, düzgün çərçivədə deyilir və Q&A-nı
-> [`qa-defence.md`](./qa-defence.md) №2-yə çəkir. Səbəb `pitch-outline.md`
-> 3d-dədir. **"At the account level"** üç sözü udma — 0.8-də toggle açılsa
-> callout 4 hub sayır, 2-si təmizdir (№3).
+> "Zero percent" səhnədə DEYİLMİR; hub recall yalnız soruşulsa
+> [`qa-defence.md`](./qa-defence.md) №2 ilə cavablanır. **"Four real players"**
+> hissəsini udma — bu faylda 0.8-də ikinci halqanın 16 hesabından 4-ü təmizdir
+> və 2-si "cash-out hub" kimi çəkilir. Jüri özü tapmamış biz deyirik.
 
 **Hərəkət:** Slider-i **0.5-ə qaytar** (növbəti addım daha təmiz görünür). Vaxt
 darsa qaytarma — kritik deyil.
@@ -390,7 +392,7 @@ olmalıdır. Amma məşqdə 3:00-ı keçirsə, bu sıra ilə:
 - 🔴 **1:08–1:41 · "Ödəniş anı görünüşü" toggle + 28%.** Yeganə görünən
   fərqləndiricimiz və miqyas körpüsü. Bunsuz biz "daha bir fraud dashboard"-uq.
 - 🔴 **1:41–1:57 · Slider 0.5 → 0.8, ikinci halqa.** Ən güclü texniki
-  arqumentimiz; "at the account level" daxil.
+  arqumentimiz; "four real players with it" daxil — false positive-i jüri tapmamış özümüz deyirik.
 - 🔴 **Slayd 2-nin ilk cümləsi (3.41% / $149M / Roblox 10-K).** Problemin real
   olduğunun yeganə xarici sübutu — və 3c-nin körpüsü ona qayıdır.
 - 🔴 **Slayd 6-nın ask cümləsi.** "We're not asking you to believe synthetic
