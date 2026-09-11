@@ -41,6 +41,25 @@ function coerceBoolean(raw: unknown): boolean {
   throw new UploadParseError(`"${raw}" could not be read as a boolean (true/false)`);
 }
 
+const EVENT_TYPES: readonly RawEvent["type"][] = ["trade", "gift", "marketplace_sale", "key_redeem", "purchase"];
+const ASSET_TYPES: readonly RawEvent["asset_type"][] = ["currency", "item", "key"];
+
+function oneOf<T extends string>(raw: unknown, allowed: readonly T[], field: string, rowLabel: string): T {
+  const s = String(raw).trim() as T;
+  if (!allowed.includes(s)) {
+    throw new UploadParseError(`${rowLabel}: "${field}" is "${String(raw)}", expected one of ${allowed.join(", ")}`);
+  }
+  return s;
+}
+
+function numberField(raw: unknown, field: string, rowLabel: string): number {
+  const n = typeof raw === "number" ? raw : Number(String(raw).trim());
+  if (!Number.isFinite(n) || n < 0) {
+    throw new UploadParseError(`${rowLabel}: "${field}" is "${String(raw)}", expected a non-negative number`);
+  }
+  return n;
+}
+
 function coerceRow(row: Record<string, unknown>, rowLabel: string): RawEvent {
   for (const field of REQUIRED_FIELDS) {
     if (row[field] === undefined || row[field] === null || row[field] === "") {
@@ -50,14 +69,14 @@ function coerceRow(row: Record<string, unknown>, rowLabel: string): RawEvent {
   const createdAtRaw = row.account_created_at;
   return {
     event_id: String(row.event_id),
-    type: row.type as RawEvent["type"],
+    type: oneOf(row.type, EVENT_TYPES, "type", rowLabel),
     timestamp: String(row.timestamp),
     from_account_id: String(row.from_account_id),
     to_account_id: String(row.to_account_id),
-    asset_type: row.asset_type as RawEvent["asset_type"],
+    asset_type: oneOf(row.asset_type, ASSET_TYPES, "asset_type", rowLabel),
     asset_id: String(row.asset_id),
-    quantity: Number(row.quantity),
-    value_usd_estimate: Number(row.value_usd_estimate),
+    quantity: numberField(row.quantity, "quantity", rowLabel),
+    value_usd_estimate: numberField(row.value_usd_estimate, "value_usd_estimate", rowLabel),
     payment_flagged: coerceBoolean(row.payment_flagged),
     account_created_at:
       createdAtRaw === undefined || createdAtRaw === null || createdAtRaw === ""
