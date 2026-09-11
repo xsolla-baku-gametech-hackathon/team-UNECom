@@ -48,7 +48,7 @@ export function Legend() {
         </Row>
       </div>
       <div className="mt-2 border-t pt-2" style={{ borderColor: "#1d2127", fontSize: 11, color: "#676d76", lineHeight: 1.45 }}>
-        Circle size = value passing through the account.
+        Circle size = role: hub, ring member, other. Line width = value transferred.
       </div>
     </div>
   );

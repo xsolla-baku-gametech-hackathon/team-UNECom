@@ -23,8 +23,8 @@ async function runUpload(events: RawEvent[]): Promise<string> {
   });
   const { inserted, skipped } = await uploadEvents(events);
   return (
-    `${inserted.toLocaleString()} events loaded, ${accounts.size.toLocaleString()} unique accounts found` +
-    (skipped > 0 ? ` (${skipped.toLocaleString()} duplicates skipped)` : "")
+    `${inserted.toLocaleString("en-US")} events loaded, ${accounts.size.toLocaleString("en-US")} unique accounts found` +
+    (skipped > 0 ? ` (${skipped.toLocaleString("en-US")} duplicates skipped)` : "")
   );
 }
 

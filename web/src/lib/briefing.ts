@@ -2,7 +2,6 @@
 // from the loaded snapshot — counts, dollar values, ring and hub ids — so a
 // judge who drops their own file gets a briefing about *their* data, never
 // about ours. Nothing here is hardcoded narrative.
-import type { DerivedGraph } from "./deriveGraph";
 import { caseRef, usd } from "./format";
 import type { PaymentMomentView } from "./paymentMomentView";
 import type { GraphSnapshot, Ring } from "./types";
@@ -39,7 +38,6 @@ function inboundCount(snapshot: GraphSnapshot, accountId: string): number {
 
 export function buildBriefing(
   snapshot: GraphSnapshot,
-  derived: DerivedGraph,
   flaggedRings: Ring[],
   paymentView: PaymentMomentView,
   sensitivity: number,
@@ -48,8 +46,7 @@ export function buildBriefing(
   const events = snapshot.events.length;
   const accounts = snapshot.accounts.length;
   const totalUsd = snapshot.events.reduce((s, e) => s + e.valueUsdEstimate, 0);
-  const transfers = derived.links.length;
-  const purchases = events - transfers;
+  const purchases = snapshot.events.filter((e) => e.from === "STORE").length;
   const flaggedPurchases = snapshot.events.filter((e) => e.paymentFlagged).length;
 
   steps.push({

@@ -61,13 +61,18 @@ export function fetchExplanation(ringId: string): Promise<RingExplanation> {
   const existing = explanations.get(ringId);
   if (existing) return existing;
   const pending = timedFetch<RingExplanation>(`/rings/${encodeURIComponent(ringId)}/explanation`)
-    .catch((): RingExplanation => ({
-      ringId,
-      source: "unavailable",
-      summary: "The explanation is late or unavailable. Review the measured evidence.",
-      signals: [],
-      recommendedAction: "Decide from the ring's measured evidence.",
-    }));
+    .catch((): RingExplanation => {
+      // A timeout or a cold engine must not poison this ring for the whole
+      // session: forget the attempt so reopening the case tries again.
+      explanations.delete(ringId);
+      return {
+        ringId,
+        source: "unavailable",
+        summary: "The explanation is late or unavailable. Review the measured evidence.",
+        signals: [],
+        recommendedAction: "Decide from the ring's measured evidence.",
+      };
+    });
   explanations.set(ringId, pending);
   return pending;
 }
@@ -100,7 +105,7 @@ export async function uploadEvents(events: RawEvent[]): Promise<{ inserted: numb
 // worked. Fails loudly instead, including the 403 when the backend has
 // ALLOW_DEMO_RESET off.
 export async function resetDemoData(): Promise<{ events: number; decisions: number }> {
-  const data = await timedFetch<{ deleted: { events: number; decisions: number } }>("/events/reset", { method: "POST" }, UPLOAD_TIMEOUT_MS);
+  const data = await timedFetch<{ deleted: { events: number; decisions: number; sensitivities: number } }>("/events/reset", { method: "POST" }, UPLOAD_TIMEOUT_MS);
   // Ring ids are reassigned by community detection on the next ingest, so a
   // cached summary would end up describing a different cluster.
   explanations.clear();
