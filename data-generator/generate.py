@@ -17,6 +17,14 @@ Konvensiya: `account_created_at` HEMISHE `from_account_id`-nin yaranma
 tarixidir (yeni hesabin dermal aktivligini olcmek ucun asas siqnal budur).
 STORE sistem hesabinin (purchase hadiselerinde alici terefdeki menbe) oz
 yaranma tarixi yoxdur -> None/bos qoyulur.
+
+Account ids in the output are opaque: every player account, clean or planted,
+is `acct_NNNN` with the numbers shuffled. The ring is planted under readable
+internal names (mule_/hub_) so the logic below stays legible, but those names
+never reach events.csv/json — otherwise the answer key would be sitting in the
+data, visible on the dashboard and readable by the Claude explanation layer.
+Which accounts were planted is recorded only in ground_truth.json.
+Pass --readable-ids to keep the internal names when debugging the generator.
 """
 from __future__ import annotations
 
@@ -162,6 +170,11 @@ class Generator:
             self.hub_accounts.add(h)
             self.ring_accounts.add(h)
 
+        # The first hub is the main collection point (3x weight); any further
+        # hubs share the rest. Must be sized to n_hubs — a fixed [3, 1] list
+        # crashed random.choices() for --hubs 3 or more.
+        hub_weights = [3] + [1] * (n_hubs - 1)
+
         mules = [f"mule_{i:03d}" for i in range(n_mules)]
         ring_window_start = self.now - timedelta(hours=72)
 
@@ -206,7 +219,7 @@ class Generator:
                     account_created_at=iso(created),
                 ))
                 relay_ts = send_ts + timedelta(minutes=random.uniform(5, 60))
-                hub = random.choices(hubs, weights=[3, 1] if n_hubs > 1 else [1])[0]
+                hub = random.choices(hubs, weights=hub_weights)[0]
                 self.events.append(Event(
                     event_id=new_event_id(), type=out_type, timestamp=iso(relay_ts),
                     from_account_id=layer_peer, to_account_id=hub,
@@ -216,7 +229,7 @@ class Generator:
                     account_created_at=iso(self.account_created_at[layer_peer]),
                 ))
             else:
-                hub = random.choices(hubs, weights=[3, 1] if n_hubs > 1 else [1])[0]
+                hub = random.choices(hubs, weights=hub_weights)[0]
                 self.events.append(Event(
                     event_id=new_event_id(), type=out_type, timestamp=iso(send_ts),
                     from_account_id=mule, to_account_id=hub,
@@ -244,6 +257,23 @@ class Generator:
             ))
 
     # ------------------------------------------------------------- output
+    def relabel_opaque(self, seed: int) -> dict[str, str]:
+        """Rename every player account to a shuffled `acct_NNNN` id.
+
+        Uses its own RNG, so the event draws above are unchanged for a seed.
+        Returns the internal-name -> output-id mapping.
+        """
+        accounts = sorted(self.account_created_at)
+        numbers = list(range(len(accounts)))
+        random.Random(seed ^ 0x5EED).shuffle(numbers)
+        mapping = {acc: f"acct_{n:04d}" for acc, n in zip(accounts, numbers)}
+        for e in self.events:
+            e.from_account_id = mapping.get(e.from_account_id, e.from_account_id)
+            e.to_account_id = mapping.get(e.to_account_id, e.to_account_id)
+        self.ring_accounts = {mapping[a] for a in self.ring_accounts}
+        self.hub_accounts = {mapping[a] for a in self.hub_accounts}
+        return mapping
+
     def sorted_events(self) -> list[Event]:
         return sorted(self.events, key=lambda e: e.timestamp)
 
@@ -283,6 +313,8 @@ def main():
     p.add_argument("--hub-sales", type=int, default=15)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--out-dir", type=str, default="output")
+    p.add_argument("--readable-ids", action="store_true",
+                   help="keep internal mule_/hub_ names in the output (debug only - leaks the answer key)")
     args = p.parse_args()
 
     out_dir = Path(args.out_dir)
@@ -299,6 +331,11 @@ def main():
         flag_rate=args.flag_rate, layering_rate=args.layering_rate,
     )
     gen.gen_hub_cashout(hubs, clean_accounts, args.hub_sales)
+
+    if not args.readable_ids:
+        mapping = gen.relabel_opaque(args.seed)
+        hubs = sorted(mapping[h] for h in hubs)
+        mules = sorted(mapping[m] for m in mules)
 
     gen.write_csv(out_dir / "events.csv")
     gen.write_json(out_dir / "events.json")

@@ -1,15 +1,23 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Briefing } from "./components/Briefing";
 import { CaseQueue, type QueueFilter } from "./components/CaseQueue";
+import { ChallengePanel } from "./components/ChallengePanel";
+import { ChallengeScoreCard } from "./components/ChallengeScore";
 import { GraphCanvas } from "./components/GraphCanvas";
 import { InvestigationPanel } from "./components/InvestigationPanel";
 import { Legend } from "./components/Legend";
 import { PaymentMomentCallout } from "./components/PaymentMomentCallout";
+import { ReplayHud } from "./components/ReplayHud";
 import { SensitivitySlider } from "./components/SensitivitySlider";
+import { SessionSummary } from "./components/SessionSummary";
 import { StatsBar } from "./components/StatsBar";
 import { UploadPanel } from "./components/UploadPanel";
-import { fetchGraph, getCachedSnapshot, isUsingMockData, prefetchExplanations, submitDecision, type Decision } from "./lib/api";
+import { fetchGraph, getCachedSnapshot, isUsingMockData, prefetchExplanations, resetDemoData, submitDecision, type Decision } from "./lib/api";
+import { buildBriefing } from "./lib/briefing";
+import { scoreChallenge, type ChallengeTruth } from "./lib/challenge";
 import { deriveGraph } from "./lib/deriveGraph";
 import { computePaymentMomentView } from "./lib/paymentMomentView";
+import { buildTimeline, replayDurationMs, replayFrame } from "./lib/replay";
 import { riskColor } from "./lib/colors";
 import { caseRef } from "./lib/format";
 import type { GraphNode, GraphSnapshot } from "./lib/types";
@@ -28,7 +36,19 @@ export default function App() {
   const [paymentMoment, setPaymentMoment] = useState(false);
   const [hoveredNode, setHoveredNode] = useState<GraphNode | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [briefingOpen, setBriefingOpen] = useState(false);
+  const [briefingIndex, setBriefingIndex] = useState(0);
+  const [summaryOpen, setSummaryOpen] = useState(false);
+  // Blind test: the planted ring a judge generated, kept only in the browser.
+  const [challengeOpen, setChallengeOpen] = useState(false);
+  const [challenge, setChallenge] = useState<ChallengeTruth | null>(null);
+  // Replay: number of events shown so far, or null when not playing.
+  const [replayIndex, setReplayIndex] = useState<number | null>(null);
+  const replayStartRef = useRef(0);
   const [mock, setMock] = useState(false);
+  const [resetState, setResetState] = useState<
+    { kind: "idle" | "confirm" | "busy" } | { kind: "done" | "error"; message: string }
+  >({ kind: "idle" });
   const [size, setSize] = useState({ width: 0, height: 0 });
   const canvasWrapRef = useRef<HTMLDivElement>(null);
 
@@ -41,6 +61,48 @@ export default function App() {
   useEffect(() => {
     load();
   }, []);
+
+  // Clicking the wordmark asks first. The click target is the most prominent
+  // thing in the header and the action is unrecoverable, so a stray click
+  // during the pitch must not be able to empty the database. Confirming is a
+  // second click rather than a native confirm() dialog — an OS dialog on a
+  // projector looks like something went wrong.
+  function requestReset() {
+    if (resetState.kind === "busy") return;
+    setResetState({ kind: resetState.kind === "confirm" ? "idle" : "confirm" });
+  }
+
+  // Every piece of selection state goes with it — a ring id selected from the
+  // old dataset means nothing once community detection re-runs.
+  async function confirmReset() {
+    if (resetState.kind === "busy") return;
+    setResetState({ kind: "busy" });
+    try {
+      const { events } = await resetDemoData();
+      setChallenge(null);
+      setSelectedRingId(null);
+      setArmed(null);
+      setRingSensOverrides({});
+      setQuery("");
+      setDecisionError(null);
+      await load();
+      setResetState({ kind: "done", message: `Baza boşaldıldı — ${events.toLocaleString("en-US")} hadisə silindi` });
+    } catch (e) {
+      const raw = e instanceof Error ? e.message : String(e);
+      setResetState({
+        kind: "error",
+        message: raw.includes("403") ? "Sıfırlama bu backend-də bağlıdır (ALLOW_DEMO_RESET)" : `Sıfırlama alınmadı: ${raw}`,
+      });
+    }
+  }
+
+  // The result banner clears itself; so does an unanswered confirmation, so a
+  // half-pressed reset never sits armed in the header waiting for a stray click.
+  useEffect(() => {
+    if (resetState.kind === "idle" || resetState.kind === "busy") return;
+    const t = setTimeout(() => setResetState({ kind: "idle" }), resetState.kind === "confirm" ? 6000 : 4000);
+    return () => clearTimeout(t);
+  }, [resetState]);
 
   useEffect(() => {
     const el = canvasWrapRef.current;
@@ -74,9 +136,100 @@ export default function App() {
     [snapshot, flaggedRings],
   );
 
+  // Live comparison of the engine's verdict with the planted truth; follows
+  // the sensitivity slider, so raising it visibly changes recall on stage.
+  const challengeScore = useMemo(
+    () => (challenge && snapshot ? scoreChallenge(challenge, snapshot, flaggedRings) : null),
+    [challenge, snapshot, flaggedRings],
+  );
+
+  // Guided walkthrough of what was just found, built from the live numbers.
+  const briefingSteps = useMemo(
+    () => (snapshot && derived && paymentView && snapshot.accounts.length > 0 ? buildBriefing(snapshot, derived, flaggedRings, paymentView, sensitivity) : []),
+    [snapshot, derived, flaggedRings, paymentView, sensitivity],
+  );
+  const briefingStep = briefingOpen ? briefingSteps[Math.min(briefingIndex, briefingSteps.length - 1)] : undefined;
+
+  function openBriefing() {
+    select(null);
+    setBriefingIndex(0);
+    setBriefingOpen(true);
+  }
+
+  async function loadAndBrief() {
+    setChallenge(null);
+    await load();
+    startReplay();
+  }
+
+  async function runChallenge(truth: ChallengeTruth) {
+    setChallengeOpen(false);
+    setChallenge(truth);
+    setSensitivity(0.5);
+    setRingSensOverrides({});
+    await load();
+    startReplay();
+  }
+
+  // Replay plays the log back in timestamp order, then the rings "snap" in
+  // and the briefing takes over. Skipping jumps straight to the snap.
+  const timeline = useMemo(() => (snapshot ? buildTimeline(snapshot) : null), [snapshot]);
+  const replaying = replayIndex != null && !!timeline && timeline.order.length > 0;
+  const frame = useMemo(
+    () => (replaying && derived && timeline ? replayFrame(derived, timeline, replayIndex) : null),
+    [replaying, derived, timeline, replayIndex],
+  );
+
+  function startReplay() {
+    if (!timeline || timeline.order.length === 0) return;
+    select(null);
+    setBriefingOpen(false);
+    setSummaryOpen(false);
+    setPaymentMoment(false);
+    replayStartRef.current = performance.now();
+    setReplayIndex(0);
+  }
+
+  function finishReplay() {
+    setReplayIndex(null);
+    // Let the snap (colours, hubs, flow) land before the briefing card rises.
+    setTimeout(openBriefing, 900);
+  }
+
+  useEffect(() => {
+    if (!replaying || !timeline) return;
+    const total = timeline.order.length;
+    const duration = replayDurationMs(total);
+    let raf = 0;
+    let last = -1;
+    const tick = () => {
+      const p = Math.min(1, (performance.now() - replayStartRef.current) / duration);
+      const eased = 1 - Math.pow(1 - p, 2);
+      const idx = Math.round(eased * total);
+      if (idx !== last) {
+        last = idx;
+        setReplayIndex(idx);
+      }
+      if (p >= 1) {
+        setTimeout(finishReplay, 600);
+        return;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [replaying, timeline]);
+
   const selectedRing = useMemo(
     () => snapshot?.rings.find((r) => r.id === selectedRingId) ?? null,
     [snapshot, selectedRingId],
+  );
+
+  // What the camera frames: a briefing spotlight wins, then the open case.
+  const focusIds = useMemo(
+    () => briefingStep?.spotlightIds ?? (selectedRing ? new Set(selectedRing.memberAccountIds) : null),
+    [briefingStep, selectedRing],
   );
 
   function select(ringId: string | null) {
@@ -121,9 +274,18 @@ export default function App() {
     }
   }
 
+  const openCaseCount = flaggedRings.filter((r) => r.status === "pending").length;
+
+  // The last "Next case" used to do nothing. Now an empty queue ends in the
+  // session summary: verdict tally, accounts for the payments team, report.
   function nextCase() {
     const list = pendingQueue().filter((r) => r.status === "pending" && r.id !== selectedRingId);
-    select(list[0]?.id ?? null);
+    if (list[0]) {
+      select(list[0].id);
+      return;
+    }
+    select(null);
+    setSummaryOpen(true);
   }
 
   // Global shortcuts: "/" focuses search, Esc backs out of the current
@@ -141,8 +303,32 @@ export default function App() {
         document.getElementById("case-search")?.focus();
         return;
       }
+      if (replaying) {
+        if (e.key === "Escape" || e.key === " " || e.key === "Enter") {
+          e.preventDefault();
+          finishReplay();
+        }
+        return;
+      }
+      if (briefingOpen) {
+        if (e.key === "Escape") setBriefingOpen(false);
+        else if (e.key === "ArrowRight" || e.key === " ") setBriefingIndex((i) => Math.min(briefingSteps.length - 1, i + 1));
+        else if (e.key === "ArrowLeft") setBriefingIndex((i) => Math.max(0, i - 1));
+        else return;
+        e.preventDefault();
+        return;
+      }
+      if (summaryOpen) {
+        if (e.key === "Escape") setSummaryOpen(false);
+        return;
+      }
+      if (challengeOpen) {
+        if (e.key === "Escape") setChallengeOpen(false);
+        return;
+      }
       if (e.key === "Escape") {
-        if (armed) setArmed(null);
+        if (resetState.kind === "confirm") setResetState({ kind: "idle" });
+        else if (armed) setArmed(null);
         else if (uploadOpen) setUploadOpen(false);
         else select(null);
         return;
@@ -165,7 +351,7 @@ export default function App() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [armed, committing, uploadOpen, selectedRingId, filter, query, flaggedRings]);
+  }, [armed, committing, uploadOpen, selectedRingId, filter, query, flaggedRings, resetState, briefingOpen, briefingSteps.length, summaryOpen, replaying, challengeOpen]);
 
   const hoverRing = hoveredNode?.ringId ? snapshot?.rings.find((r) => r.id === hoveredNode.ringId) : null;
   const isEmpty = !mock && !!snapshot && snapshot.accounts.length === 0;
@@ -174,7 +360,20 @@ export default function App() {
     <div className="flex h-screen flex-col" style={{ background: "#0a0b0d", color: "#e8e6e1", fontFamily: "'IBM Plex Sans'", fontSize: 13 }}>
       <header className="flex items-center gap-4 border-b px-3.5" style={{ flex: "0 0 52px", borderColor: "#24282f", background: "#0d0f12" }}>
         <div className="flex flex-col leading-tight" style={{ flex: "0 0 auto" }}>
-          <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 16, letterSpacing: ".07em" }}>
+          <span
+            onClick={requestReset}
+            title="Bazanı boşalt — demo açılış vəziyyətinə qayıdır"
+            className="uppercase"
+            style={{
+              fontFamily: "'Barlow Semi Condensed'",
+              fontWeight: 700,
+              fontSize: 16,
+              letterSpacing: ".07em",
+              cursor: "pointer",
+              opacity: resetState.kind === "busy" ? 0.5 : 1,
+              userSelect: "none",
+            }}
+          >
             Fraud Radar
           </span>
           <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 9.5, letterSpacing: ".17em", color: "#676d76" }}>
@@ -182,6 +381,59 @@ export default function App() {
           </span>
         </div>
         <div style={{ width: 1, height: 26, background: "#24282f" }} />
+
+        {resetState.kind === "confirm" && (
+          <div
+            className="flex items-center gap-2.5"
+            style={{ height: 26, padding: "0 10px", borderRadius: 3, border: "1px solid #6d3430", background: "#1c100f", whiteSpace: "nowrap" }}
+          >
+            <span style={{ fontSize: 11.5, color: "#e8e6e1" }}>
+              Bazadakı bütün hadisələr və qərarlar silinsin?
+            </span>
+            <span
+              onClick={confirmReset}
+              className="cursor-pointer uppercase"
+              style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 11, letterSpacing: ".1em", color: "#d1685f" }}
+            >
+              Bəli, boşalt
+            </span>
+            <span
+              onClick={() => setResetState({ kind: "idle" })}
+              className="cursor-pointer uppercase"
+              style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 11, letterSpacing: ".1em", color: "#9aa0a8" }}
+            >
+              Ləğv
+            </span>
+          </div>
+        )}
+
+        {resetState.kind === "busy" && (
+          <div
+            className="flex items-center gap-2"
+            style={{ height: 26, padding: "0 10px", borderRadius: 3, border: "1px solid #24282f", background: "#101216", whiteSpace: "nowrap" }}
+          >
+            <span style={{ width: 10, height: 10, border: "2px solid #24282f", borderTopColor: "#c8792e", borderRadius: "50%", animation: "fr-spin .7s linear infinite" }} />
+            <span style={{ fontSize: 11.5, color: "#9aa0a8" }}>Baza boşaldılır…</span>
+          </div>
+        )}
+
+        {(resetState.kind === "done" || resetState.kind === "error") && (
+          <div
+            className="flex items-center"
+            style={{
+              height: 26,
+              padding: "0 10px",
+              borderRadius: 3,
+              border: `1px solid ${resetState.kind === "done" ? "#34503f" : "#6d3430"}`,
+              background: resetState.kind === "done" ? "#0f1613" : "#1c100f",
+              color: resetState.kind === "done" ? "#8fae9b" : "#d1685f",
+              fontSize: 11.5,
+              whiteSpace: "nowrap",
+            }}
+          >
+            {resetState.message}
+          </div>
+        )}
 
         {mock ? (
           <div className="flex items-center gap-2.5" style={{ height: 26, padding: "0 10px", border: "1px solid #6b4a1f", background: "#1a1509", borderRadius: 3 }}>
@@ -216,6 +468,38 @@ export default function App() {
 
         <div style={{ width: 1, height: 26, background: "#24282f" }} />
 
+        {!mock && (
+          <div
+            onClick={() => setChallengeOpen(true)}
+            className="flex cursor-pointer items-center gap-2 rounded uppercase"
+            style={{ height: 28, padding: "0 12px", border: `1px solid ${challenge ? "#c8792e" : "#313640"}`, background: challenge ? "#1a1509" : "#0d0f12", color: challenge ? "#e0913f" : "#c3c7cc", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12, letterSpacing: ".1em" }}
+          >
+            Blind test
+          </div>
+        )}
+
+        {timeline && timeline.order.length > 0 && !isEmpty && (
+          <div
+            onClick={startReplay}
+            className="flex cursor-pointer items-center gap-2 rounded uppercase"
+            style={{ height: 28, padding: "0 12px", border: "1px solid #313640", background: replaying ? "#16191e" : "#0d0f12", color: "#c3c7cc", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12, letterSpacing: ".1em" }}
+          >
+            <span style={{ fontSize: 9 }}>▶</span>
+            Replay
+          </div>
+        )}
+
+        {briefingSteps.length > 0 && (
+          <div
+            onClick={openBriefing}
+            className="flex cursor-pointer items-center gap-2 rounded uppercase"
+            style={{ height: 28, padding: "0 12px", border: "1px solid #5c3a17", background: briefingOpen ? "#1a1509" : "#0d0f12", color: "#e0913f", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12, letterSpacing: ".1em" }}
+          >
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#c8792e", animation: "fr-pulse 1.6s infinite" }} />
+            AI briefing
+          </div>
+        )}
+
         <div
           onClick={() => setUploadOpen(true)}
           className="flex cursor-pointer items-center rounded uppercase"
@@ -228,24 +512,30 @@ export default function App() {
       <div className="flex min-h-0 flex-1">
         {derived && (
           <CaseQueue
-            rings={flaggedRings}
+            rings={replaying ? [] : flaggedRings}
             selectedRingId={selectedRingId}
             filter={filter}
             onFilterChange={setFilter}
             query={query}
             onQueryChange={setQuery}
             onSelect={select}
+            onShowSummary={flaggedRings.length > 0 && openCaseCount === 0 ? () => setSummaryOpen(true) : undefined}
           />
         )}
 
         <div ref={canvasWrapRef} className="relative flex-1" style={{ minWidth: 0, background: "#0a0b0d" }}>
           {size.width > 0 && derived && (
             <GraphCanvas
-              nodes={derived.nodes}
-              links={derived.links}
+              nodes={frame ? frame.nodes : derived.nodes}
+              links={frame ? frame.links : derived.links}
               selectedRingId={selectedRingId}
-              flaggedOnly={flaggedOnly}
-              paymentVisibleIds={paymentMoment && paymentView ? paymentView.visibleIds : null}
+              flaggedOnly={flaggedOnly && !frame}
+              paymentVisibleIds={(paymentMoment || briefingStep?.paymentMoment) && paymentView && !frame ? paymentView.visibleIds : null}
+              spotlightIds={briefingStep?.spotlightIds ?? null}
+              spotlightHubIds={briefingStep?.spotlightHubIds ?? null}
+              focusIds={frame ? null : focusIds}
+              pulseIds={frame?.pulseIds ?? null}
+              autoFit={!!frame}
               onSelectNode={handleSelectNode}
               onHoverNode={setHoveredNode}
               width={size.width}
@@ -253,7 +543,7 @@ export default function App() {
             />
           )}
 
-          {snapshot && derived && !isEmpty && (
+          {snapshot && derived && !isEmpty && !replaying && (
             <div className="absolute flex flex-wrap items-start justify-between gap-3" style={{ left: 16, right: 16, top: 14, zIndex: 30 }}>
               <StatsBar stats={snapshot.stats} flaggedRingCount={flaggedRings.length} decidedCount={decidedCount} />
               <div className="flex flex-col items-end gap-2.5" style={{ minWidth: 0 }}>
@@ -294,14 +584,23 @@ export default function App() {
                     Ödəniş anı görünüşü
                   </div>
                 </div>
-                {paymentMoment && paymentView && (
+                {(paymentMoment || briefingStep?.paymentMoment) && paymentView && (
                   <PaymentMomentCallout view={paymentView} flaggedRingCount={flaggedRings.length} />
+                )}
+                {challenge && challengeScore && !briefingOpen && (
+                  <ChallengeScoreCard
+                    truth={challenge}
+                    score={challengeScore}
+                    sensitivity={sensitivity}
+                    onClose={() => setChallenge(null)}
+                    onRaiseSensitivity={() => setSensitivity((s) => Math.min(1, Math.round((s + 0.1) * 10) / 10))}
+                  />
                 )}
               </div>
             </div>
           )}
 
-          {!isEmpty && (
+          {!isEmpty && !replaying && (
             <div className="absolute flex flex-wrap-reverse items-end justify-between gap-2.5" style={{ left: 16, right: 16, bottom: 16, zIndex: 10 }}>
               <Legend />
               {derived && (
@@ -395,7 +694,41 @@ export default function App() {
             </div>
           )}
 
-          <UploadPanel open={uploadOpen} mock={mock} onClose={() => setUploadOpen(false)} onUploaded={load} />
+          {frame && <ReplayHud frame={frame} onSkip={finishReplay} />}
+
+          {briefingOpen && briefingSteps.length > 0 && !replaying && (
+            <Briefing
+              key={briefingIndex}
+              steps={briefingSteps}
+              index={Math.min(briefingIndex, briefingSteps.length - 1)}
+              onIndexChange={setBriefingIndex}
+              onClose={() => setBriefingOpen(false)}
+              onAction={(ringId) => {
+                setBriefingOpen(false);
+                select(ringId);
+              }}
+            />
+          )}
+
+          {summaryOpen && snapshot && (
+            <SessionSummary
+              snapshot={snapshot}
+              flaggedRings={flaggedRings}
+              sensitivity={sensitivity}
+              onClose={() => setSummaryOpen(false)}
+              onRaiseSensitivity={() => {
+                setSummaryOpen(false);
+                setSensitivity((s) => Math.min(1, Math.round((s + 0.1) * 10) / 10));
+              }}
+              onOpenRing={(ringId) => {
+                setSummaryOpen(false);
+                select(ringId);
+              }}
+            />
+          )}
+
+          <UploadPanel open={uploadOpen} mock={mock} onClose={() => setUploadOpen(false)} onUploaded={loadAndBrief} />
+          <ChallengePanel open={challengeOpen} mock={mock} onClose={() => setChallengeOpen(false)} onDone={runChallenge} />
         </div>
         {selectedRing && derived && (
           <InvestigationPanel
@@ -408,6 +741,7 @@ export default function App() {
             onCommit={commitDecision}
             onClose={() => select(null)}
             onNextCase={nextCase}
+            hasNext={flaggedRings.some((r) => r.status === "pending" && r.id !== selectedRing.id)}
             ringSensOverride={ringSensOverrides[selectedRing.id] ?? null}
             globalSensitivity={sensitivity}
             onSetRingSensOverride={(v) =>

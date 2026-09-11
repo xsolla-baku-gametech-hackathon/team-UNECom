@@ -52,7 +52,15 @@ Pitch-dən **ən azı 10 dəqiqə əvvəl**, sırayla.
       faylını sil + `npm run prisma:push`).
       **Niyə:** qraf jürinin gözü qarşısında dolmalıdır — boş ekrandan tam
       şəbəkəyə keçid demonun ən güclü ilk 10 saniyəsidir.
-- [ ] **Web dev server açıqdır** — `cd web && npm run dev`, brauzer tab hazır.
+- [ ] **Web dev server açıqdır** — `cd web && npm run dev`.
+- [ ] **Brauzer tab-ı `http://localhost:5173/#/app` ünvanındadır** — `#/app`
+      olmadan kök URL **landing page** açır, dashboard yox.
+      **Niyə:** dashboard lazy-load olunur (`main.tsx` → `lazy(() => import('./App.tsx'))`),
+      ona görə ilk keçiddə qısa "Loading Fraud Radar…" fasiləsi olur. Ünvanı
+      pitch-dən əvvəl açıb dashboard-un yükləndiyini gör — səhnədə həmin
+      fasilə 0:44-dəki 4 saniyəlik boşluğa əlavə olunmasın.
+      Landing page-i jüriyə göstərmək istəyirsənsə, bu **ayrıca qərardır** və
+      180 saniyəlik büdcədə yeri yoxdur — məşq edilməyib.
 - [ ] **`data-generator/output/events.csv` MASAÜSTÜNƏ kopyalanıb**, adı qısa və
       görünən. Ehtiyat: eyni qovluqdakı `events.json` da yanında.
       ⚠️ **Bu qovluq `.gitignore`-dadır** (`data-generator/.gitignore` →
@@ -97,8 +105,8 @@ cədvəldən kənara çıxırsa, fayl səhvdir (bax bölmə 0).
 
 | Halqa | UI risk | Hesab | Dəyər | Bayraqlı alış | Hub namizədi |
 |---|---|---|---|---|---|
-| `ring_3` | **0.59** | 35 | $6,616 | 26 | `hub_1` |
-| `ring_5` | 0.42 | 16 | $2,591 | 6 | `acct_0000`, `acct_0026`, `hub_2` |
+| `ring_3` | **0.59** | 35 | $6,616 | 26 | `acct_0044` |
+| `ring_5` | 0.42 | 16 | $2,591 | 6 | `acct_0095`, `acct_0089`, `acct_0025` |
 | `ring_4` | 0.27 | 3 | $281 | 0 | — |
 
 ### Slider hansı halqanı açır
@@ -113,7 +121,7 @@ cədvəldən kənara çıxırsa, fayl səhvdir (bax bölmə 0).
 
 | Slider | Görür | Görmür | Dəyər | Gözdən qaçan hub |
 |---|---|---|---|---|
-| **0.5** | **33** | **9** | **$7,607** | **1 / 1** (`hub_1`) |
+| **0.5** | **33** | **9** | **$7,607** | **1 / 1** (`acct_0044`) |
 | 0.7 / 0.8 | 33 | 19 | $10,571 | 4 / 4 |
 
 **Miqyas körpüsü (0.5-də):** $7,607 ÷ $26,814 = **28.4%** → səhnədə
@@ -121,7 +129,7 @@ cədvəldən kənara çıxırsa, fayl səhvdir (bax bölmə 0).
 ümumi dəyər. Callout dəyəri halqa dəyərindən ($6,616) niyə böyükdür →
 [`qa-defence.md`](./qa-defence.md) №11.
 
-> 🔴 **0.7+-də callout `acct_0000` və `acct_0026`-nı da "cash-out hub" kimi
+> 🔴 **0.7+-də callout `acct_0095` və `acct_0089`-nı da "cash-out hub" kimi
 > adlandırır — bunlar təmiz hesablardır.** `hub_candidates` sırf
 > degree-imbalance evristikasıdır, halqa üzvlüyü deyil. Ona görə **toggle-ı
 > yalnız 0.5-də göstər**, slider hərəkətini toggle sönük vəziyyətdə et. Jüri
@@ -133,9 +141,9 @@ cədvəldən kənara çıxırsa, fayl səhvdir (bax bölmə 0).
 ## 3 · Ssenarinin arxa planı (özün üçün — jüriyə demə)
 
 - **~70 təmiz hesab**, adi ticarət/hədiyyə/bazar fəaliyyəti.
-- **50 `mule_XXX`** — yeni yaranıb, STORE-dan alıb (alışların ~70%-i ödəniş
+- **50 mule hesabı** (`ground_truth.json`-da; adlarından bilinmir, hamı `acct_NNNN`-dir) — yeni yaranıb, STORE-dan alıb (alışların ~70%-i ödəniş
   provayderi tərəfindən bayraqlanıb), dəqiqələr içində köçürüb.
-- **2 `hub_N`** — 80–120 gün əvvəl yaranmış, **heç vaxt bayraqlanmış karta
+- **2 hub hesabı** (`acct_0044`, `acct_0025`) — 80–120 gün əvvəl yaranmış, **heç vaxt bayraqlanmış karta
   toxunmayan**, yalnız qəbul edən və sonra bazarda satan cash-out nöqtəsi.
 
 **Ölçülmüş dəqiqlik** (`docs/accuracy.md`, 5 seed, hesab-səviyyəli):
@@ -147,9 +155,12 @@ Halqa səviyyəsində: purity 94.9%, coverage 80.0%.
 > görə ölçür. Dashboard isə **halqanı** halqa skoruna görə bayraqlayır və node
 > rəngi sabit bantlardır (`riskColor`, 0.75 / 0.5) — **slider node rəngini
 > dəyişmir**. Ekranda "hub-lar işıqlanır" baş vermir; **ikinci halqa peyda
-> olur, hub_2 onun içindədir**. Səhnədə deyilən cümlə qəsdən "precision still
-> one hundred **at the account level**" formasındadır — son üç söz bu fərqin
-> özüdür. "Zero percent" demo beat-ində deyilmir, yalnız Slayd 6-da.
+> olur, acct_0025 onun içindədir** — və onunla birlikdə **4 təmiz hesab** (16-dan).
+> Bu faylda 0.8-də hesab səviyyəsində də 37 bayraqdan 1-i təmiz hesabdır
+> (skor 38.0), yəni "precision one hundred" bu ekranda doğru deyil. Ona görə
+> səhnə cümləsi false positive-i özü deyir: "…and four real players with it.
+> That is exactly why nothing here bans anyone." Harness-in 100%-i 5 seed-lik
+> generasiya olunmuş dataya aiddir, demo faylına yox.
 
 ---
 
@@ -193,7 +204,7 @@ StatsBar dolur — **388 hadisə · 122 hesab · $26,814**.
 
 **Hərəkət:** Heç nə klikləmə. Qırmızı klasteri kursorla dövrələ. Sol paneldəki
 case queue-nun dolduğunu göstər — **bir case: `ring_3`, risk 0.59, 35 hesab**.
-`hub_1` daha iri və konturlu node kimi görünür.
+`acct_0044` daha iri və konturlu node kimi görünür.
 
 **De (EN):**
 > "The graph builds itself and pulls the ring out of the noise: 94.9 percent measured purity, five seeds."
@@ -209,7 +220,7 @@ case queue-nun dolduğunu göstər — **bir case: `ring_3`, risk 0.59, 35 hesab
 - Yalnız bayraqlanmış ödənişin `to` tərəfindəki hesablar işıqlı qalır.
 - **Bütün köçürmə kənarları tamamilə sönür.**
 - Callout: **görür 33 · görmür 9 · $7,607 · gözdən qaçan hub 1 (1 hub-dan)**,
-  altda `hub_1` etiketi.
+  altda `acct_0044` etiketi.
 
 **De (EN) — toggle basılan anda:**
 > "The differentiator. This toggle shows a payment-moment tool's entire view: the receiving end of a flagged card."
@@ -224,7 +235,7 @@ case queue-nun dolduğunu göstər — **bir case: `ring_3`, risk 0.59, 35 hesab
 
 > Bu rəqəmlər yüklənmiş datadan hesablanır, hardcode deyil — jüri öz faylını
 > yükləsə, öz rəqəmlərini görür. Bu faktı Q&A üçün saxla. "Never touched a
-> card" ölçülüb: `hub_1`/`hub_2` STORE-dan heç alış etməyib.
+> card" ölçülüb: `acct_0044`/`acct_0025` STORE-dan heç alış etməyib.
 
 **Hərəkət (bitirərkən):** Toggle-ı **söndür**. Tam dəyər axını geri qayıdır.
 
@@ -241,18 +252,17 @@ tərpətmə. Toggle **sönük** olmalıdır.
 **`[slider 0.5 → 0.8, yavaş, 3 s]`**
 
 **Görünəcək (ölçülüb):** bayraqlanmış halqa sayı **1 → 2**; ikinci halqa
-(`ring_5`, 16 hesab) rənglənir; **`hub_2` onun içindədir**; case queue-da ikinci
+(`ring_5`, 16 hesab) rənglənir; **`acct_0025` onun içindədir**; case queue-da ikinci
 case peyda olur.
 
 **De (EN) — ikinci halqa görünəndə:**
-> "Raise the threshold: a second ring surfaces, hub inside, precision still one hundred at the account level."
+> "Raise the threshold: a second ring surfaces, the second hub inside, and four real players with it. That is exactly why nothing here bans anyone."
 
 > 🔴 **Bu demonun mərkəzi anıdır.** Vaxt daralsa belə kəsmə (bölmə 8).
-> "Zero percent" burada DEYİLMİR — Slayd 6-da "the doc that says our hub recall
-> is zero at default" cümləsi ilə bir dəfə, düzgün çərçivədə deyilir və Q&A-nı
-> [`qa-defence.md`](./qa-defence.md) №2-yə çəkir. Səbəb `pitch-outline.md`
-> 3d-dədir. **"At the account level"** üç sözü udma — 0.8-də toggle açılsa
-> callout 4 hub sayır, 2-si təmizdir (№3).
+> "Zero percent" səhnədə DEYİLMİR; hub recall yalnız soruşulsa
+> [`qa-defence.md`](./qa-defence.md) №2 ilə cavablanır. **"Four real players"**
+> hissəsini udma — bu faylda 0.8-də ikinci halqanın 16 hesabından 4-ü təmizdir
+> və 2-si "cash-out hub" kimi çəkilir. Jüri özü tapmamış biz deyirik.
 
 **Hərəkət:** Slider-i **0.5-ə qaytar** (növbəti addım daha təmiz görünür). Vaxt
 darsa qaytarma — kritik deyil.
@@ -265,7 +275,7 @@ darsa qaytarma — kritik deyil.
 sonra **Enter**). Investigation panel açılır.
 
 **Göstər (barmaqla, oxumadan):** ölçülmüş sübutlar → Claude izahatı →
-confidence → tövsiyə → halqadakı hesablar (`hub_1` konturlu).
+confidence → tövsiyə → halqadakı hesablar (`acct_0044` konturlu).
 
 **De (EN):**
 > "Claude writes the case: evidence, confidence, recommendation. It never decides. The analyst does. Confirmed."
@@ -298,8 +308,8 @@ məşq et.
 | Sual | Nə göstər |
 |---|---|
 | "How is this different from Sift/Kount/Magify?" | **"Ödəniş anı görünüşü"** toggle, slider 0.5-də — 5 saniyə, sözsüz sübut |
-| "So you don't detect hubs?" | Slider 0.5 → 0.8, ikinci halqa + `hub_2` |
-| "What's your false positive rate?" | Slider 0.8 + toggle → `acct_0000`/`acct_0026` (bax `qa-defence.md` №3) |
+| "So you don't detect hubs?" | Slider 0.5 → 0.8, ikinci halqa + `acct_0025` |
+| "What's your false positive rate?" | Slider 0.8 + toggle → `acct_0095`/`acct_0089` (bax `qa-defence.md` №3) |
 | "Would it work on our data?" | Upload modalı — "drop your own file" |
 | "Why is the missed value bigger than the ring's value?" | Heç nə göstərmə — `qa-defence.md` №11, 5 saniyəlik cavab |
 
@@ -382,7 +392,7 @@ olmalıdır. Amma məşqdə 3:00-ı keçirsə, bu sıra ilə:
 - 🔴 **1:08–1:41 · "Ödəniş anı görünüşü" toggle + 28%.** Yeganə görünən
   fərqləndiricimiz və miqyas körpüsü. Bunsuz biz "daha bir fraud dashboard"-uq.
 - 🔴 **1:41–1:57 · Slider 0.5 → 0.8, ikinci halqa.** Ən güclü texniki
-  arqumentimiz; "at the account level" daxil.
+  arqumentimiz; "four real players with it" daxil — false positive-i jüri tapmamış özümüz deyirik.
 - 🔴 **Slayd 2-nin ilk cümləsi (3.41% / $149M / Roblox 10-K).** Problemin real
   olduğunun yeganə xarici sübutu — və 3c-nin körpüsü ona qayıdır.
 - 🔴 **Slayd 6-nın ask cümləsi.** "We're not asking you to believe synthetic
@@ -419,7 +429,7 @@ BİR SPİKER   ·   0:45–0:49 EKRAN → DASHBOARD, ƏL SİÇANA (3 s, danışm
 0:49  3a   CSV drop [qraf 2s] → 388 · 122 · $26,814                8s+3
 1:00  3b   1 halqa: ring_3, 0.59 → "94.9 percent measured purity"  8s
 1:08  3c   🔴 TOGGLE → 33 / 9 / $7,607 / 1 hub → 28% → 149M        30s+3
-1:41  3d   🔴 SLIDER 0.5→0.8 [3s] → 2 halqa, hub_2 · "account level" 12s+4
+1:41  3d   🔴 SLIDER 0.5→0.8 [3s] → 2 halqa, acct_0025 · "account level" 12s+4
 1:57  3e   J → Enter → panel → F → Enter → "Confirmed."              6s+3
 2:06  ◀  SLAYDLAR
 2:06  S4   T&S analyst / Rockstar / trial door → API               11s+1

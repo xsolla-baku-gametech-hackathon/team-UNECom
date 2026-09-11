@@ -12,4 +12,9 @@ export const ringSensitivityRepository = {
       update: { sensitivity },
     });
   },
+
+  async deleteAll(): Promise<number> {
+    const { count } = await prisma.ringSensitivity.deleteMany();
+    return count;
+  },
 };

@@ -92,7 +92,7 @@ Response (`AnalyzeResponse`):
   "num_accounts": 352,
   "accounts": [
     {
-      "account_id": "mule_014",
+      "account_id": "acct_0214",
       "in_degree": 2, "out_degree": 3,
       "in_value_usd": 264.27, "out_value_usd": 330.66,
       "taint_score": 1.0,
@@ -106,13 +106,13 @@ Response (`AnalyzeResponse`):
   "rings": [
     {
       "ring_id": "ring_10",
-      "account_ids": ["hub_1", "mule_000", "..."],
+      "account_ids": ["acct_0044", "acct_0117", "..."],
       "size": 43,
       "risk_score": 50.02,
       "avg_taint_score": 0.5857,
       "flagged_purchase_count": 25,
       "total_value_usd": 8376.36,
-      "hub_candidates": ["hub_1", "acct_0272", "acct_0236"]
+      "hub_candidates": ["acct_0044", "acct_0272", "acct_0236"]
     }
   ]
 }
@@ -136,7 +136,7 @@ Response (`ExplainResponse`):
 ```json
 {
   "ring_id": "ring_10",
-  "explanation": "Bu 43 hesab eyni icmada toplanıb və dəyərin böyük hissəsini hub_1, acct_0272, acct_0236 hesab(lar)ına yönləndirib. Mənbədə 25 bayraqlanmış (payment_flagged) ödəniş aşkarlanıb, ümumi axın dəyəri ~$8,376. orta ehtimalla kart-fırıldaqçılığı ilə əldə edilmiş dəyərin yuyulduğu bir fərma halqası.",
+  "explanation": "Bu 43 hesab eyni icmada toplanıb və dəyərin böyük hissəsini acct_0044, acct_0272, acct_0236 hesab(lar)ına yönləndirib. Mənbədə 25 bayraqlanmış (payment_flagged) ödəniş aşkarlanıb, ümumi axın dəyəri ~$8,376. orta ehtimalla kart-fırıldaqçılığı ilə əldə edilmiş dəyərin yuyulduğu bir fərma halqası.",
   "ai_generated": true,
   "evidence": { "...": "Claude-a göndərilən strukturlaşdırılmış sübutlar" }
 }

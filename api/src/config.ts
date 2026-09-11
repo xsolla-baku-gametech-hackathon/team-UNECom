@@ -8,4 +8,10 @@ export const config = {
   // ~3,400 events (~310 bytes each) — a real studio export is larger than the
   // demo file. 16 MiB is ~50,000 events.
   bodyLimitBytes: Number(process.env.BODY_LIMIT_BYTES ?? 16 * 1024 * 1024),
+
+  // Wipes every ingested event and every analyst decision. Opt-in, and off
+  // unless explicitly enabled, because the database is now a shared Neon
+  // instance rather than a file on one laptop — a deployed build must never
+  // hand a visitor a button that empties it for everyone.
+  allowDemoReset: process.env.ALLOW_DEMO_RESET === "true",
 };

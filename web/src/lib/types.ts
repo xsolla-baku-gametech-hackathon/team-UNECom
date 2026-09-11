@@ -72,6 +72,11 @@ export interface GraphLink {
   source: string;
   target: string;
   type: EventType;
+  timestamp: string;
   valueUsdEstimate: number;
   paymentFlagged: boolean;
+  /** Ring both endpoints belong to, if any. */
+  ringId: string | null;
+  /** True when the link sits inside a ring flagged at the current sensitivity. */
+  flagged: boolean;
 }

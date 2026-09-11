@@ -94,6 +94,20 @@ export async function uploadEvents(events: RawEvent[]): Promise<{ inserted: numb
   return { inserted: data.inserted, skipped: data.skipped };
 }
 
+// Empties the backend demo database, putting the dashboard back to its "no data
+// ingested" state. Deliberately never falls back to mock data: a reset that
+// quietly did nothing would leave the old dataset on screen and look like it
+// worked. Fails loudly instead, including the 403 when the backend has
+// ALLOW_DEMO_RESET off.
+export async function resetDemoData(): Promise<{ events: number; decisions: number }> {
+  const data = await timedFetch<{ deleted: { events: number; decisions: number } }>("/events/reset", { method: "POST" }, UPLOAD_TIMEOUT_MS);
+  // Ring ids are reassigned by community detection on the next ingest, so a
+  // cached summary would end up describing a different cluster.
+  explanations.clear();
+  cachedSnapshot = null;
+  return { events: data.deleted.events, decisions: data.deleted.decisions };
+}
+
 export async function submitDecision(ringId: string, decision: Decision): Promise<void> {
   if (!usingMock) {
     await timedFetch(`/rings/${encodeURIComponent(ringId)}/decision`, {

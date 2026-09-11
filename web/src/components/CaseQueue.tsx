@@ -12,6 +12,8 @@ interface Props {
   query: string;
   onQueryChange: (q: string) => void;
   onSelect: (ringId: string) => void;
+  /** Set when every flagged ring has a verdict: the empty state offers the report. */
+  onShowSummary?: () => void;
 }
 
 const STATUS_META: Record<Ring["status"], { label: string; c: string; bg: string; bd: string }> = {
@@ -20,7 +22,7 @@ const STATUS_META: Record<Ring["status"], { label: string; c: string; bg: string
   pending: { label: "GÖZLƏYİR", c: "#c9ccd1", bg: "#16191e", bd: "#313640" },
 };
 
-export function CaseQueue({ rings, selectedRingId, filter, onFilterChange, query, onQueryChange, onSelect }: Props) {
+export function CaseQueue({ rings, selectedRingId, filter, onFilterChange, query, onQueryChange, onSelect, onShowSummary }: Props) {
   const q = query.trim().toLowerCase();
   const list = rings
     .filter((r) => {
@@ -162,9 +164,18 @@ export function CaseQueue({ rings, selectedRingId, filter, onFilterChange, query
         })}
         {list.length === 0 && (
           <div className="px-4 py-5" style={{ fontSize: 12, color: "#676d76", lineHeight: 1.5 }}>
-            {rings.length === 0
-              ? "Hazırda uyğun case yoxdur. Sensitivliyi artırın və ya axtarışı təmizləyin."
-              : "Bu filtrə uyğun case yoxdur."}
+            {rings.length === 0 ? (
+              "Hazırda uyğun case yoxdur. Sensitivliyi artırın və ya axtarışı təmizləyin."
+            ) : filter === "open" && onShowSummary ? (
+              <>
+                Bütün case-lər qərarlanıb.{" "}
+                <span onClick={onShowSummary} className="cursor-pointer" style={{ color: "#e0913f", borderBottom: "1px solid #5c3a17" }}>
+                  Yekun hesabata bax
+                </span>
+              </>
+            ) : (
+              "Bu filtrə uyğun case yoxdur."
+            )}
           </div>
         )}
       </div>

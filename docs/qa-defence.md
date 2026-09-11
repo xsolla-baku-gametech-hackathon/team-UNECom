@@ -48,11 +48,28 @@ məhz №2 və №10-a çəkir. №1 isə toggle-dan sonra hər halda gəlir.
 | "Hub recall 0% → 100%" | **burada doğrudur** | node rəngi sabit bantlardır, dəyişmir |
 | Datası | 5 seed, 352 hesab / 2,624 hadisə | demo faylı, 122 hesab / 388 hadisə |
 
-**Ona görə səhnədə "zero" yalnız bir dəfə, Slayd 6-da deyilir: "the doc that
-says our hub recall is zero at default"** — "the dashboard shows" yox. Demo
-beat-i (3d) isə "precision still one hundred **at the account level**" deyir —
-üç son söz məhz bu cədvəlin ekvivalentidir. Jüri fərqi qaldırsa, bu cədvəli
+**Səhnədə "zero" deyilmir**; hub recall yalnız Q&A-da, soruşulsa (№2).
+Demo beat-i (3d) 0.8-də ikinci halqanın içində **4 təmiz hesab** olduğunu özü
+deyir ("…and four real players with it"), çünki demo faylında o həddə
+precision artıq 100% deyil (37 bayraqdan 1-i təmiz). Harness-in 100%-i 5
+seed-lik generasiya olunmuş dataya aiddir. Jüri fərqi qaldırsa, bu cədvəli
 danış: bu, tutulmuş səhv deyil, ölçmə metodologiyasıdır.
+
+---
+
+## 0 · "That Roblox number is from 2024. What does their latest filing say?"
+
+**Fakt:** FY2024 10-K: *"total chargebacks to us from all fraud was approximately
+3.41% of bookings"*. FY2025 10-K (fevral 2026) metriki dəyişib: *"total
+chargebacks and refunds to us, some of which may have been related to fraud were
+approximately 2.5% of bookings"*. Q2 2026 10-Q: ~1.7%. $149M Roblox-un rəqəmi
+deyil, bizim hesabımızdır (4,369.1M × 3.41%) — "about" de.
+
+**De (EN):**
+> "Right — in 2025 Roblox stopped reporting fraud chargebacks separately and now
+> reports chargebacks and refunds together: 2.5 percent of bookings. That is still
+> about ten times the average merchant on Sift's network. We quote 2024 because it
+> is the last year they isolated fraud."
 
 ---
 
@@ -88,7 +105,7 @@ güclüdür.
 hub konstruksiyaya görə orada sıfır alır (80–120 günlük hesabdır). Üstəlik hub-un
 cash-out satışları in/out balansını normallaşdırır — yəni **fırıldağın özü hub-un
 risk skorunu aşağı salır**. Amma halqa üzvlüyü hədddən asılı deyil: Louvain
-`hub_1`-i **0.5-də də** halqanın içində saxlayır.
+`acct_0044`-i **0.5-də də** halqanın içində saxlayır.
 
 **De (EN):**
 > **"Correct — at the default threshold our harness catches zero percent of hubs,
@@ -100,7 +117,7 @@ risk skorunu aşağı salır**. Amma halqa üzvlüyü hədddən asılı deyil: L
 > on the threshold at all: the hub sits inside the flagged ring at the default
 > setting, at 94.9 percent measured ring purity, even though its own score is
 > below the cut-off. Raise the threshold and the second ring and second hub
-> surface too, with precision still at one hundred."
+> surface too, along with a few real players, which is why an analyst decides."
 
 **Əlavə — "niyə düzəltmədiniz?"**
 > "Because changing the scoring to improve the metric would have invalidated the
@@ -127,7 +144,7 @@ sintetik təmiz populyasiyada power trader, reseller, guild bank yoxdur.
 ### 🔴 False-positive power move — yalnız təkid edilsə
 
 Jüri "göstərin" desə: slider-i **0.8**-ə çək, toggle-ı aç. Callout **4 hub**
-sayacaq — onlardan **`acct_0000` və `acct_0026` təmiz hesablardır**
+sayacaq — onlardan **`acct_0095` və `acct_0089` təmiz hesablardır**
 (`hub_candidates` sırf degree-imbalance evristikasıdır, halqa üzvlüyü deyil).
 Bunu gizlətmə, **özün göstər**:
 
@@ -167,6 +184,39 @@ olduğu kimi — "synthetic" sözü ilə başla, "next step" ilə bitir.
 datasından hesablanır. Halqa tapılmasa, qələbə kimi çərçivələ:
 > "If it finds nothing, that's the system being right — it doesn't flag
 > everything."
+
+### 🟢 "Blind test" — Q&A-nın əsas silahı (header-dəki düymə)
+
+"Is this real data / is this canned?" gələn kimi faylı müdafiə etmə — **münsifə
+öz halqasını qurdur.** Header → **Blind test**:
+
+1. "Give me any number." Münsifin dediyi rəqəmi *Your number*-a yaz.
+2. Parametrlərə toxunma (30 mule · 1 hub · a little · 40 players). Vaxt varsa
+   *How careful is the fraudster* → **very careful** — ən güclü hekayə budur.
+3. **Generate & run.** Brauzer jurnalı yaradır, hər hesab `p_####` (mule/hub
+   sözü yoxdur), bazanı sıfırlayır, yalnız jurnalı göndərir. Replay gedir;
+   Space ilə keç.
+4. Sağ üstdə **hesab kartı**: tutulan halqa hesabları, tutulan hub-lar, səhv
+   bayraqlanan real oyunçular, bayraqlanmış case-lərdəki halqa dəyəri. Slider
+   ilə canlı dəyişir.
+
+**De (EN):**
+> "Pick any number. The browser builds a ring with that seed — every account
+> is just p-something, no labels — wipes the database and sends the log
+> alone. Who is a mule and who is a hub never leaves this browser. Now we
+> compare what the engine flagged with what was planted."
+
+**Ölçülmüş (11.09, lokal):** defolt parametrlərlə seed 1 / 777 / 2026 / 4821 →
+0.5-də **87–94 %** halqa hesabı, hub **1/1**, yalan pozitiv **0–1 / 40**.
+*Very careful* + seed 4821 → 0.5-də **10 %**, hub 0/1; slider 0.8 → **100 %**,
+hub 1/1, yalan pozitiv 1/40. Bunu gizlətmə, göstər:
+> "At the default bar a careful ring hides — three accounts, no hub. This is
+> what the slider is for: at eighty, the whole ring and the hub, one real
+> player wrongly flagged out of forty. That one is why an analyst decides,
+> not the model."
+
+**Qayda:** kartda 0 % görünsə panikə yox — kartın öz düyməsi var:
+**Raise sensitivity →**. Bir klik = +10 %.
 
 ---
 
@@ -241,8 +291,11 @@ oğurlanmış kartla edilməsi və dəyərin sonradan yuyulmasıdır.**
 **Fakt:** birinci hədəf **Persona B** — merchant of record / ödəniş
 platformasında risk lideri: chargeback birbaşa onların üzərinə düşür və bir
 inteqrasiya yüzlərlə oyunu əhatə edir. İkinci: ticarət edilə bilən iqtisadiyyatı
-olan orta studiolar. İstifadəçi isə **Persona A** — Rockstar-ın açıq "Trust &
-Safety Senior Enforcement Analyst" vakansiyası bu rolun real olduğunun sübutudur.
+olan orta studiolar. İstifadəçi isə **Persona A** — Rockstar-ın hazırda açıq
+"Senior Trust & Safety Analyst, Creator Platform" vakansiyası
+(rockstargames.com/careers/openings/position/7806748003) bu rolun real olduğunun
+sübutudur. Köhnə "Senior Enforcement Analyst" elanı artıq bağlanıb — onu
+**adla çəkmə**.
 
 **De (EN):**
 > "First customer is a merchant of record — Xsolla — because as merchant of
@@ -250,7 +303,7 @@ Safety Senior Enforcement Analyst" vakansiyası bu rolun real olduğunun sübutu
 > covers a thousand titles. Second is mid-size studios with a tradeable economy
 > and no in-house trust and safety team. The user inside both is an enforcement
 > analyst — an operator, not a data scientist, which is why the output is a
-> written case, not a risk vector. Rockstar has that exact job open right now."
+> written case, not a risk vector. Rockstar is hiring Trust and Safety analysts right now."
 
 ---
 
@@ -289,7 +342,7 @@ olmadan** — hackathon jürisi müqavilə imzalamır, səhnədə "five thousand
 
 Fərqin mənbəyi, çəkisinə görə: (1) gözdən qaçan mule-ların **bayraqlanmamış**
 STORE alışları — kart bayraqlanmayıb, ona görə ödəniş anı aləti onları
-görməyib, amma pul həmin hesaba düşüb; (2) halqadan kənar hesabların `hub_1`-ə
+görməyib, amma pul həmin hesaba düşüb; (2) halqadan kənar hesabların `acct_0044`-ə
 ticarəti. Halqanın köçürmə dəyərinin böyük hissəsi onsuz da bu 9 hesabda —
 əsasən hub-da — bitir: hub məhz dəyərin toplandığı yerdir.
 

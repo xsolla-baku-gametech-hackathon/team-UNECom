@@ -105,7 +105,7 @@ awk '/^\*\*De \(EN\)/{f=1;buf="";next} f&&/^>/{sub(/^> /,"");buf=buf" "$0;next} 
 are believed to be fraud-sourced"* — Valve, Oktyabr 2019. Başqa heç nə.
 
 **De (EN):**
-> "In 2019, Valve's answer to fraud was amputation: delete CS:GO key trading. Still the state of the art. We built the alternative."
+> "In 2019, Valve's answer to fraud was amputation: newly bought CS:GO keys, never tradeable again. Still true today. We built the alternative."
 
 *(22 söz · ~10 s)*
 
@@ -140,10 +140,10 @@ oxunur, deyilmir.
 |---|---|
 | **3.41%** | Roblox fraud chargebacks, FY2024 — *SEC 10-K* ($4.37B bookings) |
 | **≈ $149M** | həmin faizin dollar qarşılığı |
-| **0.26%** | sənaye ortalaması — *Sift Q4 2025* → **13×** |
+| **0.26%** | Sift şəbəkəsində merchant ortalaması (bütün sənaye deyil) — *Sift Q4 2025* → **13×** |
 
 **De (EN):**
-> "Roblox told the SEC that 3.41 percent of its 2024 bookings, 149 million dollars, went to fraud chargebacks. Industry average: 0.26 percent. Tradeable economies: thirteen times more exposed."
+> "Roblox's 2024 annual report: chargebacks from fraud, 3.41 percent of bookings, about 149 million dollars. The average merchant on Sift's network: 0.26 percent. One tradeable economy, thirteen times the exposure."
 
 *(28 söz · ~12 s)*
 
@@ -214,7 +214,7 @@ $6,616, 26 bayraqlanmış alış). Hub konturlu və daha iri node kimi görünü
 hesablar işıqlı qalır, köçürmə kənarları tamamilə sönür, sağda callout açılır.
 
 **Gözlənilən callout (0.5-də ölçülüb):** görür **33** · görmür **9** ·
-**$7,607** · gözdən qaçan hub **1 / 1** (`hub_1`).
+**$7,607** · gözdən qaçan hub **1 / 1** (`acct_0044`).
 
 **De (EN):**
 > "The differentiator. This toggle shows a payment-moment tool's entire view: the receiving end of a flagged card. It sees 33 accounts. It misses 9, holding seven thousand six hundred dollars, including a cash-out hub that never touched a card. Twenty-eight percent of every dollar here lands in accounts a payment-time tool cannot see. The file is small. The blind spot behind Roblox's 149 million is not."
@@ -246,17 +246,17 @@ sintetik faylda 122 hesabın 50-si mule-dur — real iqtisadiyyatın sıxlığı
 Nisbət *bizim faylın* nisbətidir; körpü isə Slayd 2-nin artıq deyilmiş 149M-inə
 atılır, Slayd 5-in hələ deyilməmiş $1B-nə yox. $1B Slayd 5-də təzə qalır.
 
-**"Never touched a card" (flagged yox):** ölçülüb — `hub_1` və `hub_2`
+**"Never touched a card" (flagged yox):** ölçülüb — `acct_0044` və `acct_0025`
 STORE-dan heç bir alış etməyib. Hub heç bir karta toxunmur, bayraqlısına da yox.
 
 ### 3d · Həddi qaldır — ikinci halqa · 1:41–1:57 (12 s + 4 s)
 
 **Ekranda:** Toggle söndürülür, slider 0.5-dən 0.8-ə çəkilir.
 **Gözlənilən nəticə (ölçülüb):** bayraqlanmış halqa **1 → 2**; ikinci halqa
-(`ring_5`, UI risk 0.42, 16 hesab) peyda olur və **içində `hub_2` var**.
+(`ring_5`, UI risk 0.42, 16 hesab) peyda olur və **içində `acct_0025` var**.
 
 **De (EN):**
-> "A hub is aged, low-velocity, never flagged: invisible to per-account scoring. Raise the threshold: a second ring surfaces, hub inside, precision still one hundred at the account level."
+> "A hub is aged, low-velocity, never flagged: invisible to per-account scoring. Raise the threshold: a second ring surfaces, the second hub inside, and four real players with it. That is exactly why nothing here bans anyone."
 
 *(28 söz · ~12 s)*
 
@@ -266,19 +266,22 @@ düzgün idi, yeri səhv: repo oxumayan münsif 30 saniyəlik çərçivəni yox,
 "zero" sözünü eşidir, və onu demo ekranındakı ikinci halqa ilə bağlaya bilmir
 (harness hesab-səviyyəli, dashboard halqa-səviyyəli — bax xəbərdarlıq aşağıda).
 
-Rəqəmin işlədiyi yeganə kontekst **"we publish it"** cümləsidir — o da Slayd
-6-dadır: "including the doc that says our hub recall is zero at default". Orada
-rəqəm zəiflik yox, dəvətdir. Tam reframe [`qa-defence.md`](./qa-defence.md)
+Rəqəmin işlədiyi yeganə kontekst **"we publish it"** cümləsidir. Əvvəl Slayd
+6-da idi; indi Slayd 6 komandanı adlandırır (Nikita-nın pitch tələblərinin 6-cı
+bəndi: kim idi, kim nə rol oynadı), dürüstlüyü isə 3d-dəki "four real players"
+cümləsi canlı ekranda daşıyır. Tam reframe [`qa-defence.md`](./qa-defence.md)
 №2-də hazırdır və Slayd 6 Q&A-nı ora çəkir. 3d-də qalan: hub-un *niyə*
 per-account skorlama üçün görünməz olduğu (bir cümlə) + ekranda baş verən şey
 (bir cümlə). Qazanc: 15 saniyə.
 
-**"At the account level" (dürüstlük tikişi):** "precision still one hundred"
-harness-in hesab-səviyyəli ölçüsüdür və doğrudur. Amma eyni slider mövqeyində
-(0.8) toggle açılsa, callout **4 hub** sayır və 2-si təmiz hesabdır. Münsif
-sonradan alətlə oynasa, "səhnədə 100% dedilər" kimi xatırlamasın deyə üç söz
-əlavə olunub. Toggle 0.8-də **göstərilmir** — bu, planlı Q&A "power move"-udur
-(№3).
+**"Four real players with it" (dürüstlük tikişi):** əvvəlki cümlə "precision
+still one hundred at the account level" idi. Harness-in 100%-i 5 seed-lik
+generasiya olunmuş dataya aiddir; **səhnədəki demo faylında** 0.8-də ikinci
+halqanın 16 hesabından 4-ü təmizdir, 2-si ekranda "cash-out hub" kimi çəkilir,
+hesab səviyyəsində də 37 bayraqdan 1-i təmizdir. Yəni o cümlə bu ekranda yalan
+olardı. Mansur Mustafayevin bootcamp slaydı: "Be honest about false positives.
+Banning real players kills these systems." Ona görə false positive-i jüri
+tapmamış özümüz deyirik və o, "nothing here bans anyone" cümləsinə körpü olur.
 
 > ⚠️ **Dəqiqlik qeydi — bunu qarışdırma.** "Hub recall 0% → 100%" rəqəmi
 > `eval/evaluate.py`-nin **hesab-səviyyəli** ölçüsüdür. Dashboard isə
@@ -311,7 +314,7 @@ cədvəl kəsildi; dinlənilən slaydda oxunacaq şey 3-dən çox olmamalıdır)
 | Drag-and-drop CSV or JSON today · same `/events` API in production | **Game economy / live-ops lead** |
 
 **De (EN):**
-> "Built for a Trust and Safety analyst; Rockstar is hiring one now. Drag-and-drop is the trial door; production pushes the same events to our API."
+> "Built for a Trust and Safety analyst, a role Rockstar is hiring for today. Drag-and-drop is the trial door; production pushes the same events to our API."
 
 *(25 söz · ~11 s)*
 
@@ -354,14 +357,14 @@ yerini alırdı. Vaxt artıq qalsa deyilir (bax `demo-script.md` §8).
 
 | Ad | Rol |
 |---|---|
-| _(doldur)_ | Engine / detection (Python · FastAPI) |
-| _(doldur)_ | API / data layer (Node · Fastify · Prisma) |
-| _(doldur)_ | Dashboard / UX (React · Vite) |
-| _(doldur)_ | Data generation & evaluation |
-| _(doldur)_ | Pitch & business case |
+| Nezrin Ceferova | Pitch & presentation — speaker on stage |
+| Aslan Musayev | Data & evaluation — rings · accuracy.md |
+| Sardar Soltanzade | Business case — sources · ROI model |
+| Hamid Aslanov | Full-stack · engine — Python · FastAPI |
+| Matin Mehdi | Full-stack · API & UI — Node · Prisma · React |
 
 **De (EN) — komanda (2:37–2:45):**
-> "Team UNECom. Everything's in the repo, including the doc that says our hub recall is zero at default."
+> "Team UNECom: five people, five roles, all on this slide. Every line we wrote is in the public repo."
 
 *(18 söz · ~8 s)*
 
@@ -410,10 +413,10 @@ meyarında birbaşa itki. İndi son cümlə:
 | 122 hesab · 388 hadisə · $26,814 | demo faylı, engine ölçüsü, 10.09.2026 | MEASURED |
 | görür 33 · görmür 9 · $7,607 · 1 hub | həmin fayl, sensitivity 0.5 | MEASURED |
 | **28% ("twenty-eight")** | $7,607 ÷ $26,814 = 28.4%, aşağı yuvarlaqlanıb | arithmetic |
-| hub STORE-dan alış etməyib ("never touched a card") | həmin fayl, `hub_1`/`hub_2` üçün 0 alış | MEASURED |
+| hub STORE-dan alış etməyib ("never touched a card") | həmin fayl, `acct_0044`/`acct_0025` üçün 0 alış | MEASURED |
 | 4 siqnal · çəkilər 0.40 / 0.25 / 0.20 / 0.15 (slaydda) · Louvain | `engine/app/risk_scoring.py` WEIGHTS, `community.py` | CODE |
 | "detect it from the money flow between players, not from the client" · 9 pilləli huni (slaydda) | Mansur Mustafayev, GameTech Bootcamp workshop, 9 sentyabr 2026 | SOURCED (bootcamp slaydı) |
-| Rockstar T&S vakansiyası | themuse.com elanı | SOURCED |
+| Rockstar T&S vakansiyası | rockstargames.com/careers/openings/position/7806748003 (Senior Trust & Safety Analyst, Creator Platform; köhnə themuse elanı bağlanıb) | SOURCED |
 
 **Qayda:** bu cədvəldə olmayan heç bir rəqəmi səhnədə demə. Jüri mənbə soruşsa,
 cavab bir sətirdir — hamısı yuxarıdadır.

@@ -1,6 +1,6 @@
 # SPEAKER SCRIPT — səhnədə əldə tutulan yeganə vərəq (bir spiker)
 
-**UNECom · 11 Sep 2026 · 15:00 · 3:00 pitch · bir spiker · file: `events.csv` on Desktop · slider 0.5 · toggle OFF**
+**UNECom · 11 Sep 2026 · 15:00 · 3:00 pitch · spiker: Nezrin · file: `events.csv` on Desktop · slider 0.5 · toggle OFF**
 
 Oxu: yuxarıdan aşağı. Mötərizədə yalnız (vaxt · klik · ekrandan oxunan rəqəm).
 `[…]` = qəsdən fasilə, büdcədədir. *tələffüz:* sətri = rəqəmi belə de.
@@ -11,7 +11,7 @@ Oxu: yuxarıdan aşağı. Mötərizədə yalnız (vaxt · klik · ekrandan oxuna
 
 **(0:00 · qara slayd, Valve sitatı · klik yoxdur)**
 
-> "In 2019, Valve's answer to fraud was amputation: delete CS:GO key trading. Still the state of the art. We built the alternative."
+> "In 2019, Valve's answer to fraud was amputation: newly bought CS:GO keys, never tradeable again. Still true today. We built the alternative."
 
 `[nəfəs, 2 s · klik → başlıq slaydı]`
 
@@ -23,7 +23,7 @@ Oxu: yuxarıdan aşağı. Mötərizədə yalnız (vaxt · klik · ekrandan oxuna
 
 **(0:26 · S2 üç rəqəm · klik yoxdur)**
 
-> "Roblox told the SEC that 3.41 percent of its 2024 bookings, 149 million dollars, went to fraud chargebacks. Industry average: 0.26 percent. Tradeable economies: thirteen times more exposed."
+> "Roblox's 2024 annual report: chargebacks from fraud, 3.41 percent of bookings, about 149 million dollars. The average merchant on Sift's network: 0.26 percent. One tradeable economy, thirteen times the exposure."
 
 *tələffüz:* 3.41 → **three point four one** · 149 → **one hundred forty-nine** · 0.26 → **zero point two six** · 2024 → **twenty twenty-four**
 
@@ -81,9 +81,9 @@ Oxu: yuxarıdan aşağı. Mötərizədə yalnız (vaxt · klik · ekrandan oxuna
 
 `[slider 0.5 → 0.8, yavaş, 3 s]`
 
-**(1:50 · oxu: 2 halqa · ring_5 · hub_2 içində)**
+**(1:50 · oxu: 2 halqa · ring_5 · acct_0025 içində · 4 təmiz hesab da içində)**
 
-> "Raise the threshold: a second ring surfaces, hub inside, precision still one hundred at the account level."
+> "Raise the threshold: a second ring surfaces, the second hub inside, and four real players with it. That is exactly why nothing here bans anyone."
 
 `[slider → 0.5 (vaxt varsa)]`
 
@@ -99,17 +99,17 @@ Oxu: yuxarıdan aşağı. Mötərizədə yalnız (vaxt · klik · ekrandan oxuna
 
 **(2:06 · S4)**
 
-> "Built for a Trust and Safety analyst; Rockstar is hiring one now. Drag-and-drop is the trial door; production pushes the same events to our API."
+> "Built for a Trust and Safety analyst, a role Rockstar is hiring for today. Drag-and-drop is the trial door; production pushes the same events to our API."
 
 **(2:18 · S5)**
 
-> "Xsolla published a billion dollars of direct-to-consumer volume. A one percent dispute rate, our assumption inside a sourced 0.26 to 3.41 band, is ten million a year. We charge 60 thousand. A 50-million-bookings studio pays that back in 2.4 months."
+> "Xsolla's own 2025 data: over a billion dollars of direct-to-consumer PC sales. A one percent dispute rate, our assumption inside a sourced 0.26 to 3.41 band, is ten million a year. A 50-million-bookings studio pays us 60 thousand a year and earns it back in 2.4 months."
 
 *tələffüz:* 0.26 to 3.41 → **zero point two six to three point four one** · 60 → **sixty thousand** · 50-million-bookings → **fifty-million-bookings** · 2.4 → **two point four months**
 
 **(2:37 · S6)**
 
-> "Team UNECom. Everything's in the repo, including the doc that says our hub recall is zero at default."
+> "Team UNECom: five people, five roles, all on this slide. Every line we wrote is in the public repo."
 
 `[nəfəs · yavaşla]`
 

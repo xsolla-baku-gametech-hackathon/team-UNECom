@@ -66,4 +66,9 @@ export const eventRepository = {
       account_created_at: r.accountCreatedAt ? r.accountCreatedAt.toISOString() : null,
     }));
   },
+
+  async deleteAll(): Promise<number> {
+    const { count } = await prisma.event.deleteMany();
+    return count;
+  },
 };

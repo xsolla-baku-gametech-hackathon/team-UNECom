@@ -1,5 +1,14 @@
 # Design brief — pitch deck for "Fraud Radar" (Team UNECom)
 
+> **Status, 11 Sep 2026 01:00 — the deck is built.** Files: `~/Desktop/UNECom-pitch-deck.pdf` (stage copy, fonts embedded) and `~/Desktop/UNECom-pitch-deck.html` (same deck, arrow keys, F = fullscreen, works offline). Not in the repo: it carries team photos and the repo is public.
+> The built deck follows this brief with these deliberate departures, all made after rendering at 1920×1080 and after re-reading the bootcamp decks (31–57 words per page):
+> - word budget per slide is ≤ 60 (was 90–143); captions are one line, the weights list and the four-row feature table are gone (weights stay in `qa-defence.md` №12 for Q&A);
+> - 03 shows our own value-flow diagram (`stolen card → purchase ┆ mule accounts → cash-out hub → resale`, divider labelled "payment-time tools see this / Fraud Radar sees this") instead of the nine-step funnel; the headline is still attributed to M. Mustafayev on the source line; stack shown as three pills;
+> - 04 is one feature line plus three numbered user cards (Nikita's card style), not a table;
+> - 02 sets `3.41%` at 200 px as hero and the other two numbers at 120 px stacked on the right; 05 numbers are 96 px;
+> - every slide from 01b on names the judging criterion it answers, top-right, in the eyebrow style (01b → 2, 02 → 1, 03 → 4, 04 and 05 → 5, 06 → 6; the live demo covers 3 and 7);
+> - 06 adds one line for criterion 6: `Five people · 48 hours · one shared event schema · four parallel builds`; roles are one line each.
+
 You are designing a 3-minute hackathon pitch deck for a jury of payments-industry professionals. Read the whole brief before you draw. Every word of on-slide copy and every number is given here verbatim. Your job is layout, typography and rhythm. **If a word or a number is not in this brief, it does not go on a slide.**
 
 ---
@@ -88,7 +97,7 @@ Values are taken from the product's stylesheet and components. Use them as the c
 **Typefaces** (Google Fonts; all three are already used by the product):
 
 - **IBM Plex Sans** — headlines, body, captions. Weights 400, 600, 700.
-- **IBM Plex Mono** — every number, every source line, every code token (`/events`, `events.csv`, `hub_1`). Weights 400, 600. Always tabular figures.
+- **IBM Plex Mono** — every number, every source line, every code token (`/events`, `events.csv`, `acct_0044`). Weights 400, 600. Always tabular figures.
 - **Barlow Semi Condensed** — uppercase labels only: eyebrows and pills. Weight 600–700, letter-spacing 0.15em. This is the product's label style and the one detail that ties deck to dashboard.
 
 **Type scale, px at 1920×1080. Use these values and nothing between them.**
@@ -177,7 +186,7 @@ Source line: `github.com/xsolla-baku-gametech-hackathon/team-UNECom`
 
 Top band: pill `SOURCED` · eyebrow `02 · THE PROBLEM`.
 
-**Headline:** `A tradeable economy is 13× more exposed than normal e-commerce.` — hot phrase: `13×` (set in Plex Mono inside the headline).
+**Headline:** `One tradeable economy: 13× the average merchant's chargeback rate.` — hot phrase: `13×` (set in Plex Mono inside the headline).
 
 Content zone: three numbers in one row, equal columns, baselines aligned, tabular, with the same caption height in all three columns (the first caption is the longest; align the other two to its top, not its bottom):
 
@@ -185,7 +194,7 @@ Content zone: three numbers in one row, equal columns, baselines aligned, tabula
 |---|---|
 | `3.41%` | `of Roblox bookings lost to fraud chargebacks, FY2024 — stolen cards → in-game currency → resale off-platform` |
 | `≈ $149M` | `the same figure in dollars, on $4.37B of bookings` |
-| `0.26%` | `cross-industry average chargeback rate` |
+| `0.26%` | `average chargeback rate, Sift merchant network` |
 
 Source line: `Roblox FY2024 Form 10-K (SEC) · Sift Q4 2025 Digital Trust Index`
 
@@ -241,11 +250,11 @@ Content zone: a three-row, two-column table, hairline dividers, no header row, c
 
 | What | Who |
 |---|---|
-| `Value-flow graph · Louvain rings · sensitivity slider` | `Trust & Safety analyst` — `Rockstar is hiring this role now` |
+| `Value-flow graph · Louvain rings · sensitivity slider` | `Trust & Safety analyst` — `Rockstar is hiring T&S analysts now` |
 | `Claude-written case · human decision · nothing auto-banned` | `Payments / risk lead` — `at a merchant of record` |
 | `Drag-and-drop CSV or JSON today · same /events API in production` | `Game economy / live-ops lead` |
 
-Source line: `Rockstar Games — Trust & Safety Senior Enforcement Analyst, open role (themuse.com)`
+Source line: `Rockstar Games — Senior Trust & Safety Analyst, open role (rockstargames.com/careers)`
 
 ### 05 · Monetization
 
@@ -263,7 +272,7 @@ Content zone: three numbers stacked, each on its own hairline-separated row; num
 
 The `2.4 months` row is the slide's most valuable number: set the number in `#e8e6e1` at 120 like the others, but give the row 24 px more vertical space above and below than the other two.
 
-Source line: `PocketGamer.biz, Jun 2026 · Sift Q4 2025 · Vendr (Sift contract data) · Roblox FY2024 10-K · ROI model: business-case.md §5`
+Source line, one line: `PocketGamer.biz, Jun 2026 · Sift Q4 2025 · Vendr · Roblox FY2024 10-K · business-case.md §5`
 
 ### 06 · Team + ask
 
@@ -277,23 +286,17 @@ Content zone: the team, **five** equal columns (five 240 px frames across the 17
 
 - **Photo** — square, 240×240, radius 4 px, 2 px `#24282f` border. The five source photos are shot in five different conditions (daylight street, night with a film filter, grey studio, phone selfie, white studio), so they must be made to match: crop each to a square with the eyes on the same horizontal line and the head filling the same fraction of the frame, then convert **all five to greyscale** with the same contrast. Colour photos in five different palettes on one row read as "pasted in"; five matched greyscale frames read as one team. Place them in the order below. If a photo is missing, draw a `#0d0f12` square of the same size with `(photo)` in Plex Mono 28 `#4b5058` centred.
 - **Name** — Plex Sans 36 weight 600, verbatim and in this order: `Nezrin Ceferova` · `Aslan Musayev` · `Sardar Soltanzade` · `Hamid Aslanov` · `Matin Mehdi`.
-- **Role** — Plex Sans 28 `#c3c7cc`, two lines in every column (role on line one, stack on line two; a column with no stack keeps an empty second line so the five columns stay level). The five roles, verbatim, are:
-  - `Engine / detection` / `Python · FastAPI`
-  - `API / data layer` / `Node · Fastify · Prisma`
-  - `Dashboard / UX` / `React · Vite`
-  - `Data generation & evaluation` / (empty)
-  - `Pitch & business case` / (empty)
+- **Role** — Plex Sans 28 `#c3c7cc`, two lines in every column (role on line one, stack or artefact on line two), verbatim, under the names in the same order:
 
-  Which role sits under which name is set by the team, not by the designer: use the mapping in the section "Name → role" below if it is filled in; if it is not, print `(role)` under every name and leave the second line empty.
+| Name | Line one | Line two |
+|---|---|---|
+| Nezrin Ceferova | `Pitch & presentation` | `speaker on stage` |
+| Aslan Musayev | `Data & evaluation` | `rings · accuracy.md` |
+| Sardar Soltanzade | `Business case` | `sources · ROI model` |
+| Hamid Aslanov | `Full-stack · engine` | `Python · FastAPI` |
+| Matin Mehdi | `Full-stack · API & UI` | `Node · Prisma · React` |
 
-**Name → role** (team fills this in; leave `(role)` until it is filled):
-| Name | Role |
-|---|---|
-| Nezrin Ceferova | (role) |
-| Aslan Musayev | (role) |
-| Sardar Soltanzade | (role) |
-| Hamid Aslanov | (role) |
-| Matin Mehdi | (role) |
+Each role line is at most 21 characters: five columns of 326 px at Plex Sans 28 hold no more, and a wrapped role breaks the shared baseline.
 
 Below the team row, one line in Plex Mono 28 `#9aa0a8` with a `MEASURED` pill at its left:
 `docs/accuracy.md · hub recall at default sensitivity: 0% · published, not patched`
