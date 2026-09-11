@@ -272,7 +272,7 @@ export function buildMockExplanation(ringId: string, snapshot: GraphSnapshot) {
         `each bought currency from STORE and moved it to ${ring.hubAccountIds.length} hub accounts within minutes. ` +
         `About 70% of the source purchases were flagged by the payment provider as likely stolen cards. ` +
         `The hubs turn the collected value into items and sell them on the marketplace, which is the cash-out step. ` +
-        `Total value at risk: $${ring.totalValueUsd.toLocaleString()}.`,
+        `Total value at risk: $${ring.totalValueUsd.toLocaleString("en-US")}.`,
       signals: ring.signals.map((label) => ({ label, value: "" })),
       recommendedAction: "Freeze the feeder accounts, flag the hubs for investigation, and notify the payment provider.",
     };
