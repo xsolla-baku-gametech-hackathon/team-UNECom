@@ -5,10 +5,10 @@ import { eventRepository } from "../repositories/eventRepository.js";
 // risk_score there is 0-100, same scale as everywhere else in the engine.
 function recommendedActionFor(riskScore: unknown): string {
   const score = typeof riskScore === "number" ? riskScore : null;
-  if (score === null) return "Nəticəni manual araşdırma üçün nəzərdən keçirin.";
-  if (score >= 60) return "Bütün üzv hesabları dondurun və ödəniş provayderinə bildirin.";
-  if (score >= 30) return "Əlavə araşdırma üçün bayraqlayın, avtomatik bloklamayın.";
-  return "Monitorinqi davam etdirin, hazırda kifayət qədər dəlil yoxdur.";
+  if (score === null) return "Review the result manually.";
+  if (score >= 60) return "Freeze every member account and notify the payment provider.";
+  if (score >= 30) return "Flag for further investigation; do not block automatically.";
+  return "Keep monitoring; there is not enough evidence yet.";
 }
 
 // Claude tends to decorate its answer with markdown (**bold**, headings,
@@ -32,19 +32,19 @@ function toRingExplanation(res: EngineExplainResponse) {
   const signals: { label: string; value: string }[] = [];
 
   if (typeof e.account_count === "number") {
-    signals.push({ label: "Hesab sayı", value: String(e.account_count) });
+    signals.push({ label: "Accounts", value: String(e.account_count) });
   }
   if (typeof e.flagged_purchase_count === "number") {
-    signals.push({ label: "Bayraqlanmış mənbə alışları", value: String(e.flagged_purchase_count) });
+    signals.push({ label: "Flagged source purchases", value: String(e.flagged_purchase_count) });
   }
   if (typeof e.avg_taint_score === "number") {
-    signals.push({ label: "Orta taint score", value: `${Math.round(e.avg_taint_score * 100)}%` });
+    signals.push({ label: "Average taint score", value: `${Math.round(e.avg_taint_score * 100)}%` });
   }
   if (typeof e.total_value_usd === "number") {
-    signals.push({ label: "Ümumi dəyər", value: `$${e.total_value_usd.toLocaleString("en-US")}` });
+    signals.push({ label: "Total value", value: `$${e.total_value_usd.toLocaleString("en-US")}` });
   }
   if (Array.isArray(e.hub_candidates) && e.hub_candidates.length > 0) {
-    signals.push({ label: "Hub hesablar", value: e.hub_candidates.join(", ") });
+    signals.push({ label: "Hub accounts", value: e.hub_candidates.join(", ") });
   }
 
   return {
@@ -57,7 +57,7 @@ function toRingExplanation(res: EngineExplainResponse) {
 }
 
 export const explanationService = {
-  // /web's InvestigationPanel "Claude izahatı" section. Runs a fresh
+  // /web's InvestigationPanel "Model interpretation" section. Runs a fresh
   // analyze() first to get an analysis_id grounded in the current stored
   // events, then asks the engine to explain that specific ring within it —
   // otherwise /explain would fall back to whatever analysis some other

@@ -26,7 +26,7 @@ export async function ringRoutes(app: FastifyInstance) {
     }
   });
 
-  // GET /rings/:id/explanation — /web's InvestigationPanel "Claude izahatı"
+  // GET /rings/:id/explanation — /web's InvestigationPanel "Model interpretation"
   // section, proxied to the engine's Claude-generated explanation.
   app.get<{ Params: { id: string } }>("/rings/:id/explanation", async (request, reply) => {
     try {

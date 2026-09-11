@@ -51,15 +51,15 @@ function buildAccountRingMap(rings: EngineRingResult[]): Map<string, string> {
 // phrase them here rather than push formatting onto /web.
 function deriveSignals(ring: EngineRingResult): string[] {
   const signals: string[] = [
-    `${ring.size} hesab qrupda, orta taint score ${Math.round(ring.avg_taint_score * 100)}%`,
+    `${ring.size} accounts in the group, average taint score ${Math.round(ring.avg_taint_score * 100)}%`,
   ];
   if (ring.flagged_purchase_count > 0) {
-    signals.push(`${ring.flagged_purchase_count} mənbə alışı ödəniş provayderi tərəfindən bayraqlanıb`);
+    signals.push(`${ring.flagged_purchase_count} source purchases flagged by the payment provider`);
   }
   if (ring.hub_candidates.length > 0) {
-    signals.push(`${ring.hub_candidates.length} hub hesab dəyəri toplayıb nağdlaşdırır`);
+    signals.push(`${ring.hub_candidates.length} ${ring.hub_candidates.length === 1 ? "hub collects" : "hubs collect"} the value and cash it out`);
   }
-  signals.push(`Risk altında olan ümumi dəyər: $${ring.total_value_usd.toLocaleString("en-US")}`);
+  signals.push(`Total value at risk: $${ring.total_value_usd.toLocaleString("en-US")}`);
   return signals;
 }
 
