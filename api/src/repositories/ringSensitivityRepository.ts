@@ -1,4 +1,4 @@
-import { prisma } from "../db/prisma.js";
+import { prisma, type DbClient } from "../db/prisma.js";
 
 export const ringSensitivityRepository = {
   async findAll() {
@@ -13,8 +13,10 @@ export const ringSensitivityRepository = {
     });
   },
 
-  async deleteAll(): Promise<number> {
-    const { count } = await prisma.ringSensitivity.deleteMany();
+  // `db` lets a caller run this inside prisma.$transaction alongside the
+  // other tables' deleteAll.
+  async deleteAll(db: DbClient = prisma): Promise<number> {
+    const { count } = await db.ringSensitivity.deleteMany();
     return count;
   },
 };

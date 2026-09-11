@@ -1,4 +1,4 @@
-import { prisma } from "../db/prisma.js";
+import { prisma, type DbClient } from "../db/prisma.js";
 import type { EventInput } from "../types/event.js";
 import type { EngineEvent } from "../clients/engineClient.js";
 
@@ -67,8 +67,10 @@ export const eventRepository = {
     }));
   },
 
-  async deleteAll(): Promise<number> {
-    const { count } = await prisma.event.deleteMany();
+  // `db` lets a caller run this inside prisma.$transaction alongside the
+  // other tables' deleteAll.
+  async deleteAll(db: DbClient = prisma): Promise<number> {
+    const { count } = await db.event.deleteMany();
     return count;
   },
 };
