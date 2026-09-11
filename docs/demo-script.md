@@ -48,8 +48,10 @@ Pitch-dən **ən azı 10 dəqiqə əvvəl**, sırayla.
 - [ ] **Engine ayaqdadır** — `cd engine && .venv/bin/uvicorn app.main:app --port 8000`,
       `/health` cavab verir.
 - [ ] **API ayaqdadır və verilənlər bazası BOŞDUR.** `GET /events` heç nə
-      qaytarmamalıdır. Dolu qalıbsa: `npm run prisma:migrate reset` (və ya DB
-      faylını sil + `npm run prisma:push`).
+      qaytarmamalıdır. Dolu qalıbsa: sol üstdəki **"Fraud Radar"** yazısına
+      klik → **"Yes, clear it"**. Bu yalnız `api/.env`-də
+      `ALLOW_DEMO_RESET="true"` olanda işləyir (lokal API); canlı Render
+      API-si reseti 403 ilə rədd edir.
       **Niyə:** qraf jürinin gözü qarşısında dolmalıdır — boş ekrandan tam
       şəbəkəyə keçid demonun ən güclü ilk 10 saniyəsidir.
 - [ ] **Web dev server açıqdır** — `cd web && npm run dev`.
