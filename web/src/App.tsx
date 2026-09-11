@@ -52,10 +52,11 @@ export default function App() {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const canvasWrapRef = useRef<HTMLDivElement>(null);
 
-  async function load() {
+  async function load(): Promise<GraphSnapshot> {
     const data = await fetchGraph();
     setSnapshot(data);
     setMock(isUsingMockData());
+    return data;
   }
 
   useEffect(() => {
@@ -145,7 +146,7 @@ export default function App() {
 
   // Guided walkthrough of what was just found, built from the live numbers.
   const briefingSteps = useMemo(
-    () => (snapshot && derived && paymentView && snapshot.accounts.length > 0 ? buildBriefing(snapshot, derived, flaggedRings, paymentView, sensitivity) : []),
+    () => (snapshot && derived && paymentView && snapshot.accounts.length > 0 ? buildBriefing(snapshot, flaggedRings, paymentView, sensitivity) : []),
     [snapshot, derived, flaggedRings, paymentView, sensitivity],
   );
   const briefingStep = briefingOpen ? briefingSteps[Math.min(briefingIndex, briefingSteps.length - 1)] : undefined;
@@ -157,9 +158,10 @@ export default function App() {
   }
 
   async function loadAndBrief() {
+    setUploadOpen(false);
     setChallenge(null);
-    await load();
-    startReplay();
+    const data = await load();
+    startReplay(data.events.length > 0);
   }
 
   async function runChallenge(truth: ChallengeTruth) {
@@ -167,8 +169,8 @@ export default function App() {
     setChallenge(truth);
     setSensitivity(0.5);
     setRingSensOverrides({});
-    await load();
-    startReplay();
+    const data = await load();
+    startReplay(data.events.length > 0);
   }
 
   // Replay plays the log back in timestamp order, then the rings "snap" in
@@ -180,8 +182,12 @@ export default function App() {
     [replaying, derived, timeline, replayIndex],
   );
 
-  function startReplay() {
-    if (!timeline || timeline.order.length === 0) return;
+  // `hasEvents` is passed by callers that just loaded a new snapshot: the
+  // `timeline` memo in this closure still describes the previous one, so on
+  // the first upload into an empty database it would say "nothing to play"
+  // and the replay would silently never start.
+  function startReplay(hasEvents = (timeline?.order.length ?? 0) > 0) {
+    if (!hasEvents) return;
     select(null);
     setBriefingOpen(false);
     setSummaryOpen(false);
@@ -480,7 +486,7 @@ export default function App() {
 
         {timeline && timeline.order.length > 0 && !isEmpty && (
           <div
-            onClick={startReplay}
+            onClick={() => startReplay()}
             className="flex cursor-pointer items-center gap-2 rounded uppercase"
             style={{ height: 28, padding: "0 12px", border: "1px solid #313640", background: replaying ? "#16191e" : "#0d0f12", color: "#c3c7cc", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12, letterSpacing: ".1em" }}
           >
