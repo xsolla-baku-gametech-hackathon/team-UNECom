@@ -175,3 +175,5 @@ aşkarlanır, sonra hər icmanın orta riski + bayraqlanmış alış sayı +
   sadəcə AI izahı yerinə şablon mətn qaytarır (`ai_generated: false`).
 - `CLAUDE_MODEL` mühit dəyişəni ilə model dəyişdirilə bilər (default:
   `claude-sonnet-5`).
+- `EXPLAIN_LANGUAGE=en` izahı ingiliscə yazdırır (default `az`). Jüri
+  Azərbaycan dilini oxumursa, səhnədə ekrandakı ən böyük mətn bloku budur.
