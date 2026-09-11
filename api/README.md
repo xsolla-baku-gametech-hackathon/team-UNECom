@@ -158,8 +158,13 @@ Doesn't touch the engine. → `{ "ring_id": "...", "status": "confirmed_fraud", 
 Ring detection itself is **not** stored here — `/rings` and `/graph` always
 ask the engine fresh. Only our two local overrides persist independently.
 
-Empty databases return `[]` from `/rings` and `404 account_not_found` from
-`/accounts/:id/risk`. Upstream HTTP errors preserve their status; connection
-failures return 502 and timeouts return 504.
+Empty databases return `[]` from `/rings`, `404 account_not_found` from
+`/accounts/:id/risk` and `404 not_found` from `/rings/:id/explanation`.
+
+Every route that proxies the engine reports failures the same way
+(`src/routes/engineErrors.ts`): the upstream HTTP status is preserved, with
+`error` set to `engine_timeout` (504), `engine_unreachable` (502),
+`not_found` (404) or `engine_request_failed` (anything else), plus a
+`message`.
 
 Run `npm test` to build and check upstream HTTP status and timeout handling.
