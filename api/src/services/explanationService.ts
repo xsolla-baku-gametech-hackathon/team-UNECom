@@ -11,6 +11,22 @@ function recommendedActionFor(riskScore: unknown): string {
   return "Monitorinqi davam etdirin, hazırda kifayət qədər dəlil yoxdur.";
 }
 
+// Claude tends to decorate its answer with markdown (**bold**, headings,
+// list markers). The panel renders plain text, so the markers would show up
+// literally on screen. Strip the common inline/line-start syntax and keep the
+// words.
+export function stripMarkdown(text: string): string {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/__(.+?)__/g, "$1")
+    .replace(/(^|\s)[*_](\S.*?\S|\S)[*_](?=\s|$|[.,;:!?])/g, "$1$2")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/^\s{0,3}#{1,6}\s+/gm, "")
+    .replace(/^\s{0,3}[-*+]\s+/gm, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 function toRingExplanation(res: EngineExplainResponse) {
   const e = res.evidence;
   const signals: { label: string; value: string }[] = [];
@@ -34,7 +50,7 @@ function toRingExplanation(res: EngineExplainResponse) {
   return {
     ringId: res.ring_id,
     source: res.ai_generated ? "ai" : "template",
-    summary: res.explanation.replace(/\*\*(.*?)\*\*/gs, "$1").replace(/`([^`]+)`/g, "$1"),
+    summary: stripMarkdown(res.explanation),
     signals,
     recommendedAction: recommendedActionFor(e.risk_score),
   };
