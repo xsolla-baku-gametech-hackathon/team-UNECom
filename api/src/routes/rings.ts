@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { ringService } from "../services/ringService.js";
 import { explanationService } from "../services/explanationService.js";
-import { EngineError } from "../clients/engineClient.js";
+import { sendEngineError } from "./engineErrors.js";
 
 const sensitivityBodySchema = z.object({
   sensitivity: z.number().min(0).max(1),
@@ -19,10 +19,7 @@ export async function ringRoutes(app: FastifyInstance) {
     try {
       return await ringService.listRings();
     } catch (err) {
-      if (err instanceof EngineError) {
-        return reply.status(err.statusCode).send({ error: err.statusCode === 504 ? "engine_timeout" : err.statusCode === 502 ? "engine_unreachable" : "engine_request_failed", message: err.message });
-      }
-      throw err;
+      return sendEngineError(reply, err);
     }
   });
 
@@ -32,10 +29,7 @@ export async function ringRoutes(app: FastifyInstance) {
     try {
       return await explanationService.getExplanation(request.params.id);
     } catch (err) {
-      if (err instanceof EngineError) {
-        return reply.status(err.statusCode).send({ error: err.statusCode === 504 ? "engine_timeout" : err.statusCode === 502 ? "engine_unreachable" : "engine_request_failed", message: err.message });
-      }
-      throw err;
+      return sendEngineError(reply, err);
     }
   });
 
