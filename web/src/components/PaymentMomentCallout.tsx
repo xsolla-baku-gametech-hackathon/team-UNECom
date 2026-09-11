@@ -23,37 +23,36 @@ export function PaymentMomentCallout({ view, flaggedRingCount }: Props) {
     <div style={{ width: 342, maxWidth: "100%", border: "1px solid #5c3a17", background: "#0d0f12", borderRadius: 3, padding: "11px 12px" }}>
       <div className="flex items-baseline justify-between gap-3">
         <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 10, letterSpacing: ".16em", color: "#c8792e" }}>
-          Ödəniş anı aləti nə görür
+          What a payment-moment tool sees
         </span>
         <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 9.5, letterSpacing: ".13em", color: "#4b5058" }}>
-          {flaggedRingCount} halqa
+          {flaggedRingCount} {flaggedRingCount === 1 ? "ring" : "rings"}
         </span>
       </div>
 
       <div className="mt-2.5 flex gap-2">
-        <Stat label="Görür" value={String(view.visibleCount)} sub="bayraqlanmış kart" />
-        <Stat label="Görmür" value={String(view.missedCount)} sub="halqa üzvü" hot />
+        <Stat label="Sees" value={String(view.visibleCount)} sub="flagged card" />
+        <Stat label="Misses" value={String(view.missedCount)} sub="ring members" hot />
       </div>
 
       {view.missedCount > 0 ? (
         <div className="mt-2.5" style={{ fontSize: 12, lineHeight: 1.55, color: "#c3c7cc" }}>
-          Ödəniş anı aləti <span style={{ fontFamily: "'IBM Plex Mono'", color: "#e8e6e1" }}>{view.visibleCount}</span> hesab
-          görür. <span style={{ fontFamily: "'IBM Plex Mono'", color: "#e0913f" }}>{view.missedCount}</span> hesabı görmür —
-          bunların əlində <span style={{ fontFamily: "'IBM Plex Mono'", color: "#e0913f" }}>{usd(view.missedValueUsd)}</span> dəyər
-          var, o cümlədən heç vaxt bayraqlanmış karta toxunmamış{" "}
-          <span style={{ fontFamily: "'IBM Plex Mono'", color: "#e0913f" }}>{view.missedHubCount}</span> cash-out hub
-          {view.hubCount > 0 && <span style={{ color: "#676d76" }}> ({view.hubCount} hub-dan)</span>}.
+          A payment-moment tool sees <span style={{ fontFamily: "'IBM Plex Mono'", color: "#e8e6e1" }}>{view.visibleCount}</span> accounts.
+          It misses <span style={{ fontFamily: "'IBM Plex Mono'", color: "#e0913f" }}>{view.missedCount}</span>, holding{" "}
+          <span style={{ fontFamily: "'IBM Plex Mono'", color: "#e0913f" }}>{usd(view.missedValueUsd)}</span>, including{" "}
+          <span style={{ fontFamily: "'IBM Plex Mono'", color: "#e0913f" }}>{view.missedHubCount}</span> cash-out {view.missedHubCount === 1 ? "hub" : "hubs"} that never touched a flagged card
+          {view.hubCount > 0 && <span style={{ color: "#676d76" }}> (of {view.hubCount})</span>}.
         </div>
       ) : (
         <div className="mt-2.5" style={{ fontSize: 12, lineHeight: 1.55, color: "#9aa0a8" }}>
-          Bu həssaslıqda bayraqlanmış halqanın hər üzvü ödəniş anında da görünür — bu datada gizli qol yoxdur.
+          At this sensitivity every member of a flagged ring is also visible at payment time. This data has no hidden branch.
         </div>
       )}
 
       {view.missedHubIds.length > 0 && (
         <div className="mt-2.5 border-t pt-2" style={{ borderColor: "#1d2127" }}>
           <div className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 9.5, letterSpacing: ".14em", color: "#676d76" }}>
-            Gözdən qaçan hub
+            Missed hubs
           </div>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
             {view.missedHubIds.slice(0, 8).map((id) => (
@@ -74,7 +73,7 @@ export function PaymentMomentCallout({ view, flaggedRingCount }: Props) {
       )}
 
       <div className="mt-2.5 border-t pt-2" style={{ borderColor: "#1d2127", fontSize: 11, color: "#676d76", lineHeight: 1.45 }}>
-        Solğun düyünlər ödəniş prosessorunun heç vaxt görmədiyi hesablardır. Toggle-ı söndürüb tam dəyər axınına qayıdın.
+        Faded nodes are accounts the payment processor never sees. Turn the toggle off to return to the full value flow.
       </div>
     </div>
   );

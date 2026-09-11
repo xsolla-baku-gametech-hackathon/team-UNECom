@@ -15,7 +15,7 @@ export function SensitivitySlider({ value, onChange, flaggedCount, totalCount, f
     <div style={{ width: 296, maxWidth: "100%", border: "1px solid #24282f", background: "#0d0f12", borderRadius: 3, padding: "11px 12px" }}>
       <div className="flex items-baseline justify-between">
         <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 10, letterSpacing: ".16em", color: "#676d76" }}>
-          Aşkarlama həssaslığı
+          Detection sensitivity
         </span>
         <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 13, fontWeight: 600, color: "#e8e6e1" }}>{pct}%</span>
       </div>
@@ -29,15 +29,15 @@ export function SensitivitySlider({ value, onChange, flaggedCount, totalCount, f
         style={{ margin: "10px 0 2px", height: 3 }}
       />
       <div className="flex justify-between uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 9.5, letterSpacing: ".13em", color: "#4b5058" }}>
-        <span>Sərt</span>
-        <span>Baza</span>
-        <span>Geniş</span>
+        <span>Strict</span>
+        <span>Default</span>
+        <span>Broad</span>
       </div>
       <div className="mt-1" style={{ fontSize: 11, color: "#676d76", lineHeight: 1.4 }}>
-        Solda az, əmin halqa bayraqlanır. Sağda çox, gurultulu halqa bayraqlanır.
+        Left flags fewer, surer rings. Right flags more, noisier rings.
       </div>
       <div className="mt-2.5 border-t pt-2" style={{ borderColor: "#1d2127", fontFamily: "'IBM Plex Mono'", fontSize: 11, color: "#9aa0a8", lineHeight: 1.5 }}>
-        {flaggedCount} / {totalCount} halqa bayraqlanır · {flaggedAccounts} hesab · hədd risk ≥ {thr.toFixed(2)}
+        {flaggedCount} / {totalCount} rings flagged · {flaggedAccounts} accounts · threshold risk ≥ {thr.toFixed(2)}
       </div>
     </div>
   );

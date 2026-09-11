@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 """
-Sintetik oyun-iqtisadiyyati event generatoru.
+Synthetic game-economy event generator.
 
-Iki qat data yaradir:
-  1. "Temiz" hesablar arasinda normal trade/gift/marketplace/key/purchase axini.
-  2. Aciq-askar bir kart-firildaqciligi "ferma halqasi": 50 yeni hesab qisa
-     muddet erzinde 1-2 hub hesaba deyer axidir, menbe alislarinin bir hissesi
-     payment_flagged=true olur.
+It produces two layers of data:
+  1. Normal trade/gift/marketplace/key/purchase flow between clean accounts.
+  2. One card-fraud "farming ring": 50 new accounts funnel value to 1-2 hub
+     accounts within a short window, and part of their source purchases are
+     payment_flagged=true.
 
-Umumi data kontrakti (butun komanda buna esaslanir, DEYISME):
+Shared data contract (the whole team builds on it, DO NOT CHANGE):
   event_id, type, timestamp, from_account_id, to_account_id,
   asset_type, asset_id, quantity, value_usd_estimate, payment_flagged,
   account_created_at
 
-Konvensiya: `account_created_at` HEMISHE `from_account_id`-nin yaranma
-tarixidir (yeni hesabin dermal aktivligini olcmek ucun asas siqnal budur).
-STORE sistem hesabinin (purchase hadiselerinde alici terefdeki menbe) oz
-yaranma tarixi yoxdur -> None/bos qoyulur.
+Convention: `account_created_at` is ALWAYS the creation time of
+`from_account_id` (the main signal for spotting brand-new accounts that move
+value at once). The STORE system account (the source side of purchase
+events) has no creation time of its own, so it is left None/empty.
 
 Account ids in the output are opaque: every player account, clean or planted,
 is `acct_NNNN` with the numbers shuffled. The ring is planted under readable
@@ -291,8 +291,8 @@ class Generator:
     def write_ground_truth(self, path: Path, hubs: list[str], mules: list[str]):
         data = {
             "description": (
-                "Demo/qiymetlendirme ucun daxili ground truth. Engine bu faylı "
-                "OXUMAMALIDIR — yalniz nece netice cixdigini yoxlamaq ucundur."
+                "Internal ground truth for the demo and evaluation. The engine "
+                "must NEVER read this file; it only checks what the engine found."
             ),
             "hub_accounts": hubs,
             "mule_accounts": mules,
@@ -303,13 +303,13 @@ class Generator:
 
 
 def main():
-    p = argparse.ArgumentParser(description="Sintetik post-purchase fraud data generatoru")
+    p = argparse.ArgumentParser(description="Synthetic post-purchase fraud data generator")
     p.add_argument("--clean-accounts", type=int, default=300)
     p.add_argument("--clean-events", type=int, default=2500)
     p.add_argument("--mules", type=int, default=50)
     p.add_argument("--hubs", type=int, default=2)
-    p.add_argument("--flag-rate", type=float, default=0.7, help="menbe alislarinin ne qederi payment_flagged=true")
-    p.add_argument("--layering-rate", type=float, default=0.2, help="mule->peer->hub ile bir elave hop ehtimali")
+    p.add_argument("--flag-rate", type=float, default=0.7, help="share of ring source purchases with payment_flagged=true")
+    p.add_argument("--layering-rate", type=float, default=0.2, help="probability of one extra mule->peer->hub layering hop")
     p.add_argument("--hub-sales", type=int, default=15)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--out-dir", type=str, default="output")
@@ -341,8 +341,8 @@ def main():
     gen.write_json(out_dir / "events.json")
     gen.write_ground_truth(out_dir / "ground_truth.json", hubs, mules)
 
-    print(f"{len(gen.events)} hadise yaradildi -> {out_dir}/events.{{csv,json}}")
-    print(f"Ferma halqasi: {len(mules)} mule + {len(hubs)} hub -> {out_dir}/ground_truth.json")
+    print(f"{len(gen.events)} events written -> {out_dir}/events.{{csv,json}}")
+    print(f"Farming ring: {len(mules)} mules + {len(hubs)} hubs -> {out_dir}/ground_truth.json")
 
 
 if __name__ == "__main__":

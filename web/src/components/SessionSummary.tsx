@@ -49,10 +49,10 @@ export function SessionSummary({ snapshot, flaggedRings, sensitivity, onClose, o
         <div className="flex items-center justify-between border-b px-4 py-3" style={{ borderColor: "#24282f" }}>
           <div>
             <div className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 10, letterSpacing: ".18em", color: "#c8792e" }}>
-              Növbə boşaldı
+              Queue cleared
             </div>
             <div style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 20, lineHeight: 1.15, marginTop: 3, color: "#e8e6e1" }}>
-              Yekun hesabat — {report.verdicts.fraud + report.verdicts.real} case qərarlandı
+              Session report: {report.verdicts.fraud + report.verdicts.real} cases decided
             </div>
           </div>
           <button onClick={onClose} className="flex items-center justify-center rounded" style={{ width: 24, height: 24, border: "1px solid #24282f", color: "#9aa0a8", fontFamily: "'IBM Plex Mono'", fontSize: 12 }}>
@@ -62,22 +62,22 @@ export function SessionSummary({ snapshot, flaggedRings, sensitivity, onClose, o
 
         <div className="p-4">
           <div className="flex gap-2">
-            <Cell label="Fırıldaq" value={String(report.verdicts.fraud)} sub={`${report.fraudAccounts.length} hesab · ${report.fraudHubs.length} hub`} tone="fraud" />
-            <Cell label="Real oyunçu" value={String(report.verdicts.real)} sub={`${report.clearedAccounts.length} hesab təmizləndi`} tone="real" />
-            <Cell label="Dondurulacaq dəyər" value={usd(report.fraudValueUsd)} sub="təsdiqlənmiş halqalarda" />
+            <Cell label="Fraud" value={String(report.verdicts.fraud)} sub={`${report.fraudAccounts.length} accounts · ${report.fraudHubs.length} hubs`} tone="fraud" />
+            <Cell label="Real players" value={String(report.verdicts.real)} sub={`${report.clearedAccounts.length} accounts cleared`} tone="real" />
+            <Cell label="Value to freeze" value={usd(report.fraudValueUsd)} sub="in confirmed rings" />
           </div>
 
           {fraudRings.length > 0 ? (
             <div className="mt-4">
               <div className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 10, letterSpacing: ".16em", color: "#e8e6e1" }}>
-                Ödəniş komandasına gedən halqalar
+                Rings going to the payments team
               </div>
               <div className="mt-2 flex flex-col gap-1.5">
                 {fraudRings.map((r) => (
                   <div key={r.id} onClick={() => onOpenRing(r.id)} className="flex cursor-pointer items-center justify-between gap-3 rounded px-3 py-2" style={{ background: "#101216", border: "1px solid #1d2127" }}>
                     <div className="flex items-center gap-3" style={{ fontFamily: "'IBM Plex Mono'", fontSize: 11.5 }}>
                       <span style={{ color: "#e8e6e1", fontWeight: 600 }}>{caseRef(r.id)}</span>
-                      <span style={{ color: "#9aa0a8" }}>{r.memberAccountIds.length} hesab</span>
+                      <span style={{ color: "#9aa0a8" }}>{r.memberAccountIds.length} accounts</span>
                       <span style={{ color: "#d1685f" }}>{usd(r.totalValueUsd)}</span>
                     </div>
                     <div className="flex flex-wrap justify-end gap-1">
@@ -91,19 +91,19 @@ export function SessionSummary({ snapshot, flaggedRings, sensitivity, onClose, o
                 ))}
               </div>
               <div className="mt-2" style={{ fontSize: 11, color: "#676d76", lineHeight: 1.5 }}>
-                Konturlu id-lər nağdlaşdırma nöqtələridir. Heç nə avtomatik bloklanmayıb — hesabat ödəniş komandasının qərarı üçündür.
+                Outlined ids are cash-out points. Nothing was blocked automatically; the report is for the payments team to act on.
               </div>
             </div>
           ) : (
             <div className="mt-4" style={{ fontSize: 12.5, color: "#9aa0a8", lineHeight: 1.55 }}>
-              Bu həssaslıqda bayraqlanan bütün halqalar real oyunçu kimi təmizləndi. Hər şey qaydasındadırsa, bu da nəticədir.
+              Every ring flagged at this sensitivity was cleared as real players. If everything is in order, that is a result too.
             </div>
           )}
 
           <div className="mt-4 border-t pt-3" style={{ borderColor: "#1d2127", fontSize: 11.5, color: "#9aa0a8", lineHeight: 1.5 }}>
             {report.ringsBelowThreshold > 0
-              ? `${report.ringsBelowThreshold} icma hələ həddin altındadır (həssaslıq ${Math.round(sensitivity * 100)}%). Həddi endirsən növbəyə yeni case-lər gəlir.`
-              : "Bu jurnalda başqa icma qalmadı."}
+              ? `${report.ringsBelowThreshold} communities are still below the threshold (sensitivity ${Math.round(sensitivity * 100)}%). Lower the threshold and new cases join the queue.`
+              : "No other communities remain in this log."}
           </div>
 
           <div className="mt-3.5 flex flex-wrap items-center gap-2">
@@ -112,7 +112,7 @@ export function SessionSummary({ snapshot, flaggedRings, sensitivity, onClose, o
               className="flex items-center rounded uppercase"
               style={{ height: 34, padding: "0 14px", background: "#c8792e", color: "#0a0b0d", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12.5, letterSpacing: ".11em" }}
             >
-              Hesabatı endir (JSON)
+              Download report (JSON)
             </button>
             {canRaise && (
               <button
@@ -120,7 +120,7 @@ export function SessionSummary({ snapshot, flaggedRings, sensitivity, onClose, o
                 className="flex items-center rounded uppercase"
                 style={{ height: 34, padding: "0 14px", border: "1px solid #5c3a17", color: "#e0913f", background: "#1a1509", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12.5, letterSpacing: ".11em" }}
               >
-                Həssaslığı artır → yeni case-lər
+                Raise sensitivity → new cases
               </button>
             )}
             <button
@@ -128,7 +128,7 @@ export function SessionSummary({ snapshot, flaggedRings, sensitivity, onClose, o
               className="flex items-center rounded uppercase"
               style={{ height: 34, padding: "0 14px", border: "1px solid #313640", color: "#9aa0a8", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12.5, letterSpacing: ".11em" }}
             >
-              Bağla
+              Close
             </button>
           </div>
         </div>

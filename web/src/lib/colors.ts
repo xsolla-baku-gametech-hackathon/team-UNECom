@@ -13,9 +13,9 @@ export function riskColor(score: number): string {
 }
 
 export function severityText(score: number): string {
-  if (score >= 0.75) return "Yüksək — həddi aydın keçir";
-  if (score >= 0.5) return "Yüksəldilmiş — həddin üzərindədir";
-  return "Aşağı — həddi cüzi keçir";
+  if (score >= 0.75) return "High: clearly over the threshold";
+  if (score >= 0.5) return "Elevated: above the threshold";
+  return "Low: just over the threshold";
 }
 
 // sensitivity: 0..1. Higher sensitivity -> lower threshold -> more rings

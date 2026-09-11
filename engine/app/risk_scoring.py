@@ -1,13 +1,14 @@
-"""Risk skorlama sinyallari.
+"""Risk scoring signals.
 
-Dord musteqil sinyal hesablanir, sonra cekili cemlenir:
-  1. taint_score      - hesabin dəyərinin ne qederi bayraqlanmis (payment_flagged)
-                        alislardan menshelidir (qraf boyunca "haircut" tainting ile
-                        yayilir - kripto-forensika-da geniş istifade olunan usul).
-  2. velocity_score   - hesab yarandiqdan neçe tez sonra ilk cixis tranzaksiyasini
-                        edib (yeni hesab dermal aktivdirse -> subheli).
-  3. imbalance_score  - in-degree/out-degree balanssizligi (cox giris, az cixis = hub).
-  4. community_risk    - hesabin daxil oldugu icmanin umumi riski (bax community.py).
+Four independent signals are computed, then combined with fixed weights:
+  1. taint_score      - how much of an account's value originates in flagged
+                        (payment_flagged) purchases, propagated along the graph
+                        with "haircut" tainting, a method common in crypto forensics.
+  2. velocity_score   - how soon after creation the account made its first
+                        outgoing transfer (a brand-new account moving value at
+                        once is suspicious).
+  3. imbalance_score  - in/out-degree imbalance (many in, few out = hub).
+  4. community_risk   - the overall risk of the account's community (see community.py).
 """
 from __future__ import annotations
 
@@ -30,12 +31,14 @@ IMBALANCE_HUB_THRESHOLD = 0.3
 
 
 def compute_taint(events_sorted: list[dict]) -> dict[str, dict]:
-    """Her hesab ucun tainted/clean USD pool-u hesablayir (haircut tainting).
+    """Compute a tainted/clean USD pool for every account (haircut tainting).
 
-    Qayida: purchase flagged olarsa deyer "tainted" pool-a, yoxsa "clean"
-    pool-a dusur. Her sonraki cixan tranzaksiyada src-in cari tainted
-    nisbeti ile yeni deyer dst-e yayilir. Menbe pool-u azalmır (fungible
-    aktiv fərziyyesi ile sadelesdirme) - bu, taint-i "izlemek" ucun kifayetdir.
+    Rule: a flagged purchase adds its value to the buyer's "tainted" pool,
+    any other purchase to the "clean" pool. Each outgoing transfer then
+    carries value to the receiver in the sender's current tainted ratio.
+    The sender's pool is not debited (a simplification that treats assets as
+    fungible); the ratio stays correct, which is all tracing taint needs, but
+    absolute dollar amounts are overstated.
     """
     pools: dict[str, dict[str, float]] = defaultdict(lambda: {"tainted": 0.0, "clean": 0.0})
     flagged_purchase_count: dict[str, int] = defaultdict(int)
@@ -79,7 +82,7 @@ def compute_velocity(
     events_sorted: list[dict],
     account_created_at: dict[str, datetime],
 ) -> dict[str, float]:
-    """Hesab yaranandan ilk cixis tranzaksiyasina qeder kecen vaxta gore skor (0..1, tez=yuksek)."""
+    """Score by time from account creation to first outgoing transfer (0..1, sooner = higher)."""
     first_outgoing: dict[str, datetime] = {}
     for e in events_sorted:
         if e["type"] == "purchase":
@@ -99,7 +102,7 @@ def compute_velocity(
 
 
 def compute_degree_imbalance(G: nx.MultiDiGraph) -> dict[str, dict]:
-    """In/out-degree balanssizligi: cox giris + az cixis = hub-vari pattern."""
+    """In/out-degree imbalance: many inbound + few outbound = hub-like pattern."""
     result: dict[str, dict] = {}
     for node in G.nodes():
         in_deg = G.in_degree(node)
@@ -113,7 +116,7 @@ def compute_degree_imbalance(G: nx.MultiDiGraph) -> dict[str, dict]:
             "out_degree": out_deg,
             "in_value_usd": in_val,
             "out_value_usd": out_val,
-            "imbalance_score": max(ratio, 0.0),  # yalniz "hub-vari" isteqameti risk sayilir
+            "imbalance_score": max(ratio, 0.0),  # only the hub-like direction counts as risk
         }
     return result
 

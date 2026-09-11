@@ -1,14 +1,14 @@
-"""Icma/halqa askarlanmasi (Louvain, networkx-in daxili implementasiyasi)."""
+"""Community / ring detection (Louvain, networkx's built-in implementation)."""
 from __future__ import annotations
 
 import networkx as nx
 
 MIN_RING_SIZE = 3
-RING_RISK_THRESHOLD = 15.0  # bundan asagi orta riskli icmalar "ring" kimi qaytarilmir
+RING_RISK_THRESHOLD = 15.0  # communities with a lower average risk are not reported as rings
 
 
 def detect_communities(H: nx.Graph) -> dict[str, int]:
-    """Her node-a bir community_id tekan edir. Bos/tek-node qraf ucun bos qaytarir."""
+    """Assign a community_id to every node; an edgeless graph gets one id per node."""
     if H.number_of_edges() == 0:
         return {node: idx for idx, node in enumerate(H.nodes())}
 
@@ -24,10 +24,11 @@ def community_avg_risk(
     node_to_community: dict[str, int],
     account_scores: dict[str, dict],
 ) -> dict[str, float]:
-    """Her node ucun oz icmasinin ORTA (ozu istisna) risk skorunu qaytarir.
+    """Return, for every node, the AVERAGE risk score of its community (the
+    node's own score is included in the average).
 
-    Bu, "ferdi hesab riski" ile "icma riski"nin bir-birini gucledirmesi ucun
-    combine_scores-a geri verilen ayri bir sinyaldir.
+    This is a separate signal fed back into combine_scores, so individual
+    account risk and community risk reinforce each other.
     """
     by_community: dict[int, list[str]] = {}
     for node, cid in node_to_community.items():

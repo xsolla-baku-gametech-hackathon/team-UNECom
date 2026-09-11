@@ -1,8 +1,8 @@
-"""Hadiselerden (events) directed graph qurur.
+"""Build a directed value-flow graph from events.
 
-STORE (magaza/odenis sistemi) hesab kimi qraf-a DAXIL EDILMIR — o, real
-oyunçu deyil, purchase hadiselerinin menbeyidir. Purchase-lar ayrica
-saxlanilir ve tainted-value tracing ucun istifade olunur (bax risk_scoring.py).
+STORE (the shop / payment system) is NOT added to the graph as an account:
+it is not a player, only the source of purchase events. Purchases are kept
+separately and used for tainted-value tracing (see risk_scoring.py).
 """
 from __future__ import annotations
 
@@ -14,11 +14,11 @@ STORE_ACCOUNT = "STORE"
 
 
 def build_graph(events: list[dict]) -> tuple[nx.MultiDiGraph, dict[str, datetime]]:
-    """P2P (trade/gift/marketplace_sale/key_redeem) hadiselerinden qraf qurur.
+    """Build the graph from P2P events (trade/gift/marketplace_sale/key_redeem).
 
-    Qaytarir:
-      G: node=hesab, her P2P hadise ucun bir kenar (weight=value_usd_estimate)
-      account_created_at: hesab_id -> yaranma tarixi (from_account_id-den cixarilir)
+    Returns:
+      G: node = account, one edge per P2P event (weight = value_usd_estimate)
+      account_created_at: account_id -> creation time (taken from from_account_id)
     """
     G = nx.MultiDiGraph()
     account_created_at: dict[str, datetime] = {}
@@ -28,7 +28,7 @@ def build_graph(events: list[dict]) -> tuple[nx.MultiDiGraph, dict[str, datetime
             account_created_at.setdefault(e["from_account_id"], e["account_created_at"])
 
         if e["type"] == "purchase":
-            continue  # STORE -> account, qrafa deyil, taint tracing-e gedir
+            continue  # STORE -> account: not a graph edge, feeds taint tracing
 
         src, dst = e["from_account_id"], e["to_account_id"]
         G.add_node(src)
@@ -46,7 +46,7 @@ def build_graph(events: list[dict]) -> tuple[nx.MultiDiGraph, dict[str, datetime
 
 
 def to_undirected_weighted(G: nx.MultiDiGraph) -> nx.Graph:
-    """Community detection ucun sade, cekili (weighted), yonlendirilmemis qraf."""
+    """Simple weighted, undirected graph for community detection."""
     H = nx.Graph()
     H.add_nodes_from(G.nodes())
     for u, v, data in G.edges(data=True):

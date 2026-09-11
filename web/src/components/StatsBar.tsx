@@ -22,10 +22,10 @@ function Cell({ label, value, sub, hot, last }: { label: string; value: string; 
 export function StatsBar({ stats, flaggedRingCount, decidedCount }: Props) {
   return (
     <div className="flex items-stretch" style={{ border: "1px solid #24282f", background: "#0d0f12", borderRadius: 3 }}>
-      <Cell label="Aktiv hesab" value={stats.activeAccounts.toLocaleString("en-US")} sub="yüklənmiş qrafda" />
-      <Cell label="Ümumi hadisə" value={stats.totalEvents.toLocaleString("en-US")} sub="yüklənmiş jurnalda" />
-      <Cell label="Ümumi dövriyyə" value={usd(stats.totalVolumeUsd)} sub="təxmini USD" />
-      <Cell label="Riskli halqa" value={String(flaggedRingCount)} sub={`${decidedCount} qərarlanıb`} hot last />
+      <Cell label="Accounts" value={stats.activeAccounts.toLocaleString("en-US")} sub="in the loaded graph" />
+      <Cell label="Events" value={stats.totalEvents.toLocaleString("en-US")} sub="in the loaded log" />
+      <Cell label="Total volume" value={usd(stats.totalVolumeUsd)} sub="estimated USD" />
+      <Cell label="Flagged rings" value={String(flaggedRingCount)} sub={`${decidedCount} decided`} hot last />
     </div>
   );
 }

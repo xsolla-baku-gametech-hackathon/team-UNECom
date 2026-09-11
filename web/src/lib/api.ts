@@ -64,9 +64,9 @@ export function fetchExplanation(ringId: string): Promise<RingExplanation> {
     .catch((): RingExplanation => ({
       ringId,
       source: "unavailable",
-      summary: "İzah gecikdi və ya əlçatan deyil. Ölçülmüş sübutları nəzərdən keçirin.",
+      summary: "The explanation is late or unavailable. Review the measured evidence.",
       signals: [],
-      recommendedAction: "Qərarı halqanın ölçülmüş sübutlarına əsasən verin.",
+      recommendedAction: "Decide from the ring's measured evidence.",
     }));
   explanations.set(ringId, pending);
   return pending;

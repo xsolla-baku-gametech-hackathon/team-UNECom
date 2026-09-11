@@ -17,9 +17,9 @@ interface Props {
 }
 
 const STATUS_META: Record<Ring["status"], { label: string; c: string; bg: string; bd: string }> = {
-  confirmed_fraud: { label: "FIRILDAQ", c: "#d1685f", bg: "#1c100f", bd: "#6d3430" },
+  confirmed_fraud: { label: "FRAUD", c: "#d1685f", bg: "#1c100f", bd: "#6d3430" },
   confirmed_real: { label: "REAL", c: "#8fae9b", bg: "#0f1613", bd: "#34503f" },
-  pending: { label: "GÖZLƏYİR", c: "#c9ccd1", bg: "#16191e", bd: "#313640" },
+  pending: { label: "PENDING", c: "#c9ccd1", bg: "#16191e", bd: "#313640" },
 };
 
 export function CaseQueue({ rings, selectedRingId, filter, onFilterChange, query, onQueryChange, onSelect, onShowSummary }: Props) {
@@ -47,14 +47,14 @@ export function CaseQueue({ rings, selectedRingId, filter, onFilterChange, query
             className="uppercase"
             style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12, letterSpacing: ".16em", color: "#e8e6e1" }}
           >
-            İş növbəsi
+            Case queue
           </span>
           <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 11, color: "#676d76" }}>
             {list.length} / {rings.length}
           </span>
         </div>
         <div className="mt-1" style={{ fontSize: 11.5, color: "#676d76", lineHeight: 1.45 }}>
-          Cari həssaslıqda bayraqlanan halqalar, ən şiddətlidən başlayaraq.
+          Rings flagged at the current sensitivity, most severe first.
         </div>
       </div>
 
@@ -76,7 +76,7 @@ export function CaseQueue({ rings, selectedRingId, filter, onFilterChange, query
               letterSpacing: ".12em",
             }}
           >
-            {f === "open" ? "Açıq" : f === "decided" ? "Qərarlanmış" : "Hamısı"}
+            {f === "open" ? "Open" : f === "decided" ? "Decided" : "All"}
           </div>
         ))}
       </div>
@@ -91,7 +91,7 @@ export function CaseQueue({ rings, selectedRingId, filter, onFilterChange, query
             id="case-search"
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
-            placeholder="Case və ya hesab id axtar"
+            placeholder="Search case or account id"
             className="flex-1 bg-transparent outline-none"
             style={{ border: 0, color: "#e8e6e1", fontFamily: "'IBM Plex Mono'", fontSize: 11.5 }}
           />
@@ -149,7 +149,7 @@ export function CaseQueue({ rings, selectedRingId, filter, onFilterChange, query
                 </span>
               </div>
               <div className="mt-1.5" style={{ fontSize: 12.5, color: "#c3c7cc", lineHeight: 1.35 }}>
-                {feeders} hesab {r.hubAccountIds.length} hub-a dəyər ötürür
+                {feeders} accounts feeding {r.hubAccountIds.length} {r.hubAccountIds.length === 1 ? "hub" : "hubs"}
               </div>
               <div
                 className="mt-1.5 flex items-center gap-3"
@@ -157,7 +157,7 @@ export function CaseQueue({ rings, selectedRingId, filter, onFilterChange, query
               >
                 <span style={{ color: riskColor(r.riskScore) }}>risk {r.riskScore.toFixed(2)}</span>
                 <span>{usd(r.totalValueUsd)}</span>
-                <span style={{ color: "#4b5058" }}>{r.memberAccountIds.length} hesab</span>
+                <span style={{ color: "#4b5058" }}>{r.memberAccountIds.length} accounts</span>
               </div>
             </div>
           );
@@ -165,16 +165,16 @@ export function CaseQueue({ rings, selectedRingId, filter, onFilterChange, query
         {list.length === 0 && (
           <div className="px-4 py-5" style={{ fontSize: 12, color: "#676d76", lineHeight: 1.5 }}>
             {rings.length === 0 ? (
-              "Hazırda uyğun case yoxdur. Sensitivliyi artırın və ya axtarışı təmizləyin."
+              "No matching cases right now. Raise the sensitivity or clear the search."
             ) : filter === "open" && onShowSummary ? (
               <>
-                Bütün case-lər qərarlanıb.{" "}
+                Every case is decided.{" "}
                 <span onClick={onShowSummary} className="cursor-pointer" style={{ color: "#e0913f", borderBottom: "1px solid #5c3a17" }}>
-                  Yekun hesabata bax
+                  View the session report
                 </span>
               </>
             ) : (
-              "Bu filtrə uyğun case yoxdur."
+              "No cases match this filter."
             )}
           </div>
         )}
@@ -184,9 +184,9 @@ export function CaseQueue({ rings, selectedRingId, filter, onFilterChange, query
         className="flex gap-3.5 px-3.5 py-2.5 border-t"
         style={{ borderColor: "#1d2127", fontFamily: "'IBM Plex Mono'", fontSize: 10, color: "#4b5058" }}
       >
-        <span>J / K hərəkət</span>
-        <span>↵ aç</span>
-        <span>F fırıldaq</span>
+        <span>J / K move</span>
+        <span>↵ open</span>
+        <span>F fraud</span>
         <span>R real</span>
       </div>
     </div>

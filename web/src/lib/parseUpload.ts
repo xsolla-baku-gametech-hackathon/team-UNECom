@@ -38,13 +38,13 @@ function coerceBoolean(raw: unknown): boolean {
   const s = String(raw).trim().toLowerCase();
   if (s === "true" || s === "1") return true;
   if (s === "false" || s === "0" || s === "") return false;
-  throw new UploadParseError(`"${raw}" boolean (true/false) kimi oxuna bilmədi`);
+  throw new UploadParseError(`"${raw}" could not be read as a boolean (true/false)`);
 }
 
 function coerceRow(row: Record<string, unknown>, rowLabel: string): RawEvent {
   for (const field of REQUIRED_FIELDS) {
     if (row[field] === undefined || row[field] === null || row[field] === "") {
-      throw new UploadParseError(`${rowLabel}: "${field}" sahəsi boşdur və ya yoxdur`);
+      throw new UploadParseError(`${rowLabel}: field "${field}" is empty or missing`);
     }
   }
   const createdAtRaw = row.account_created_at;
@@ -71,11 +71,11 @@ export function parseJsonEvents(text: string): RawEvent[] {
   try {
     parsed = JSON.parse(text);
   } catch (e) {
-    throw new UploadParseError(`Fayl düzgün JSON deyil: ${(e as Error).message}`);
+    throw new UploadParseError(`The file is not valid JSON: ${(e as Error).message}`);
   }
   const rows = Array.isArray(parsed) ? parsed : [parsed];
-  if (rows.length === 0) throw new UploadParseError("Fayl boşdur — heç bir hadisə tapılmadı");
-  return rows.map((row, i) => coerceRow(row as Record<string, unknown>, `Sətir ${i + 1}`));
+  if (rows.length === 0) throw new UploadParseError("The file is empty: no events found");
+  return rows.map((row, i) => coerceRow(row as Record<string, unknown>, `Row ${i + 1}`));
 }
 
 // Minimal CSV parser: handles quoted fields with embedded commas/quotes
@@ -112,20 +112,20 @@ function parseCsvLine(line: string): string[] {
 export function parseCsvEvents(text: string): RawEvent[] {
   const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
   if (lines.length < 2) {
-    throw new UploadParseError("CSV faylında başlıqdan başqa heç bir sətir yoxdur");
+    throw new UploadParseError("The CSV file has no rows after the header");
   }
   const headers = parseCsvLine(lines[0]).map((h) => h.trim());
   const missing = REQUIRED_FIELDS.filter((f) => !headers.includes(f));
   if (missing.length > 0) {
     throw new UploadParseError(
-      `CSV başlığında bu sütunlar yoxdur: ${missing.join(", ")}. Gözlənilən başlıq: ${REQUIRED_FIELDS.join(", ")}`,
+      `The CSV header is missing these columns: ${missing.join(", ")}. Expected header: ${REQUIRED_FIELDS.join(", ")}`,
     );
   }
   return lines.slice(1).map((line, i) => {
     const cells = parseCsvLine(line);
     const row: Record<string, unknown> = {};
     headers.forEach((h, idx) => (row[h] = cells[idx]));
-    return coerceRow(row, `Sətir ${i + 2}`);
+    return coerceRow(row, `Row ${i + 2}`);
   });
 }
 

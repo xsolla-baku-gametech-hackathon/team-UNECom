@@ -214,10 +214,10 @@ export function buildMockSnapshot(): GraphSnapshot {
       status: "pending",
       totalValueUsd: Math.round(ringTotalValue * 100) / 100,
       signals: [
-        "50 hesab son 72 saatda yaradılıb və eyni saatda aktivləşib",
-        "Hər mule STORE-dan alış edir, dəqiqələr içində 1-2 hub-a köçürür",
-        "Mənbə alışlarının ~70%-i ödəniş provayderi tərəfindən payment_flagged=true",
-        "Hub-lar mule-lardan gələn dəyəri bazarda cash-out edir",
+        "50 accounts created in the last 72 hours, active within the same hour",
+        "Each account buys from STORE and forwards to 1-2 hubs within minutes",
+        "~70% of source purchases were flagged by the payment provider",
+        "Hubs cash out the incoming value on the marketplace",
       ],
     },
     {
@@ -230,10 +230,10 @@ export function buildMockSnapshot(): GraphSnapshot {
         events.filter((e) => e.from === WHALE || e.to === WHALE).reduce((s, e) => s + e.valueUsdEstimate, 0) * 100,
       ) / 100,
       signals: [
-        "Yüksək dəyərli ticarət həcmi, 12 fərqli tərəfdaşla",
-        "Hesab 320 gün əvvəl yaradılıb (fərma hesabları adətən <3 gün olur)",
-        "Heç bir ödəniş payment_flagged=true deyil",
-        "Ticarət saatları normal oyuncu fəallıq nümunəsinə uyğundur",
+        "High-value trade volume with 12 different counterparties",
+        "Account created 320 days ago (farm accounts are usually under 3 days old)",
+        "No payment is flagged",
+        "Trading hours match a normal player activity pattern",
       ],
     },
   ];
@@ -258,9 +258,9 @@ export function buildMockExplanation(ringId: string, snapshot: GraphSnapshot) {
     return {
       source: "demo" as const,
       ringId,
-      summary: "Bu halqa üçün əlavə məlumat tapılmadı.",
+      summary: "No further information for this ring.",
       signals: [],
-      recommendedAction: "Nəzərdən keçirin.",
+      recommendedAction: "Review it.",
     };
   }
   if (ring.id === "ring_farm_01") {
@@ -268,23 +268,23 @@ export function buildMockExplanation(ringId: string, snapshot: GraphSnapshot) {
       source: "demo" as const,
       ringId,
       summary:
-        `Bu 52 hesablıq qrup klassik "gold farming" halqasına bənzəyir: 50 hesab son 72 saat ` +
-        `ərzində yaradılıb, hər biri STORE-dan valyuta alıb və dəqiqələr içində ${ring.hubAccountIds.length} hub ` +
-        `hesaba köçürüb. Mənbə alışlarının təxminən 70%-i ödəniş provayderi tərəfindən oğurlanmış kart şübhəsi ilə ` +
-        `bayraqlanıb. Hub hesablar topladıqları dəyəri bazarda əşyalara çevirib satır — bu da nağdlaşdırma addımıdır. ` +
-        `Ümumi risk altında olan dəyər: $${ring.totalValueUsd.toLocaleString()}.`,
+        `This 52-account group looks like a classic farming ring: 50 accounts were created in the last 72 hours, ` +
+        `each bought currency from STORE and moved it to ${ring.hubAccountIds.length} hub accounts within minutes. ` +
+        `About 70% of the source purchases were flagged by the payment provider as likely stolen cards. ` +
+        `The hubs turn the collected value into items and sell them on the marketplace, which is the cash-out step. ` +
+        `Total value at risk: $${ring.totalValueUsd.toLocaleString()}.`,
       signals: ring.signals.map((label) => ({ label, value: "" })),
-      recommendedAction: "Bütün mule hesablarını dondurun, hub-ları araşdırma üçün bayraqlayın, ödəniş provayderinə bildirin.",
+      recommendedAction: "Freeze the feeder accounts, flag the hubs for investigation, and notify the payment provider.",
     };
   }
   return {
     source: "demo" as const,
     ringId,
     summary:
-      `Bu hesab yüksək ticarət həcminə görə bayraqlanıb, lakin siqnallar fərqlidir: hesab 320 gün əvvəl ` +
-      `yaradılıb (fərma hesabları adətən 3 gündən azdır), heç bir ödənişi bayraqlanmayıb, və ticarət nümunəsi ` +
-      `uzun müddətli, çox-tərəfdaşlı kolleksiyaçı davranışına uyğundur. Bu, çox güman ki, real, yüksək xərcləyən oyunçudur.`,
+      `This account was flagged for its high trade volume, but the signals differ: it was created 320 days ago ` +
+      `(farm accounts are usually under 3 days old), none of its payments were flagged, and its trading pattern ` +
+      `matches a long-term collector with many counterparties. This is most likely a real, high-spending player.`,
     signals: ring.signals.map((label) => ({ label, value: "" })),
-    recommendedAction: "Avtomatik bloklamayın — sensitivliyi aşağı salın və ya əlaqə saxlayaraq manual təsdiq edin.",
+    recommendedAction: "Do not block automatically. Lower the sensitivity, or contact the player and confirm manually.",
   };
 }
