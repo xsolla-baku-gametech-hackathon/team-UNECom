@@ -1,9 +1,9 @@
-# Design brief — pitch deck for "Fraud Radar" (Team UNECom)
+# Design brief — pitch deck for "Fraud Tracker" (Team UNECom)
 
 > **Status, 11 Sep 2026 01:00 — the deck is built.** Files: `~/Desktop/UNECom-pitch-deck.pdf` (stage copy, fonts embedded) and `~/Desktop/UNECom-pitch-deck.html` (same deck, arrow keys, F = fullscreen, works offline). Not in the repo: it carries team photos and the repo is public.
 > The built deck follows this brief with these deliberate departures, all made after rendering at 1920×1080 and after re-reading the bootcamp decks (31–57 words per page):
 > - word budget per slide is ≤ 60 (was 90–143); captions are one line, the weights list and the four-row feature table are gone (weights stay in `qa-defence.md` №12 for Q&A);
-> - 03 shows our own value-flow diagram (`stolen card → purchase ┆ mule accounts → cash-out hub → resale`, divider labelled "payment-time tools see this / Fraud Radar sees this") instead of the nine-step funnel; the headline is still attributed to M. Mustafayev on the source line; stack shown as three pills;
+> - 03 shows our own value-flow diagram (`stolen card → purchase ┆ mule accounts → cash-out hub → resale`, divider labelled "payment-time tools see this / Fraud Tracker sees this") instead of the nine-step funnel; the headline is still attributed to M. Mustafayev on the source line; stack shown as three pills;
 > - 04 is one feature line plus three numbered user cards (Nikita's card style), not a table;
 > - 02 sets `3.41%` at 200 px as hero and the other two numbers at 120 px stacked on the right; 05 numbers are 96 px;
 > - every slide from 01b on names the judging criterion it answers, top-right, in the eyebrow style (01b → 2, 02 → 1, 03 → 4, 04 and 05 → 5, 06 → 6; the live demo covers 3 and 7);
@@ -42,7 +42,7 @@ When a choice is between "more" and "less", choose less, then make what remains 
 
 ## 1. Context
 
-**Product.** Fraud Radar is an investigation dashboard for game economies. Fraud tools on the market (Sift, Kount, Magify) score the *payment*: was this card stolen? Fraud Radar starts after the payment clears and traces where the in-game value *goes* — trades, gifts, marketplace sales, key redemptions — and finds laundering rings: many freshly created "mule" accounts buying with bad cards and forwarding value to a "cash-out hub" that never touches a flagged card itself. A human analyst confirms or rejects each case. Nothing is auto-banned.
+**Product.** Fraud Tracker is an investigation dashboard for game economies. Fraud tools on the market (Sift, Kount, Magify) score the *payment*: was this card stolen? Fraud Tracker starts after the payment clears and traces where the in-game value *goes* — trades, gifts, marketplace sales, key redemptions — and finds laundering rings: many freshly created "mule" accounts buying with bad cards and forwarding value to a "cash-out hub" that never touches a flagged card itself. A human analyst confirms or rejects each case. Nothing is auto-banned.
 
 **Team.** UNECom, five people, 48-hour build. Public repo: `github.com/xsolla-baku-gametech-hackathon/team-UNECom`.
 
@@ -175,7 +175,7 @@ Background, right two-thirds of the frame: the product's value-flow graph (§6),
 
 Content zone, left 6 columns:
 
-- `Fraud Radar` — Plex Sans 40 weight 700
+- `Fraud Tracker` — Plex Sans 40 weight 700
 - `Post-Purchase Value Flow` — Plex Sans 40 weight 400 `#c3c7cc`
 - `We trace where in-game value goes after the payment clears.` — Plex Sans 36
 - `trade · gift · marketplace sale · key redeem` — Plex Mono 28 `#9aa0a8`
@@ -236,7 +236,7 @@ Right column, the funnel: nine horizontal bars stacked top to bottom, each narro
 9. Studio gets paid
 ```
 
-A 2 px `#e8e6e1` bracket spans the gap between bars 7 and 8 on the right side, with the label `Fraud Radar works here` in Plex Mono 28 `#e8e6e1`. No percentages on the funnel.
+A 2 px `#e8e6e1` bracket spans the gap between bars 7 and 8 on the right side, with the label `Fraud Tracker works here` in Plex Mono 28 `#e8e6e1`. No percentages on the funnel.
 
 Source line, one line only: `Funnel and "money flow" after M. Mustafayev, GameTech Bootcamp workshop, 9 Sep 2026`
 

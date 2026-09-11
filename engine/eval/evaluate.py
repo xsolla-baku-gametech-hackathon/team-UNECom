@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline accuracy evaluation for the Fraud Radar engine.
+"""Offline accuracy evaluation for the Fraud Tracker engine.
 
 Measures the engine against the planted ground truth in the synthetic
 dataset. Nothing here touches `app/` — the scoring pipeline is imported and
@@ -434,7 +434,7 @@ def render_text(agg: dict) -> str:
     acc = agg["account_level"]
     L = [
         "=" * 70,
-        "FRAUD RADAR — ENGINE ACCURACY EVALUATION",
+        "FRAUD TRACKER — ENGINE ACCURACY EVALUATION",
         "=" * 70,
         f"Seeds            : {agg['seeds']}",
         f"Dataset per run  : {agg['dataset']['accounts']['mean']:.0f} accounts, "

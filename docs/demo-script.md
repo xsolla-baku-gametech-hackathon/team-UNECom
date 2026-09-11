@@ -48,7 +48,7 @@ Pitch-dən **ən azı 10 dəqiqə əvvəl**, sırayla.
 - [ ] **Engine ayaqdadır** — `cd engine && .venv/bin/uvicorn app.main:app --port 8000`,
       `/health` cavab verir.
 - [ ] **API ayaqdadır və verilənlər bazası BOŞDUR.** `GET /events` heç nə
-      qaytarmamalıdır. Dolu qalıbsa: sol üstdəki **"Fraud Radar"** yazısına
+      qaytarmamalıdır. Dolu qalıbsa: sol üstdəki **"Fraud Tracker"** yazısına
       klik → **"Yes, clear it"**. Bu yalnız `api/.env`-də
       `ALLOW_DEMO_RESET="true"` olanda işləyir (lokal API); canlı Render
       API-si reseti 403 ilə rədd edir.
@@ -56,9 +56,9 @@ Pitch-dən **ən azı 10 dəqiqə əvvəl**, sırayla.
       şəbəkəyə keçid demonun ən güclü ilk 10 saniyəsidir.
 - [ ] **Web dev server açıqdır** — `cd web && npm run dev`.
 - [ ] **Brauzer tab-ı `http://localhost:5173` ünvanındadır** — kök URL birbaşa
-      radarı açır (landing page yoxdur; köhnə `#/app` linkləri də işləyir).
+      dashboard-u açır (landing page yoxdur; köhnə `#/app` linkləri də işləyir).
       **Niyə:** dashboard lazy-load olunur (`main.tsx` → `lazy(() => import('./App.tsx'))`),
-      ona görə ilk keçiddə qısa "Loading Fraud Radar…" fasiləsi olur. Ünvanı
+      ona görə ilk keçiddə qısa "Loading Fraud Tracker…" fasiləsi olur. Ünvanı
       pitch-dən əvvəl açıb dashboard-un yükləndiyini gör — səhnədə həmin
       fasilə 0:44-dəki 4 saniyəlik boşluğa əlavə olunmasın.
 - [ ] **`data-generator/output/events.csv` MASAÜSTÜNƏ kopyalanıb**, adı qısa və
@@ -422,7 +422,7 @@ FAYL: data-generator/output/events.csv   ·   SLIDER: 0.5   ·   TOGGLE: OFF
 BİR SPİKER   ·   0:45–0:49 EKRAN → DASHBOARD, ƏL SİÇANA (3 s, danışma)
 
 0:00  S1a  Valve 2019 "amputation" → "We built the alternative."   10s
-0:10  S1b  "Fraud Radar traces…" · "We start there."               13s+3
+0:10  S1b  "Fraud Tracker traces…" · "We start there."               13s+3
 0:26  S2   3.41% / $149M / 0.26% / 13× → son söz "exposed"        12s+1
 0:39  S3   "Four signals per account… Louvain finds the ring."     6s+4
 0:45  ▶  DASHBOARD · əl siçana (3 s)
