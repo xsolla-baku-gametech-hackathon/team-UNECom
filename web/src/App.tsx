@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Briefing } from "./components/Briefing";
 import { CaseQueue, type QueueFilter } from "./components/CaseQueue";
+import { ChallengePanel } from "./components/ChallengePanel";
+import { ChallengeScoreCard } from "./components/ChallengeScore";
 import { GraphCanvas } from "./components/GraphCanvas";
 import { InvestigationPanel } from "./components/InvestigationPanel";
 import { Legend } from "./components/Legend";
@@ -12,6 +14,7 @@ import { StatsBar } from "./components/StatsBar";
 import { UploadPanel } from "./components/UploadPanel";
 import { fetchGraph, getCachedSnapshot, isUsingMockData, prefetchExplanations, resetDemoData, submitDecision, type Decision } from "./lib/api";
 import { buildBriefing } from "./lib/briefing";
+import { scoreChallenge, type ChallengeTruth } from "./lib/challenge";
 import { deriveGraph } from "./lib/deriveGraph";
 import { computePaymentMomentView } from "./lib/paymentMomentView";
 import { buildTimeline, replayDurationMs, replayFrame } from "./lib/replay";
@@ -36,6 +39,9 @@ export default function App() {
   const [briefingOpen, setBriefingOpen] = useState(false);
   const [briefingIndex, setBriefingIndex] = useState(0);
   const [summaryOpen, setSummaryOpen] = useState(false);
+  // Blind test: the planted ring a judge generated, kept only in the browser.
+  const [challengeOpen, setChallengeOpen] = useState(false);
+  const [challenge, setChallenge] = useState<ChallengeTruth | null>(null);
   // Replay: number of events shown so far, or null when not playing.
   const [replayIndex, setReplayIndex] = useState<number | null>(null);
   const replayStartRef = useRef(0);
@@ -73,6 +79,7 @@ export default function App() {
     setResetState({ kind: "busy" });
     try {
       const { events } = await resetDemoData();
+      setChallenge(null);
       setSelectedRingId(null);
       setArmed(null);
       setRingSensOverrides({});
@@ -129,6 +136,13 @@ export default function App() {
     [snapshot, flaggedRings],
   );
 
+  // Live comparison of the engine's verdict with the planted truth; follows
+  // the sensitivity slider, so raising it visibly changes recall on stage.
+  const challengeScore = useMemo(
+    () => (challenge && snapshot ? scoreChallenge(challenge, snapshot, flaggedRings) : null),
+    [challenge, snapshot, flaggedRings],
+  );
+
   // Guided walkthrough of what was just found, built from the live numbers.
   const briefingSteps = useMemo(
     () => (snapshot && derived && paymentView && snapshot.accounts.length > 0 ? buildBriefing(snapshot, derived, flaggedRings, paymentView, sensitivity) : []),
@@ -143,6 +157,16 @@ export default function App() {
   }
 
   async function loadAndBrief() {
+    setChallenge(null);
+    await load();
+    startReplay();
+  }
+
+  async function runChallenge(truth: ChallengeTruth) {
+    setChallengeOpen(false);
+    setChallenge(truth);
+    setSensitivity(0.5);
+    setRingSensOverrides({});
     await load();
     startReplay();
   }
@@ -298,6 +322,10 @@ export default function App() {
         if (e.key === "Escape") setSummaryOpen(false);
         return;
       }
+      if (challengeOpen) {
+        if (e.key === "Escape") setChallengeOpen(false);
+        return;
+      }
       if (e.key === "Escape") {
         if (resetState.kind === "confirm") setResetState({ kind: "idle" });
         else if (armed) setArmed(null);
@@ -323,7 +351,7 @@ export default function App() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [armed, committing, uploadOpen, selectedRingId, filter, query, flaggedRings, resetState, briefingOpen, briefingSteps.length, summaryOpen, replaying]);
+  }, [armed, committing, uploadOpen, selectedRingId, filter, query, flaggedRings, resetState, briefingOpen, briefingSteps.length, summaryOpen, replaying, challengeOpen]);
 
   const hoverRing = hoveredNode?.ringId ? snapshot?.rings.find((r) => r.id === hoveredNode.ringId) : null;
   const isEmpty = !mock && !!snapshot && snapshot.accounts.length === 0;
@@ -440,6 +468,16 @@ export default function App() {
 
         <div style={{ width: 1, height: 26, background: "#24282f" }} />
 
+        {!mock && (
+          <div
+            onClick={() => setChallengeOpen(true)}
+            className="flex cursor-pointer items-center gap-2 rounded uppercase"
+            style={{ height: 28, padding: "0 12px", border: `1px solid ${challenge ? "#c8792e" : "#313640"}`, background: challenge ? "#1a1509" : "#0d0f12", color: challenge ? "#e0913f" : "#c3c7cc", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12, letterSpacing: ".1em" }}
+          >
+            Blind test
+          </div>
+        )}
+
         {timeline && timeline.order.length > 0 && !isEmpty && (
           <div
             onClick={startReplay}
@@ -548,6 +586,15 @@ export default function App() {
                 </div>
                 {(paymentMoment || briefingStep?.paymentMoment) && paymentView && (
                   <PaymentMomentCallout view={paymentView} flaggedRingCount={flaggedRings.length} />
+                )}
+                {challenge && challengeScore && !briefingOpen && (
+                  <ChallengeScoreCard
+                    truth={challenge}
+                    score={challengeScore}
+                    sensitivity={sensitivity}
+                    onClose={() => setChallenge(null)}
+                    onRaiseSensitivity={() => setSensitivity((s) => Math.min(1, Math.round((s + 0.1) * 10) / 10))}
+                  />
                 )}
               </div>
             </div>
@@ -681,6 +728,7 @@ export default function App() {
           )}
 
           <UploadPanel open={uploadOpen} mock={mock} onClose={() => setUploadOpen(false)} onUploaded={loadAndBrief} />
+          <ChallengePanel open={challengeOpen} mock={mock} onClose={() => setChallengeOpen(false)} onDone={runChallenge} />
         </div>
         {selectedRing && derived && (
           <InvestigationPanel
