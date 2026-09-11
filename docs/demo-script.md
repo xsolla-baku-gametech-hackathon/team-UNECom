@@ -48,8 +48,10 @@ Pitch-dən **ən azı 10 dəqiqə əvvəl**, sırayla.
 - [ ] **Engine ayaqdadır** — `cd engine && .venv/bin/uvicorn app.main:app --port 8000`,
       `/health` cavab verir.
 - [ ] **API ayaqdadır və verilənlər bazası BOŞDUR.** `GET /events` heç nə
-      qaytarmamalıdır. Dolu qalıbsa: `npm run prisma:migrate reset` (və ya DB
-      faylını sil + `npm run prisma:push`).
+      qaytarmamalıdır. Dolu qalıbsa: sol üstdəki **"Fraud Radar"** yazısına
+      klik → **"Yes, clear it"**. Bu yalnız `api/.env`-də
+      `ALLOW_DEMO_RESET="true"` olanda işləyir (lokal API); canlı Render
+      API-si reseti 403 ilə rədd edir.
       **Niyə:** qraf jürinin gözü qarşısında dolmalıdır — boş ekrandan tam
       şəbəkəyə keçid demonun ən güclü ilk 10 saniyəsidir.
 - [ ] **Web dev server açıqdır** — `cd web && npm run dev`.
@@ -69,8 +71,8 @@ Pitch-dən **ən azı 10 dəqiqə əvvəl**, sırayla.
       gətirmir, `generate.py` isə başqa fayl verir (bax bölmə 0).
 - [ ] **Fayl yenidən generasiya EDİLMƏYİB** (bax bölmə 0).
 - [ ] **Slider 0.5-dədir.**
-- [ ] **"Ödəniş anı görünüşü" toggle SÖNÜKDÜR.**
-- [ ] **"Yalnız bayraqlanmış halqalar" toggle SÖNÜKDÜR** (qraf tam görünsün).
+- [ ] **"Payment-moment view" toggle SÖNÜKDÜR.**
+- [ ] **"Flagged rings only" toggle SÖNÜKDÜR** (qraf tam görünsün).
 - [ ] **Investigation panel bağlıdır**, case seçilməyib, upload banner-i təmizdir.
 - [ ] **Tam ekran (F11).** Bookmark bar, bildirişlər, Slack — hamısı bağlı.
       Ekran parlaqlığı maksimum (proyektorda tünd tema solğun görünür).
@@ -117,7 +119,7 @@ cədvəldən kənara çıxırsa, fayl səhvdir (bax bölmə 0).
 | 0.6 | 0.49 | `ring_3` — 1 halqa |
 | **0.7 / 0.8** | 0.42 / 0.34 | `ring_3` + `ring_5` — **2 halqa** |
 
-### "Ödəniş anı görünüşü" callout-u
+### "Payment-moment view" callout-u
 
 | Slider | Görür | Görmür | Dəyər | Gözdən qaçan hub |
 |---|---|---|---|---|
@@ -211,9 +213,9 @@ case queue-nun dolduğunu göstər — **bir case: `ring_3`, risk 0.59, 35 hesab
 
 ---
 
-### ⏱ 1:08–1:41 · **"Ödəniş anı görünüşü" + miqyas körpüsü — ƏSAS AN** (30 s + 3 s)
+### ⏱ 1:08–1:41 · **"Payment-moment view" + miqyas körpüsü — ƏSAS AN** (30 s + 3 s)
 
-**Hərəkət:** Qrafın üstündəki **"Ödəniş anı görünüşü"** toggle-ına klik.
+**Hərəkət:** Qrafın üstündəki **"Payment-moment view"** toggle-ına klik.
 **Slider 0.5-də olmalıdır** (bax bölmə 2-dəki xəbərdarlıq).
 
 **Görünəcək:**
@@ -280,12 +282,12 @@ confidence → tövsiyə → halqadakı hesablar (`acct_0044` konturlu).
 **De (EN):**
 > "Claude writes the case: evidence, confidence, recommendation. It never decides. The analyst does. Confirmed."
 
-**Hərəkət:** **F** (və ya "Fırıldaqdır") → təsdiq ekranı → **Enter** (və ya
-"Bəli — fırıldaq") → status **"Fırıldaq kimi qeydə alındı"**. "Confirmed" sözü
+**Hərəkət:** **F** (və ya "Fraud") → təsdiq ekranı → **Enter** (və ya
+"Yes, fraud") → status **"Recorded as fraud"**. "Confirmed" sözü
 Enter-lə eyni anda deyilir.
 
-> **Səhv qərar verdinsə:** təsdiqdən ƏVVƏL **Esc** (və ya "Ləğv et") geri
-> qaytarır. Təsdiq basılıbsa geri dönüş yoxdur — **"Növbəti case →"** ilə davam
+> **Səhv qərar verdinsə:** təsdiqdən ƏVVƏL **Esc** (və ya "Cancel") geri
+> qaytarır. Təsdiq basılıbsa geri dönüş yoxdur — **"Next case →"** ilə davam
 > et, dayanıb düzəltməyə çalışma.
 
 ---
@@ -307,7 +309,7 @@ məşq et.
 
 | Sual | Nə göstər |
 |---|---|
-| "How is this different from Sift/Kount/Magify?" | **"Ödəniş anı görünüşü"** toggle, slider 0.5-də — 5 saniyə, sözsüz sübut |
+| "How is this different from Sift/Kount/Magify?" | **"Payment-moment view"** toggle, slider 0.5-də — 5 saniyə, sözsüz sübut |
 | "So you don't detect hubs?" | Slider 0.5 → 0.8, ikinci halqa + `acct_0025` |
 | "What's your false positive rate?" | Slider 0.8 + toggle → `acct_0095`/`acct_0089` (bax `qa-defence.md` №3) |
 | "Would it work on our data?" | Upload modalı — "drop your own file" |
@@ -389,7 +391,7 @@ olmalıdır. Amma məşqdə 3:00-ı keçirsə, bu sıra ilə:
 
 - 🔴 **0:00 · Soyuq açılış (Valve).** Onsuz pitch tərif ilə başlayır və ilk
   5 saniyə itir. Zatən keçmişdə qalır — kəsilə bilməz.
-- 🔴 **1:08–1:41 · "Ödəniş anı görünüşü" toggle + 28%.** Yeganə görünən
+- 🔴 **1:08–1:41 · "Payment-moment view" toggle + 28%.** Yeganə görünən
   fərqləndiricimiz və miqyas körpüsü. Bunsuz biz "daha bir fraud dashboard"-uq.
 - 🔴 **1:41–1:57 · Slider 0.5 → 0.8, ikinci halqa.** Ən güclü texniki
   arqumentimiz; "four real players with it" daxil — false positive-i jüri tapmamış özümüz deyirik.

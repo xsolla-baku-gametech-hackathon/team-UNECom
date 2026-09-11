@@ -57,7 +57,7 @@ Oxu: yuxarıdan aşağı. Mötərizədə yalnız (vaxt · klik · ekrandan oxuna
 
 *tələffüz:* 94.9 → **ninety-four point nine**
 
-**(1:08 · TOGGLE "Ödəniş anı görünüşü" ON)**
+**(1:08 · TOGGLE "Payment-moment view" ON)**
 
 > "The differentiator. This toggle shows a payment-moment tool's entire view: the receiving end of a flagged card."
 
