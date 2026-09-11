@@ -7,7 +7,7 @@ import { PaymentMomentCallout } from "./components/PaymentMomentCallout";
 import { SensitivitySlider } from "./components/SensitivitySlider";
 import { StatsBar } from "./components/StatsBar";
 import { UploadPanel } from "./components/UploadPanel";
-import { fetchGraph, getCachedSnapshot, isUsingMockData, prefetchExplanations, submitDecision, type Decision } from "./lib/api";
+import { fetchGraph, getCachedSnapshot, isUsingMockData, prefetchExplanations, resetDemoData, submitDecision, type Decision } from "./lib/api";
 import { deriveGraph } from "./lib/deriveGraph";
 import { computePaymentMomentView } from "./lib/paymentMomentView";
 import { riskColor } from "./lib/colors";
@@ -29,6 +29,7 @@ export default function App() {
   const [hoveredNode, setHoveredNode] = useState<GraphNode | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [mock, setMock] = useState(false);
+  const [resetState, setResetState] = useState<{ kind: "idle" | "busy" } | { kind: "done" | "error"; message: string }>({ kind: "idle" });
   const [size, setSize] = useState({ width: 0, height: 0 });
   const canvasWrapRef = useRef<HTMLDivElement>(null);
 
@@ -41,6 +42,37 @@ export default function App() {
   useEffect(() => {
     load();
   }, []);
+
+  // Clicking the wordmark empties the demo database, so the pitch can be put
+  // back to its opening state without leaving the browser. Every piece of
+  // selection state is cleared too — a ring id selected from the old dataset
+  // means nothing once community detection re-runs.
+  async function handleReset() {
+    if (resetState.kind === "busy") return;
+    setResetState({ kind: "busy" });
+    try {
+      const { events } = await resetDemoData();
+      setSelectedRingId(null);
+      setArmed(null);
+      setRingSensOverrides({});
+      setQuery("");
+      setDecisionError(null);
+      await load();
+      setResetState({ kind: "done", message: `Baza boşaldıldı — ${events.toLocaleString("en-US")} hadisə silindi` });
+    } catch (e) {
+      const raw = e instanceof Error ? e.message : String(e);
+      setResetState({
+        kind: "error",
+        message: raw.includes("403") ? "Sıfırlama bu backend-də bağlıdır (ALLOW_DEMO_RESET)" : `Sıfırlama alınmadı: ${raw}`,
+      });
+    }
+  }
+
+  useEffect(() => {
+    if (resetState.kind !== "done" && resetState.kind !== "error") return;
+    const t = setTimeout(() => setResetState({ kind: "idle" }), 4000);
+    return () => clearTimeout(t);
+  }, [resetState]);
 
   useEffect(() => {
     const el = canvasWrapRef.current;
@@ -174,7 +206,20 @@ export default function App() {
     <div className="flex h-screen flex-col" style={{ background: "#0a0b0d", color: "#e8e6e1", fontFamily: "'IBM Plex Sans'", fontSize: 13 }}>
       <header className="flex items-center gap-4 border-b px-3.5" style={{ flex: "0 0 52px", borderColor: "#24282f", background: "#0d0f12" }}>
         <div className="flex flex-col leading-tight" style={{ flex: "0 0 auto" }}>
-          <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 16, letterSpacing: ".07em" }}>
+          <span
+            onClick={handleReset}
+            title="Bazanı boşalt — demo açılış vəziyyətinə qayıdır"
+            className="uppercase"
+            style={{
+              fontFamily: "'Barlow Semi Condensed'",
+              fontWeight: 700,
+              fontSize: 16,
+              letterSpacing: ".07em",
+              cursor: "pointer",
+              opacity: resetState.kind === "busy" ? 0.5 : 1,
+              userSelect: "none",
+            }}
+          >
             Fraud Radar
           </span>
           <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 9.5, letterSpacing: ".17em", color: "#676d76" }}>
@@ -182,6 +227,24 @@ export default function App() {
           </span>
         </div>
         <div style={{ width: 1, height: 26, background: "#24282f" }} />
+
+        {(resetState.kind === "done" || resetState.kind === "error") && (
+          <div
+            className="flex items-center"
+            style={{
+              height: 26,
+              padding: "0 10px",
+              borderRadius: 3,
+              border: `1px solid ${resetState.kind === "done" ? "#34503f" : "#6d3430"}`,
+              background: resetState.kind === "done" ? "#0f1613" : "#1c100f",
+              color: resetState.kind === "done" ? "#8fae9b" : "#d1685f",
+              fontSize: 11.5,
+              whiteSpace: "nowrap",
+            }}
+          >
+            {resetState.message}
+          </div>
+        )}
 
         {mock ? (
           <div className="flex items-center gap-2.5" style={{ height: 26, padding: "0 10px", border: "1px solid #6b4a1f", background: "#1a1509", borderRadius: 3 }}>
