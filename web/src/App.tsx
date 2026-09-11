@@ -5,6 +5,7 @@ import { GraphCanvas } from "./components/GraphCanvas";
 import { InvestigationPanel } from "./components/InvestigationPanel";
 import { Legend } from "./components/Legend";
 import { PaymentMomentCallout } from "./components/PaymentMomentCallout";
+import { ReplayHud } from "./components/ReplayHud";
 import { SensitivitySlider } from "./components/SensitivitySlider";
 import { SessionSummary } from "./components/SessionSummary";
 import { StatsBar } from "./components/StatsBar";
@@ -13,6 +14,7 @@ import { fetchGraph, getCachedSnapshot, isUsingMockData, prefetchExplanations, r
 import { buildBriefing } from "./lib/briefing";
 import { deriveGraph } from "./lib/deriveGraph";
 import { computePaymentMomentView } from "./lib/paymentMomentView";
+import { buildTimeline, replayDurationMs, replayFrame } from "./lib/replay";
 import { riskColor } from "./lib/colors";
 import { caseRef } from "./lib/format";
 import type { GraphNode, GraphSnapshot } from "./lib/types";
@@ -34,6 +36,9 @@ export default function App() {
   const [briefingOpen, setBriefingOpen] = useState(false);
   const [briefingIndex, setBriefingIndex] = useState(0);
   const [summaryOpen, setSummaryOpen] = useState(false);
+  // Replay: number of events shown so far, or null when not playing.
+  const [replayIndex, setReplayIndex] = useState<number | null>(null);
+  const replayStartRef = useRef(0);
   const [mock, setMock] = useState(false);
   const [resetState, setResetState] = useState<
     { kind: "idle" | "confirm" | "busy" } | { kind: "done" | "error"; message: string }
@@ -139,8 +144,58 @@ export default function App() {
 
   async function loadAndBrief() {
     await load();
-    openBriefing();
+    startReplay();
   }
+
+  // Replay plays the log back in timestamp order, then the rings "snap" in
+  // and the briefing takes over. Skipping jumps straight to the snap.
+  const timeline = useMemo(() => (snapshot ? buildTimeline(snapshot) : null), [snapshot]);
+  const replaying = replayIndex != null && !!timeline && timeline.order.length > 0;
+  const frame = useMemo(
+    () => (replaying && derived && timeline ? replayFrame(derived, timeline, replayIndex) : null),
+    [replaying, derived, timeline, replayIndex],
+  );
+
+  function startReplay() {
+    if (!timeline || timeline.order.length === 0) return;
+    select(null);
+    setBriefingOpen(false);
+    setSummaryOpen(false);
+    setPaymentMoment(false);
+    replayStartRef.current = performance.now();
+    setReplayIndex(0);
+  }
+
+  function finishReplay() {
+    setReplayIndex(null);
+    // Let the snap (colours, hubs, flow) land before the briefing card rises.
+    setTimeout(openBriefing, 900);
+  }
+
+  useEffect(() => {
+    if (!replaying || !timeline) return;
+    const total = timeline.order.length;
+    const duration = replayDurationMs(total);
+    let raf = 0;
+    let last = -1;
+    const tick = () => {
+      const p = Math.min(1, (performance.now() - replayStartRef.current) / duration);
+      const eased = 1 - Math.pow(1 - p, 2);
+      const idx = Math.round(eased * total);
+      if (idx !== last) {
+        last = idx;
+        setReplayIndex(idx);
+      }
+      if (p >= 1) {
+        setTimeout(finishReplay, 600);
+        return;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [replaying, timeline]);
 
   const selectedRing = useMemo(
     () => snapshot?.rings.find((r) => r.id === selectedRingId) ?? null,
@@ -224,6 +279,13 @@ export default function App() {
         document.getElementById("case-search")?.focus();
         return;
       }
+      if (replaying) {
+        if (e.key === "Escape" || e.key === " " || e.key === "Enter") {
+          e.preventDefault();
+          finishReplay();
+        }
+        return;
+      }
       if (briefingOpen) {
         if (e.key === "Escape") setBriefingOpen(false);
         else if (e.key === "ArrowRight" || e.key === " ") setBriefingIndex((i) => Math.min(briefingSteps.length - 1, i + 1));
@@ -261,7 +323,7 @@ export default function App() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [armed, committing, uploadOpen, selectedRingId, filter, query, flaggedRings, resetState, briefingOpen, briefingSteps.length, summaryOpen]);
+  }, [armed, committing, uploadOpen, selectedRingId, filter, query, flaggedRings, resetState, briefingOpen, briefingSteps.length, summaryOpen, replaying]);
 
   const hoverRing = hoveredNode?.ringId ? snapshot?.rings.find((r) => r.id === hoveredNode.ringId) : null;
   const isEmpty = !mock && !!snapshot && snapshot.accounts.length === 0;
@@ -378,6 +440,17 @@ export default function App() {
 
         <div style={{ width: 1, height: 26, background: "#24282f" }} />
 
+        {timeline && timeline.order.length > 0 && !isEmpty && (
+          <div
+            onClick={startReplay}
+            className="flex cursor-pointer items-center gap-2 rounded uppercase"
+            style={{ height: 28, padding: "0 12px", border: "1px solid #313640", background: replaying ? "#16191e" : "#0d0f12", color: "#c3c7cc", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12, letterSpacing: ".1em" }}
+          >
+            <span style={{ fontSize: 9 }}>▶</span>
+            Replay
+          </div>
+        )}
+
         {briefingSteps.length > 0 && (
           <div
             onClick={openBriefing}
@@ -401,7 +474,7 @@ export default function App() {
       <div className="flex min-h-0 flex-1">
         {derived && (
           <CaseQueue
-            rings={flaggedRings}
+            rings={replaying ? [] : flaggedRings}
             selectedRingId={selectedRingId}
             filter={filter}
             onFilterChange={setFilter}
@@ -415,14 +488,16 @@ export default function App() {
         <div ref={canvasWrapRef} className="relative flex-1" style={{ minWidth: 0, background: "#0a0b0d" }}>
           {size.width > 0 && derived && (
             <GraphCanvas
-              nodes={derived.nodes}
-              links={derived.links}
+              nodes={frame ? frame.nodes : derived.nodes}
+              links={frame ? frame.links : derived.links}
               selectedRingId={selectedRingId}
-              flaggedOnly={flaggedOnly}
-              paymentVisibleIds={(paymentMoment || briefingStep?.paymentMoment) && paymentView ? paymentView.visibleIds : null}
+              flaggedOnly={flaggedOnly && !frame}
+              paymentVisibleIds={(paymentMoment || briefingStep?.paymentMoment) && paymentView && !frame ? paymentView.visibleIds : null}
               spotlightIds={briefingStep?.spotlightIds ?? null}
               spotlightHubIds={briefingStep?.spotlightHubIds ?? null}
-              focusIds={focusIds}
+              focusIds={frame ? null : focusIds}
+              pulseIds={frame?.pulseIds ?? null}
+              autoFit={!!frame}
               onSelectNode={handleSelectNode}
               onHoverNode={setHoveredNode}
               width={size.width}
@@ -430,7 +505,7 @@ export default function App() {
             />
           )}
 
-          {snapshot && derived && !isEmpty && (
+          {snapshot && derived && !isEmpty && !replaying && (
             <div className="absolute flex flex-wrap items-start justify-between gap-3" style={{ left: 16, right: 16, top: 14, zIndex: 30 }}>
               <StatsBar stats={snapshot.stats} flaggedRingCount={flaggedRings.length} decidedCount={decidedCount} />
               <div className="flex flex-col items-end gap-2.5" style={{ minWidth: 0 }}>
@@ -478,7 +553,7 @@ export default function App() {
             </div>
           )}
 
-          {!isEmpty && (
+          {!isEmpty && !replaying && (
             <div className="absolute flex flex-wrap-reverse items-end justify-between gap-2.5" style={{ left: 16, right: 16, bottom: 16, zIndex: 10 }}>
               <Legend />
               {derived && (
@@ -572,7 +647,9 @@ export default function App() {
             </div>
           )}
 
-          {briefingOpen && briefingSteps.length > 0 && (
+          {frame && <ReplayHud frame={frame} onSkip={finishReplay} />}
+
+          {briefingOpen && briefingSteps.length > 0 && !replaying && (
             <Briefing
               key={briefingIndex}
               steps={briefingSteps}

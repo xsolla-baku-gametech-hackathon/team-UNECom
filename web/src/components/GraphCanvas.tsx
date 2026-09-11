@@ -16,6 +16,10 @@ interface Props {
   spotlightHubIds?: Set<string> | null;
   /** Accounts the camera should frame; null returns to the whole graph. */
   focusIds?: Set<string> | null;
+  /** Replay: accounts that just made a flagged purchase, drawn with a red pulse. */
+  pulseIds?: Set<string> | null;
+  /** Replay: keep the whole growing graph in frame as nodes arrive. */
+  autoFit?: boolean;
   onSelectNode: (node: GraphNode) => void;
   onHoverNode: (node: GraphNode | null) => void;
   width: number;
@@ -39,6 +43,8 @@ export function GraphCanvas({
   spotlightIds = null,
   spotlightHubIds = null,
   focusIds = null,
+  pulseIds = null,
+  autoFit = false,
   onSelectNode,
   onHoverNode,
   width,
@@ -88,6 +94,11 @@ export function GraphCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [graphData]);
 
+  useEffect(() => {
+    if (!autoFit) return;
+    fgRef.current?.zoomToFit(350, 140);
+  }, [autoFit, graphData]);
+
   // Camera: opening a case (or a briefing spotlight) frames those accounts,
   // so the ring fills the screen instead of being a smudge in the corner.
   // Clearing the focus eases back out to the whole graph.
@@ -95,7 +106,7 @@ export function GraphCanvas({
     const fg = fgRef.current;
     if (!fg || isFirstLoad) return;
     if (!focusIds || focusIds.size === 0) {
-      fg.zoomToFit(600, 50);
+      if (!autoFit) fg.zoomToFit(600, 50);
       return;
     }
     const t = setTimeout(() => {
@@ -179,6 +190,20 @@ export function GraphCanvas({
         ctx.arc(node.x ?? 0, node.y ?? 0, r, 0, 2 * Math.PI);
         ctx.fillStyle = node.flagged ? riskColor(node.riskScore) : NEUTRAL_FILL;
         ctx.fill();
+
+        if (pulseIds?.has(node.id)) {
+          // Replay: a flagged purchase just landed here.
+          ctx.lineWidth = 1.5 / Math.sqrt(globalScale);
+          ctx.strokeStyle = "#d1685f";
+          ctx.beginPath();
+          ctx.arc(node.x ?? 0, node.y ?? 0, r + 4 / Math.sqrt(globalScale), 0, 2 * Math.PI);
+          ctx.stroke();
+          ctx.globalAlpha = o * 0.4;
+          ctx.beginPath();
+          ctx.arc(node.x ?? 0, node.y ?? 0, r + 9 / Math.sqrt(globalScale), 0, 2 * Math.PI);
+          ctx.stroke();
+          ctx.globalAlpha = o;
+        }
 
         if (node.isHub) {
           ctx.lineWidth = 2 / Math.sqrt(globalScale);
