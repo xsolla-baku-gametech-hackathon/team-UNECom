@@ -53,14 +53,12 @@ Pitch-dən **ən azı 10 dəqiqə əvvəl**, sırayla.
       **Niyə:** qraf jürinin gözü qarşısında dolmalıdır — boş ekrandan tam
       şəbəkəyə keçid demonun ən güclü ilk 10 saniyəsidir.
 - [ ] **Web dev server açıqdır** — `cd web && npm run dev`.
-- [ ] **Brauzer tab-ı `http://localhost:5173/#/app` ünvanındadır** — `#/app`
-      olmadan kök URL **landing page** açır, dashboard yox.
+- [ ] **Brauzer tab-ı `http://localhost:5173` ünvanındadır** — kök URL birbaşa
+      radarı açır (landing page yoxdur; köhnə `#/app` linkləri də işləyir).
       **Niyə:** dashboard lazy-load olunur (`main.tsx` → `lazy(() => import('./App.tsx'))`),
       ona görə ilk keçiddə qısa "Loading Fraud Radar…" fasiləsi olur. Ünvanı
       pitch-dən əvvəl açıb dashboard-un yükləndiyini gör — səhnədə həmin
       fasilə 0:44-dəki 4 saniyəlik boşluğa əlavə olunmasın.
-      Landing page-i jüriyə göstərmək istəyirsənsə, bu **ayrıca qərardır** və
-      180 saniyəlik büdcədə yeri yoxdur — məşq edilməyib.
 - [ ] **`data-generator/output/events.csv` MASAÜSTÜNƏ kopyalanıb**, adı qısa və
       görünən. Ehtiyat: eyni qovluqdakı `events.json` da yanında.
       ⚠️ **Bu qovluq `.gitignore`-dadır** (`data-generator/.gitignore` →
