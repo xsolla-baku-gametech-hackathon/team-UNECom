@@ -58,7 +58,6 @@ export function GraphCanvas({
   // object per id and patch its fields in place, instead of building new
   // objects, or the whole layout would re-simulate and jitter on every tick.
   const nodeObjectsRef = useRef(new Map<string, FGNode>());
-  const isFirstLoad = nodeObjectsRef.current.size === 0;
 
   const graphData = useMemo(() => {
     const map = nodeObjectsRef.current;
@@ -85,14 +84,38 @@ export function GraphCanvas({
   // First load: fit early so something is on screen, then fit again once
   // the layout settles — the early fit is taken while nodes are still
   // flying apart and leaves the graph small in a corner.
+  //
+  // "First load" is tracked by whether that fit has actually run, not by
+  // peeking at the node map during render: the map is already full by the
+  // time effects run whenever the page opens on a loaded database (and on
+  // React's development double render), which skipped the fit and left the
+  // camera looking at an empty corner. An empty graph (e.g. after a reset)
+  // arms it again for the next dataset.
+  const fittedRef = useRef(false);
   const fitOnStopRef = useRef(false);
   useEffect(() => {
-    if (!isFirstLoad) return;
+    if (graphData.nodes.length === 0) {
+      fittedRef.current = false;
+      fitOnStopRef.current = false;
+      return;
+    }
+    if (fittedRef.current) return;
     fitOnStopRef.current = true;
-    const t = setTimeout(() => fgRef.current?.zoomToFit(400, 50), 300);
+    const t = setTimeout(() => {
+      fittedRef.current = true;
+      fgRef.current?.zoomToFit(400, 50);
+    }, 300);
+    return () => clearTimeout(t);
+  }, [graphData]);
+
+  // The canvas changes size when the case queue and panels mount; keep the
+  // whole graph framed unless a case (or the replay) owns the camera.
+  useEffect(() => {
+    if (!fittedRef.current || focusIds?.size || autoFit) return;
+    const t = setTimeout(() => fgRef.current?.zoomToFit(300, 50), 80);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [graphData]);
+  }, [width, height]);
 
   useEffect(() => {
     if (!autoFit) return;
@@ -104,7 +127,9 @@ export function GraphCanvas({
   // Clearing the focus eases back out to the whole graph.
   useEffect(() => {
     const fg = fgRef.current;
-    if (!fg || isFirstLoad) return;
+    // Before the first fit the layout has no positions yet; leave the camera
+    // to the first-load fit above.
+    if (!fg || !fittedRef.current) return;
     if (!focusIds || focusIds.size === 0) {
       if (!autoFit) fg.zoomToFit(600, 50);
       return;
