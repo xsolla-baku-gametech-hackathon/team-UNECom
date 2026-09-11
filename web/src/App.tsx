@@ -29,7 +29,9 @@ export default function App() {
   const [hoveredNode, setHoveredNode] = useState<GraphNode | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [mock, setMock] = useState(false);
-  const [resetState, setResetState] = useState<{ kind: "idle" | "busy" } | { kind: "done" | "error"; message: string }>({ kind: "idle" });
+  const [resetState, setResetState] = useState<
+    { kind: "idle" | "confirm" | "busy" } | { kind: "done" | "error"; message: string }
+  >({ kind: "idle" });
   const [size, setSize] = useState({ width: 0, height: 0 });
   const canvasWrapRef = useRef<HTMLDivElement>(null);
 
@@ -43,11 +45,19 @@ export default function App() {
     load();
   }, []);
 
-  // Clicking the wordmark empties the demo database, so the pitch can be put
-  // back to its opening state without leaving the browser. Every piece of
-  // selection state is cleared too — a ring id selected from the old dataset
-  // means nothing once community detection re-runs.
-  async function handleReset() {
+  // Clicking the wordmark asks first. The click target is the most prominent
+  // thing in the header and the action is unrecoverable, so a stray click
+  // during the pitch must not be able to empty the database. Confirming is a
+  // second click rather than a native confirm() dialog — an OS dialog on a
+  // projector looks like something went wrong.
+  function requestReset() {
+    if (resetState.kind === "busy") return;
+    setResetState({ kind: resetState.kind === "confirm" ? "idle" : "confirm" });
+  }
+
+  // Every piece of selection state goes with it — a ring id selected from the
+  // old dataset means nothing once community detection re-runs.
+  async function confirmReset() {
     if (resetState.kind === "busy") return;
     setResetState({ kind: "busy" });
     try {
@@ -68,9 +78,11 @@ export default function App() {
     }
   }
 
+  // The result banner clears itself; so does an unanswered confirmation, so a
+  // half-pressed reset never sits armed in the header waiting for a stray click.
   useEffect(() => {
-    if (resetState.kind !== "done" && resetState.kind !== "error") return;
-    const t = setTimeout(() => setResetState({ kind: "idle" }), 4000);
+    if (resetState.kind === "idle" || resetState.kind === "busy") return;
+    const t = setTimeout(() => setResetState({ kind: "idle" }), resetState.kind === "confirm" ? 6000 : 4000);
     return () => clearTimeout(t);
   }, [resetState]);
 
@@ -174,7 +186,8 @@ export default function App() {
         return;
       }
       if (e.key === "Escape") {
-        if (armed) setArmed(null);
+        if (resetState.kind === "confirm") setResetState({ kind: "idle" });
+        else if (armed) setArmed(null);
         else if (uploadOpen) setUploadOpen(false);
         else select(null);
         return;
@@ -197,7 +210,7 @@ export default function App() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [armed, committing, uploadOpen, selectedRingId, filter, query, flaggedRings]);
+  }, [armed, committing, uploadOpen, selectedRingId, filter, query, flaggedRings, resetState]);
 
   const hoverRing = hoveredNode?.ringId ? snapshot?.rings.find((r) => r.id === hoveredNode.ringId) : null;
   const isEmpty = !mock && !!snapshot && snapshot.accounts.length === 0;
@@ -207,7 +220,7 @@ export default function App() {
       <header className="flex items-center gap-4 border-b px-3.5" style={{ flex: "0 0 52px", borderColor: "#24282f", background: "#0d0f12" }}>
         <div className="flex flex-col leading-tight" style={{ flex: "0 0 auto" }}>
           <span
-            onClick={handleReset}
+            onClick={requestReset}
             title="Bazanı boşalt — demo açılış vəziyyətinə qayıdır"
             className="uppercase"
             style={{
@@ -227,6 +240,41 @@ export default function App() {
           </span>
         </div>
         <div style={{ width: 1, height: 26, background: "#24282f" }} />
+
+        {resetState.kind === "confirm" && (
+          <div
+            className="flex items-center gap-2.5"
+            style={{ height: 26, padding: "0 10px", borderRadius: 3, border: "1px solid #6d3430", background: "#1c100f", whiteSpace: "nowrap" }}
+          >
+            <span style={{ fontSize: 11.5, color: "#e8e6e1" }}>
+              Bazadakı bütün hadisələr və qərarlar silinsin?
+            </span>
+            <span
+              onClick={confirmReset}
+              className="cursor-pointer uppercase"
+              style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 11, letterSpacing: ".1em", color: "#d1685f" }}
+            >
+              Bəli, boşalt
+            </span>
+            <span
+              onClick={() => setResetState({ kind: "idle" })}
+              className="cursor-pointer uppercase"
+              style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 11, letterSpacing: ".1em", color: "#9aa0a8" }}
+            >
+              Ləğv
+            </span>
+          </div>
+        )}
+
+        {resetState.kind === "busy" && (
+          <div
+            className="flex items-center gap-2"
+            style={{ height: 26, padding: "0 10px", borderRadius: 3, border: "1px solid #24282f", background: "#101216", whiteSpace: "nowrap" }}
+          >
+            <span style={{ width: 10, height: 10, border: "2px solid #24282f", borderTopColor: "#c8792e", borderRadius: "50%", animation: "fr-spin .7s linear infinite" }} />
+            <span style={{ fontSize: 11.5, color: "#9aa0a8" }}>Baza boşaldılır…</span>
+          </div>
+        )}
 
         {(resetState.kind === "done" || resetState.kind === "error") && (
           <div
