@@ -177,7 +177,7 @@ Source line: `github.com/xsolla-baku-gametech-hackathon/team-UNECom`
 
 Top band: pill `SOURCED` · eyebrow `02 · THE PROBLEM`.
 
-**Headline:** `A tradeable economy is 13× more exposed than normal e-commerce.` — hot phrase: `13×` (set in Plex Mono inside the headline).
+**Headline:** `One tradeable economy: 13× the average merchant's chargeback rate.` — hot phrase: `13×` (set in Plex Mono inside the headline).
 
 Content zone: three numbers in one row, equal columns, baselines aligned, tabular, with the same caption height in all three columns (the first caption is the longest; align the other two to its top, not its bottom):
 
@@ -185,7 +185,7 @@ Content zone: three numbers in one row, equal columns, baselines aligned, tabula
 |---|---|
 | `3.41%` | `of Roblox bookings lost to fraud chargebacks, FY2024 — stolen cards → in-game currency → resale off-platform` |
 | `≈ $149M` | `the same figure in dollars, on $4.37B of bookings` |
-| `0.26%` | `cross-industry average chargeback rate` |
+| `0.26%` | `average chargeback rate, Sift merchant network` |
 
 Source line: `Roblox FY2024 Form 10-K (SEC) · Sift Q4 2025 Digital Trust Index`
 
@@ -241,11 +241,11 @@ Content zone: a three-row, two-column table, hairline dividers, no header row, c
 
 | What | Who |
 |---|---|
-| `Value-flow graph · Louvain rings · sensitivity slider` | `Trust & Safety analyst` — `Rockstar is hiring this role now` |
+| `Value-flow graph · Louvain rings · sensitivity slider` | `Trust & Safety analyst` — `Rockstar is hiring T&S analysts now` |
 | `Claude-written case · human decision · nothing auto-banned` | `Payments / risk lead` — `at a merchant of record` |
 | `Drag-and-drop CSV or JSON today · same /events API in production` | `Game economy / live-ops lead` |
 
-Source line: `Rockstar Games — Trust & Safety Senior Enforcement Analyst, open role (themuse.com)`
+Source line: `Rockstar Games — Senior Trust & Safety Analyst, open role (rockstargames.com/careers)`
 
 ### 05 · Monetization
 

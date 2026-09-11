@@ -32,10 +32,13 @@ different reason to care.
 internally on how much fraud they catch *and* on how few real players they ban by
 mistake. Works in a queue, not in a data-science notebook.
 
-**This role is real and hiring.** Rockstar Games has an open
-*Trust & Safety Senior Enforcement Analyst* role responsible for designing and
-implementing enforcement processes **`[SOURCED]`**
-([themuse.com](https://themuse.com/jobs/rockstargames/trust-safety-senior-enforcement-analyst-4a003d)).
+**This role is real and hiring.** Rockstar Games is hiring a *Senior Trust &
+Safety Analyst, Creator Platform* (posted 17 Jul 2026, updated 10 Sep 2026)
+**`[SOURCED]`**
+([rockstargames.com](https://www.rockstargames.com/careers/openings/position/7806748003)).
+Honest scope note: that role moderates player-made content on FiveM/RedM, not
+payment fraud. The *Trust & Safety Senior Enforcement Analyst* posting we first
+cited has closed (the link now returns 404), so we no longer name it.
 Typical listed requirement is 1–5 years in Trust & Safety, fraud operations or
 customer service — i.e. **an operator, not an engineer**. That matters for our
 product: the output has to be a readable explanation, not a risk vector.
@@ -64,11 +67,15 @@ spreadsheets. Manual graph-tracing does not scale past a few dozen accounts.
 crossing scheme monitoring thresholds, not any individual bad player.
 
 **Why this persona is the highest-value one:** as merchant of record, the
-chargeback lands on *them*, not on the studio. Xsolla operates as merchant and
-seller of record for Valve, Twitch, Ubisoft, Epic Games and PUBG Corporation
-**`[SOURCED]`** ([Xsolla company profile](https://grokipedia.com/page/Xsolla)),
-across 200+ geographies. Every laundered purchase in that network is their
-liability.
+chargeback lands on *them*, not on the studio. In its own press boilerplate
+Xsolla says it "operates as the merchant of record across 200+ geographies" and
+"supports major gaming titles like Valve, Twitch, Roblox, Ubisoft, Epic Games,
+Take-Two, KRAFTON, Nexters, NetEase, Playstudios, Playrix, miHoYo, and more"
+**`[SOURCED]`**
+([Xsolla press release, 26 Aug 2026](https://xsolla.prezly.com/xsolla-announces-five-year-partnership-with-the-global-esports-federation)).
+Xsolla does not say it is merchant of record *for* each of those names, and we
+do not claim it. Every laundered purchase where Xsolla is merchant of record is
+its liability.
 
 Comparable buyers: **Xsolla, Coda Payments, Stash, Appcharge, Nuvei's gaming
 vertical.**
@@ -113,19 +120,21 @@ T&S tool deserves budget. Weakest buyer, strongest advocate.
 | Figure | Value | Type | Source |
 |---|---|---|---|
 | **Roblox chargebacks from all fraud, FY2024** | **3.41% of bookings** | `[SOURCED]` | [Roblox FY2024 10-K](https://www.sec.gov/Archives/edgar/data/1315098/000131509825000033/rblx-20241231.htm) |
-| Roblox chargebacks from fraud, FY2022 | 3.16% of bookings | `[SOURCED]` | [Roblox FY2022 10-K](https://www.sec.gov/Archives/edgar/data/1315098/000131509823000035/rblx-20221231.htm) |
+| Roblox chargebacks from *this* (stolen-card Robux) fraud, FY2022 | 3.16% of bookings — narrower metric than FY2024's "all fraud" | `[SOURCED]` | [Roblox FY2022 10-K](https://www.sec.gov/Archives/edgar/data/1315098/000131509823000035/rblx-20221231.htm) |
+| Roblox chargebacks **and refunds**, "some of which may have been related to fraud", FY2025 | 2.5% of bookings — Roblox changed the metric; fraud is no longer isolated | `[SOURCED]` | Roblox FY2025 10-K (filed 11 Feb 2026) |
 | Roblox bookings, FY2024 | $4,369.1M | `[SOURCED]` | FY2024 10-K, revenue-to-bookings reconciliation |
 | ⇒ **Roblox fraud chargebacks, FY2024, in dollars** | **≈ $149.0M** | `[SOURCED]` (arithmetic on two sourced figures: 4,369.1 × 3.41%) | — |
-| Roblox "Infrastructure and trust & safety" spend, FY2024 | $915.4M | `[SOURCED]` | FY2024 10-K |
-| Average merchant chargeback rate, Q3 2025 (cross-industry) | 0.26% | `[SOURCED]` | [Sift Q4 2025 Digital Trust Index](https://sift.com/index-reports-disputes-q4-2025/) |
+| Roblox "Infrastructure and trust & safety" expense line, FY2024 | $915.4M — **mostly data centres**; the 10-K says it consists "primarily of expenses related to the operation of our data centers and technical infrastructure" | `[SOURCED]` | FY2024 10-K |
+| Average merchant chargeback rate across Sift's network, Q3 2025 | 0.26% | `[SOURCED]` | [Sift Q4 2025 Digital Trust Index](https://sift.com/index-reports-disputes-q4-2025/) — Sift's customer network, not the whole industry |
 | Global chargeback losses | $33.79B (2025) → $41.69B (2028) | `[SOURCED]` | Sift Q4 2025 Index |
-| US merchant true cost per $1 of chargeback | **$4.61** | `[SOURCED]` | Sift Q4 2025 Index |
+| US merchant true cost per $1 of **fraud** | **$4.61** | `[SOURCED]` | [LexisNexis True Cost of Fraud, 2 Apr 2025](https://risk.lexisnexis.com/about-us/press-room/press-release/20250402-tcof-ecommerce-and-retail) (Sift re-quotes it as "per $1 in chargebacks"; the primary source says per $1 of fraud) |
 | First-party fraud share of reported fraud | 36% (up from 15% prior year) | `[SOURCED]` | Sift Q4 2025 Index |
 
 **The single most important comparison on this page:**
 
-> Roblox's fraud chargeback rate is **3.41%** — roughly **13× the 0.26%
-> cross-industry average**. A game platform with a liquid secondary market for
+> Roblox's FY2024 fraud chargeback rate is **3.41%** — roughly **13× the 0.26%
+> average across Sift's merchant network**. (FY2025's combined chargebacks-and-
+> refunds figure, 2.5%, is still ~10× that average.) A game platform with a liquid secondary market for
 > its currency does not have a normal chargeback profile. That gap is the
 > market.
 
@@ -163,7 +172,7 @@ up from what *is* public, and show every step.
 
 | Input | Value | Type |
 |---|---|---|
-| Xsolla direct-to-consumer **PC** transactions, 2025 | **> $1.0B** | `[SOURCED]` — [PocketGamer.biz, 23 Jun 2026](https://www.pocketgamer.biz/xsolla-data-reveals-direct-to-consumer-pc-game-transactions-surpassed-1-billion-in-2025/) |
+| Xsolla direct-to-consumer **PC** transactions, 2025 | **> $1.0B** | `[SOURCED]` — Xsolla's own data, published as a sponsored guest post on [PocketGamer.biz, 23 Jun 2026](https://www.pocketgamer.biz/xsolla-data-reveals-direct-to-consumer-pc-game-transactions-surpassed-1-billion-in-2025/); covers Xsolla's publisher network only |
 | Games in that figure | 1,000+ titles | `[SOURCED]` (same) |
 | Average transaction value | just over $15 | `[SOURCED]` (same) |
 | ⇒ implied transaction count | **~66 million transactions** ($1.0B ÷ $15) | `[SOURCED]` arithmetic |
@@ -188,8 +197,8 @@ disputed volume** flowing through Xsolla as merchant of record.
 
 ### Step 3 — what that costs beyond the face value
 
-Applying the sourced US multiplier of **$4.61 of true cost per $1 of chargeback**
-(fees, review labour, scheme penalties, lost good customers) `[SOURCED, Sift]`:
+Applying the sourced US multiplier of **$4.61 of true cost per $1 of fraud**
+(fees, review labour, scheme penalties, lost good customers) `[SOURCED, LexisNexis]`:
 
 - Central case: $10.0M × 4.61 = **~$46M/year in total economic cost** on the PC
   D2C slice alone.
@@ -225,7 +234,7 @@ Three viable models. Pros, cons, and one recommendation.
 
 **Shape:** $0.01–$0.05 per value-transfer event analysed (trade, gift,
 marketplace sale, key redeem). Benchmark: Kount Essentials is reported at
-**$0.07 per transaction** `[SOURCED, secondary]`
+**about $0.07 per transaction** on third-party listing sites (Kount's own page says "request a quote") `[SOURCED, secondary]`
 ([chargeback.io](https://www.chargeback.io/blog/kount-alternatives)) — but note
 that Kount prices *payment* transactions, while we price *post-purchase transfer*
 events, which are far more numerous in a tradeable economy.
@@ -291,7 +300,7 @@ gets us into the budget that already exists.
 | 1 | Annual bookings | **$50,000,000** | `[ASSUMPTION]` — the "90+ games above $1M, 15+ above $10M" tier in Xsolla's own 2025 PC D2C data `[SOURCED]` puts a realistic mid-size D2C studio in the tens of millions |
 | 2 | Fraud chargeback rate | **1.70%** | `[ASSUMPTION]` — exactly **half** of Roblox's disclosed 3.41% `[SOURCED]`, discounted because most studios have a shallower off-platform resale market than Robux |
 | 3 | Direct chargeback loss (1 × 2) | **$850,000 / yr** | arithmetic |
-| 4 | True-cost multiplier | **2.0×** | `[ASSUMPTION]` — deliberately conservative; the sourced US figure is 4.61× `[SOURCED, Sift]` and we are cutting it by more than half |
+| 4 | True-cost multiplier | **2.0×** | `[ASSUMPTION]` — deliberately conservative; the sourced US figure is 4.61× per $1 of fraud `[SOURCED, LexisNexis]` and we are cutting it by more than half |
 | 5 | Total annual economic loss (3 × 4) | **$1,700,000 / yr** | arithmetic |
 | 6 | Share of that loss involving post-purchase transfer (mule → hub) | **60%** | `[ASSUMPTION]` — Valve's own statement that "nearly all key purchases that end up being traded or sold on the marketplace are believed to be fraud-sourced" `[SOURCED]` suggests the transfer-linked share is high in tradeable economies; we discount from "nearly all" to 60% |
 | 7 | Addressable loss (5 × 6) | **$1,020,000 / yr** | arithmetic |
@@ -325,7 +334,7 @@ above that and the customer is up.
 | Vendor | Model | Public price | Type |
 |---|---|---|---|
 | **Sift** | Volume-based subscription | Median ACV **$150,000/yr**; range **$29.6K–$600K**; $40K–$100K at 100K–500K events/mo | `[SOURCED, secondary]` — [Vendr](https://www.vendr.com/marketplace/sift-science), anonymised deal data, not a published rate card |
-| **Kount** (Equifax) | Per-transaction + tiered | Essentials **$0.07/transaction**; Advanced from **$1,000/mo** | `[SOURCED, secondary]` — [chargeback.io](https://www.chargeback.io/blog/kount-alternatives) |
+| **Kount** (Equifax) | Per-transaction + tiered | Essentials listed at **~$0.07/transaction** (third-party listings); Advanced from **$1,000/mo** | `[SOURCED, secondary]` — [chargeback.io](https://www.chargeback.io/blog/kount-alternatives) |
 | **Signifyd** | % of GMV, guaranteed protection | **0.5%–1.0% of GMV** | `[SOURCED, secondary]` — [Ringly](https://www.ringly.io/blog/signifyd-alternatives) |
 | **Chargeflow** | Success-fee on recovered chargebacks | `[NOT FOUND]` — no public rate | — |
 | **Justt** | Success-fee chargeback representment | `[NOT FOUND]` — no public rate | — |
@@ -406,9 +415,10 @@ positive rate low enough that you dare act on it — that is the moat, and it is
 the part in-house teams consistently underestimate.
 
 **4. The budget already exists and is enormous.**
-Roblox spent **$915.4M on "Infrastructure and trust & safety" in FY2024**
-`[SOURCED, 10-K]`. Trust & safety is not a nice-to-have line item at this scale;
-it is a nine-figure cost centre actively shopping for leverage.
+Roblox reports a combined **"Infrastructure and trust & safety"** expense line
+of **$915.4M for FY2024** `[SOURCED, 10-K]`. Most of that is data centres, so we
+do not quote it as trust & safety spend. What it does show: Roblox files trust &
+safety next to infrastructure, as a core operating cost rather than a side project.
 
 **5. Regulatory direction of travel.**
 The gaming industry is repeatedly flagged for weak KYC/AML controls around
@@ -442,9 +452,10 @@ Five bullets. Each contains one number. Copy directly to the Monetization slide.
    stolen cards → in-game currency → discounted resale off-platform.**
    *(Roblox FY2024 10-K)*
 
-2. **That rate is 13× the 0.26% cross-industry chargeback average — a tradeable
-   in-game economy is structurally 13× more exposed than normal e-commerce.**
-   *(Sift Q4 2025 Digital Trust Index)*
+2. **That rate is 13× the 0.26% average chargeback rate across Sift's merchant
+   network. One tradeable in-game economy, thirteen times the exposure.**
+   *(Sift Q4 2025 Digital Trust Index; Roblox FY2025 reports chargebacks and
+   refunds combined at 2.5%, still ~10×)*
 
 3. **Valve's answer in 2019 was to delete CS:GO key trading entirely, stating
    "nearly all" traded keys were fraud-sourced. We are the alternative to
