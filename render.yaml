@@ -22,6 +22,8 @@ services:
     buildCommand: npm install && npm run build && npx prisma generate && npx prisma db push
     startCommand: npm run start
     envVars:
+      - key: NODE_VERSION
+        value: 22.22.2 # the start command uses node --env-file-if-exists, which needs Node >= 22.9
       - key: DATABASE_URL
         sync: false # Neon Postgres connection string — set manually in the Render dashboard
       - key: HOST
