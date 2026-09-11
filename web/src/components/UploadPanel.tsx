@@ -23,8 +23,8 @@ async function runUpload(events: RawEvent[]): Promise<string> {
   });
   const { inserted, skipped } = await uploadEvents(events);
   return (
-    `${inserted.toLocaleString()} hadisə yükləndi, ${accounts.size.toLocaleString()} unikal hesab aşkarlandı` +
-    (skipped > 0 ? ` (${skipped.toLocaleString()} təkrar atlandı)` : "")
+    `${inserted.toLocaleString()} events loaded, ${accounts.size.toLocaleString()} unique accounts found` +
+    (skipped > 0 ? ` (${skipped.toLocaleString()} duplicates skipped)` : "")
   );
 }
 
@@ -45,7 +45,7 @@ export function UploadPanel({ open, mock, onClose, onUploaded }: Props) {
       onUploaded();
     } catch (e) {
       const message =
-        e instanceof UploadParseError ? e.message : `Yükləmə uğursuz oldu: ${e instanceof Error ? e.message : String(e)}`;
+        e instanceof UploadParseError ? e.message : `Upload failed: ${e instanceof Error ? e.message : String(e)}`;
       setStatus({ kind: "error", message });
     }
   }
@@ -59,7 +59,7 @@ export function UploadPanel({ open, mock, onClose, onUploaded }: Props) {
       setStatus({ kind: "success", message });
       onUploaded();
     } catch (e) {
-      setStatus({ kind: "error", message: `Nümunə data yüklənmədi: ${e instanceof Error ? e.message : String(e)}` });
+      setStatus({ kind: "error", message: `Sample data failed to load: ${e instanceof Error ? e.message : String(e)}` });
     }
   }
 
@@ -90,7 +90,7 @@ export function UploadPanel({ open, mock, onClose, onUploaded }: Props) {
       >
         <div className="flex items-center justify-between border-b px-4 py-3" style={{ borderColor: "#24282f" }}>
           <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 14, letterSpacing: ".13em", color: "#e8e6e1" }}>
-            Hadisə jurnalı yüklə
+            Upload event log
           </span>
           <button
             onClick={onClose}
@@ -103,7 +103,7 @@ export function UploadPanel({ open, mock, onClose, onUploaded }: Props) {
 
         {mock && status.kind === "idle" && (
           <div className="border-b px-4 py-2.5" style={{ borderColor: "#24282f", background: "#1a1509", fontSize: 11.5, color: "#e0913f", lineHeight: 1.45 }}>
-            Backend hazırda əlçatan deyil — yükləmə uğursuz olacaq, backend qoşulanda yenidən sınayın.
+            The backend is unreachable right now, so the upload will fail. Try again once it is back.
           </div>
         )}
 
@@ -130,10 +130,10 @@ export function UploadPanel({ open, mock, onClose, onUploaded }: Props) {
               >
                 <input ref={inputRef} type="file" accept=".csv,.json" className="hidden" onChange={onPick} />
                 <div style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 15, letterSpacing: ".06em", color: "#e8e6e1" }}>
-                  {dragOver ? "Buraxın, yüklənsin" : "Faylınızı bura atın, ya da klikləyib seçin"}
+                  {dragOver ? "Drop to upload" : "Drop your file here, or click to choose"}
                 </div>
                 <div className="mt-1.5" style={{ fontSize: 12, color: "#9aa0a8" }}>
-                  Başlıq sətirli CSV, ya da JSON — tək obyekt və ya array.
+                  CSV with a header row, or JSON: a single object or an array.
                 </div>
                 <div className="mt-3.5" style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10.5, color: "#4b5058", lineHeight: 1.7, wordBreak: "break-all" }}>
                   event_id · type · timestamp · from_account_id · to_account_id · asset_type · asset_id · quantity ·
@@ -141,13 +141,13 @@ export function UploadPanel({ open, mock, onClose, onUploaded }: Props) {
                 </div>
               </div>
               <div className="mt-3 flex items-center justify-between">
-                <span style={{ fontSize: 11.5, color: "#676d76" }}>Təkrar event_id-lər atlanır, iki dəfə sayılmır.</span>
+                <span style={{ fontSize: 11.5, color: "#676d76" }}>Repeated event_ids are skipped, never counted twice.</span>
                 <span
                   onClick={handleSample}
                   className="cursor-pointer"
                   style={{ fontFamily: "'IBM Plex Mono'", fontSize: 11, color: "#676d76", borderBottom: "1px dashed #313640" }}
                 >
-                  nümunə dataset yüklə
+                  load sample dataset
                 </span>
               </div>
             </>
@@ -167,11 +167,11 @@ export function UploadPanel({ open, mock, onClose, onUploaded }: Props) {
                   }}
                 />
                 <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 13, letterSpacing: ".1em", color: "#e8e6e1" }}>
-                  {status.fileName} işlənir
+                  Processing {status.fileName}
                 </span>
               </div>
               <div className="mt-3" style={{ fontFamily: "'IBM Plex Mono'", fontSize: 11, color: "#676d76" }}>
-                /events-ə göndərilir, sonra qraf yenidən analiz olunur…
+                Sending to /events, then re-analysing the graph…
               </div>
             </div>
           )}
@@ -185,7 +185,7 @@ export function UploadPanel({ open, mock, onClose, onUploaded }: Props) {
                   ✓
                 </span>
                 <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 14, letterSpacing: ".1em", color: "#8fae9b" }}>
-                  Yükləmə tamamlandı
+                  Upload complete
                 </span>
               </div>
               <div className="mt-2.5" style={{ fontSize: 12.5, color: "#c3c7cc", lineHeight: 1.5 }}>{status.message}</div>
@@ -195,7 +195,7 @@ export function UploadPanel({ open, mock, onClose, onUploaded }: Props) {
                   className="flex items-center rounded uppercase"
                   style={{ height: 34, padding: "0 14px", background: "#c8792e", color: "#0a0b0d", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12.5, letterSpacing: ".11em" }}
                 >
-                  Qrafa qayıt
+                  Back to the graph
                 </button>
               </div>
             </div>
@@ -210,7 +210,7 @@ export function UploadPanel({ open, mock, onClose, onUploaded }: Props) {
                   !
                 </span>
                 <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 14, letterSpacing: ".1em", color: "#d1685f" }}>
-                  Fayl rədd edildi
+                  File rejected
                 </span>
               </div>
               <div className="mt-2.5" style={{ fontSize: 12.5, color: "#c3c7cc", lineHeight: 1.5 }}>{status.message}</div>
@@ -220,14 +220,14 @@ export function UploadPanel({ open, mock, onClose, onUploaded }: Props) {
                   className="flex items-center rounded uppercase"
                   style={{ height: 34, padding: "0 14px", background: "#c8792e", color: "#0a0b0d", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12.5, letterSpacing: ".11em" }}
                 >
-                  Başqa fayl seç
+                  Choose another file
                 </button>
                 <button
                   onClick={onClose}
                   className="flex items-center rounded uppercase"
                   style={{ height: 34, padding: "0 14px", border: "1px solid #313640", color: "#9aa0a8", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12.5, letterSpacing: ".11em" }}
                 >
-                  Ləğv et
+                  Cancel
                 </button>
               </div>
             </div>

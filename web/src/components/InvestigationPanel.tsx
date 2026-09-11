@@ -22,9 +22,9 @@ interface Props {
 }
 
 const STATUS_META: Record<Ring["status"], { label: string; c: string }> = {
-  confirmed_fraud: { label: "Fırıldaq kimi qeydə alındı", c: "#d1685f" },
-  confirmed_real: { label: "Real oyunçu kimi qeydə alındı", c: "#8fae9b" },
-  pending: { label: "Gözləyir", c: "#c9ccd1" },
+  confirmed_fraud: { label: "Recorded as fraud", c: "#d1685f" },
+  confirmed_real: { label: "Recorded as real players", c: "#8fae9b" },
+  pending: { label: "Pending", c: "#c9ccd1" },
 };
 
 export function InvestigationPanel({
@@ -78,8 +78,8 @@ export function InvestigationPanel({
             className="mt-1.5"
             style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 17, lineHeight: 1.2, color: "#e8e6e1" }}
           >
-            {ring.memberAccountIds.length - ring.hubAccountIds.length} hesab {ring.hubAccountIds.length} cash-out hub-a
-            dəyər ötürür
+            {ring.memberAccountIds.length - ring.hubAccountIds.length} accounts feeding {ring.hubAccountIds.length} cash-out{" "}
+            {ring.hubAccountIds.length === 1 ? "hub" : "hubs"}
           </div>
         </div>
         <button
@@ -94,7 +94,7 @@ export function InvestigationPanel({
       <div className="flex border-b" style={{ borderColor: "#1d2127" }}>
         <div className="flex-1 border-r px-3.5 py-3" style={{ borderColor: "#1d2127" }}>
           <div className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 9.5, letterSpacing: ".15em", color: "#676d76" }}>
-            Halqa risk skoru
+            Ring risk score
           </div>
           <div style={{ fontFamily: "'IBM Plex Mono'", fontSize: 22, fontWeight: 600, marginTop: 3, color: riskColor(ring.riskScore) }}>
             {ring.riskScore.toFixed(2)}
@@ -103,33 +103,33 @@ export function InvestigationPanel({
         </div>
         <div className="flex-1 border-r px-3.5 py-3" style={{ borderColor: "#1d2127" }}>
           <div className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 9.5, letterSpacing: ".15em", color: "#676d76" }}>
-            Risk altındakı dəyər
+            Value at risk
           </div>
           <div style={{ fontFamily: "'IBM Plex Mono'", fontSize: 22, fontWeight: 600, marginTop: 3, color: "#e8e6e1" }}>
             {usd(ring.totalValueUsd)}
           </div>
-          <div style={{ fontSize: 11, color: "#9aa0a8", marginTop: 2 }}>{ring.memberAccountIds.length} hesab arasında</div>
+          <div style={{ fontSize: 11, color: "#9aa0a8", marginTop: 2 }}>across {ring.memberAccountIds.length} accounts</div>
         </div>
         <div className="px-3.5 py-3" style={{ flex: "0 0 96px" }}>
           <div className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 9.5, letterSpacing: ".15em", color: "#676d76" }}>
             Status
           </div>
           <div style={{ marginTop: 6, fontFamily: "'IBM Plex Mono'", fontSize: 11, color: STATUS_META[ring.status].c }}>
-            {ring.status === "pending" ? "GÖZLƏYİR" : ring.status === "confirmed_fraud" ? "FIRILDAQ" : "REAL"}
+            {ring.status === "pending" ? "PENDING" : ring.status === "confirmed_fraud" ? "FRAUD" : "REAL"}
           </div>
         </div>
       </div>
 
       {!flagged && !decided && (
         <div className="mx-3.5 mt-3 rounded px-3 py-2" style={{ background: "#101216", border: "1px solid #24282f", fontSize: 11.5, color: "#9aa0a8" }}>
-          Cari həssaslıq səviyyəsində bu halqa bayraqlanmır.
+          This ring is not flagged at the current sensitivity.
         </div>
       )}
 
       <div className="border-b px-3.5 py-3" style={{ borderColor: "#1d2127" }}>
         <div className="flex items-center gap-2">
           <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 10, letterSpacing: ".16em", color: "#e8e6e1" }}>
-            Ölçülmüş sübutlar
+            Measured evidence
           </span>
         </div>
         <div className="mt-2.5 flex flex-col">
@@ -144,9 +144,9 @@ export function InvestigationPanel({
       <div className="border-b px-3.5 py-3" style={{ borderColor: "#1d2127", background: "#101216" }}>
         <div className="flex items-center gap-2">
           <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 10, letterSpacing: ".16em", color: "#c8792e" }}>
-            Model interpretasiyası
+            Model interpretation
           </span>
-          <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10, color: "#676d76" }}>{explanation?.source === "ai" ? "Claude tərəfindən yazılıb" : explanation?.source === "template" ? "Şablon izah" : explanation?.source === "demo" ? "Demo izahı" : ""}</span>
+          <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10, color: "#676d76" }}>{explanation?.source === "ai" ? "Written by Claude" : explanation?.source === "template" ? "Template text" : explanation?.source === "demo" ? "Demo text" : ""}</span>
         </div>
         {loading ? (
           <div className="mt-2.5">
@@ -159,7 +159,7 @@ export function InvestigationPanel({
             <div style={{ fontSize: 13, lineHeight: 1.62, color: "#c3c7cc" }}>{explanation?.summary}</div>
             <div className="mt-2.5 border-t pt-2" style={{ borderColor: "#1d2127", fontSize: 12.5, lineHeight: 1.55, color: "#9aa0a8" }}>
               <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 9.5, letterSpacing: ".15em", color: "#676d76" }}>
-                Tövsiyə
+                Recommendation
               </span>
               <br />
               {explanation?.recommendedAction}
@@ -170,7 +170,7 @@ export function InvestigationPanel({
 
       <div className="border-b px-3.5 py-3" style={{ borderColor: "#1d2127" }}>
         <div className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 10, letterSpacing: ".16em", color: "#e8e6e1" }}>
-          Bu halqadakı hesablar
+          Accounts in this ring
         </div>
         <div className="mt-2.5 flex flex-wrap gap-1.5">
           {ring.memberAccountIds.map((id) => {
@@ -193,22 +193,22 @@ export function InvestigationPanel({
             );
           })}
         </div>
-        <div className="mt-2" style={{ fontSize: 11, color: "#676d76" }}>Konturlu id-lər cash-out hub-lardır.</div>
+        <div className="mt-2" style={{ fontSize: 11, color: "#676d76" }}>Outlined ids are cash-out hubs.</div>
       </div>
 
       <div className="px-3.5 py-3">
         <div className="flex cursor-pointer items-center justify-between" onClick={() => setTuningOpen((v) => !v)}>
           <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 10, letterSpacing: ".16em", color: "#9aa0a8" }}>
-            Yalnız bu case üçün hədd
+            Threshold for this case only
           </span>
           <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 11, color: "#676d76" }}>
-            {ringSensOverride != null ? `override aktiv · ${Math.round(ringSensOverride * 100)}%` : tuningOpen ? "gizlət" : "qlobalı izləyir"}
+            {ringSensOverride != null ? `override on · ${Math.round(ringSensOverride * 100)}%` : tuningOpen ? "hide" : "follows global"}
           </span>
         </div>
         {tuningOpen && (
           <div className="mt-2.5">
             <div style={{ fontSize: 11.5, color: "#676d76", lineHeight: 1.5 }}>
-              Qlobal sürüşdürücünü yalnız bu case üçün əvəz edir. Növbədəki digər case-lərə təsir etmir.
+              Overrides the global slider for this case only. Other cases in the queue are unaffected.
             </div>
             <div className="mt-2 flex items-center gap-2.5">
               <input
@@ -231,7 +231,7 @@ export function InvestigationPanel({
                   className="cursor-pointer uppercase"
                   style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 10.5, letterSpacing: ".12em", color: "#c8792e" }}
                 >
-                  Qlobala sıfırla
+                  Reset to global
                 </span>
               </div>
             )}
@@ -244,7 +244,7 @@ export function InvestigationPanel({
         {!armed && !decided && (
           <div>
             <div style={{ fontSize: 11.5, color: "#676d76", lineHeight: 1.45 }}>
-              Qərarınız bu case üçün qeydə alınır. Heç nə avtomatik bloklanmır.
+              Your decision is recorded for this case. Nothing is blocked automatically.
             </div>
             <div className="mt-2.5 flex gap-2">
               <button
@@ -252,14 +252,14 @@ export function InvestigationPanel({
                 className="flex flex-1 items-center justify-center gap-2 rounded uppercase"
                 style={{ height: 36, border: "1px solid #6d3430", background: "#180f0e", color: "#d1685f", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12.5, letterSpacing: ".11em" }}
               >
-                Fırıldaqdır <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10, opacity: 0.7 }}>F</span>
+                Fraud <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10, opacity: 0.7 }}>F</span>
               </button>
               <button
                 onClick={() => onArm("real")}
                 className="flex flex-1 items-center justify-center gap-2 rounded uppercase"
                 style={{ height: 36, border: "1px solid #34503f", background: "#0d1411", color: "#72a184", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12.5, letterSpacing: ".11em" }}
               >
-                Real oyunçudur <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10, opacity: 0.7 }}>R</span>
+                Real players <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10, opacity: 0.7 }}>R</span>
               </button>
             </div>
           </div>
@@ -271,8 +271,8 @@ export function InvestigationPanel({
           >
             <div style={{ fontSize: 12.5, lineHeight: 1.45, color: "#e8e6e1" }}>
               {armed === "fraud"
-                ? "Bu case fırıldaq kimi qeyd olunsun? Hesablar aktiv qalır — qərarınız ödəniş komandası üçün qeydə alınır."
-                : "Bu case real oyunçu kimi qeyd olunsun? Növbədən çıxır və hesablar şübhədən təmizlənir."}
+                ? "Mark this case as fraud? The accounts stay active; your decision is recorded for the payments team."
+                : "Mark this case as real players? It leaves the queue and the accounts are cleared."}
             </div>
             <div className="mt-2.5 flex items-center gap-2">
               <button
@@ -281,16 +281,16 @@ export function InvestigationPanel({
                 className="flex items-center rounded uppercase"
                 style={{ height: 32, padding: "0 14px", color: "#0a0b0d", background: armed === "fraud" ? "#b0473f" : "#4f7a5f", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12, letterSpacing: ".11em" }}
               >
-                {committing ? "..." : armed === "fraud" ? "Bəli — fırıldaq" : "Bəli — real oyunçu"}
+                {committing ? "..." : armed === "fraud" ? "Yes, fraud" : "Yes, real players"}
               </button>
               <button
                 onClick={() => onArm(null)}
                 className="flex items-center rounded uppercase"
                 style={{ height: 32, padding: "0 14px", border: "1px solid #313640", color: "#9aa0a8", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12 }}
               >
-                Ləğv et
+                Cancel
               </button>
-              <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10.5, color: "#676d76" }}>↵ təsdiq · esc ləğv</span>
+              <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10.5, color: "#676d76" }}>↵ confirm · esc cancel</span>
             </div>
           </div>
         )}
@@ -307,7 +307,7 @@ export function InvestigationPanel({
                 className="flex items-center rounded uppercase"
                 style={{ height: 32, padding: "0 14px", background: "#c8792e", color: "#0a0b0d", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12, letterSpacing: ".11em" }}
               >
-                {hasNext ? "Növbəti case →" : "Yekun hesabat →"}
+                {hasNext ? "Next case →" : "Session report →"}
               </button>
             </div>
           </div>

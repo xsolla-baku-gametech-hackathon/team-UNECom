@@ -86,12 +86,12 @@ export default function App() {
       setQuery("");
       setDecisionError(null);
       await load();
-      setResetState({ kind: "done", message: `Baza boşaldıldı — ${events.toLocaleString("en-US")} hadisə silindi` });
+      setResetState({ kind: "done", message: `Database cleared: ${events.toLocaleString("en-US")} events deleted` });
     } catch (e) {
       const raw = e instanceof Error ? e.message : String(e);
       setResetState({
         kind: "error",
-        message: raw.includes("403") ? "Sıfırlama bu backend-də bağlıdır (ALLOW_DEMO_RESET)" : `Sıfırlama alınmadı: ${raw}`,
+        message: raw.includes("403") ? "Reset is disabled on this backend (ALLOW_DEMO_RESET)" : `Reset failed: ${raw}`,
       });
     }
   }
@@ -268,7 +268,7 @@ export default function App() {
       const current = getCachedSnapshot();
       if (current) setSnapshot({ ...current, rings: [...current.rings] });
     } catch {
-      setDecisionError("Qərar saxlanmadı. Yenidən cəhd edin.");
+      setDecisionError("Decision not saved. Try again.");
     } finally {
       setCommitting(false);
     }
@@ -362,7 +362,7 @@ export default function App() {
         <div className="flex flex-col leading-tight" style={{ flex: "0 0 auto" }}>
           <span
             onClick={requestReset}
-            title="Bazanı boşalt — demo açılış vəziyyətinə qayıdır"
+            title="Clear the database and return to the demo opening state"
             className="uppercase"
             style={{
               fontFamily: "'Barlow Semi Condensed'",
@@ -377,7 +377,7 @@ export default function App() {
             Fraud Radar
           </span>
           <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 9.5, letterSpacing: ".17em", color: "#676d76" }}>
-            Post-purchase dəyər axını
+            Post-purchase value flow
           </span>
         </div>
         <div style={{ width: 1, height: 26, background: "#24282f" }} />
@@ -388,21 +388,21 @@ export default function App() {
             style={{ height: 26, padding: "0 10px", borderRadius: 3, border: "1px solid #6d3430", background: "#1c100f", whiteSpace: "nowrap" }}
           >
             <span style={{ fontSize: 11.5, color: "#e8e6e1" }}>
-              Bazadakı bütün hadisələr və qərarlar silinsin?
+              Delete every event and decision in the database?
             </span>
             <span
               onClick={confirmReset}
               className="cursor-pointer uppercase"
               style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 11, letterSpacing: ".1em", color: "#d1685f" }}
             >
-              Bəli, boşalt
+              Yes, clear it
             </span>
             <span
               onClick={() => setResetState({ kind: "idle" })}
               className="cursor-pointer uppercase"
               style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 11, letterSpacing: ".1em", color: "#9aa0a8" }}
             >
-              Ləğv
+              Cancel
             </span>
           </div>
         )}
@@ -413,7 +413,7 @@ export default function App() {
             style={{ height: 26, padding: "0 10px", borderRadius: 3, border: "1px solid #24282f", background: "#101216", whiteSpace: "nowrap" }}
           >
             <span style={{ width: 10, height: 10, border: "2px solid #24282f", borderTopColor: "#c8792e", borderRadius: "50%", animation: "fr-spin .7s linear infinite" }} />
-            <span style={{ fontSize: 11.5, color: "#9aa0a8" }}>Baza boşaldılır…</span>
+            <span style={{ fontSize: 11.5, color: "#9aa0a8" }}>Clearing the database…</span>
           </div>
         )}
 
@@ -439,9 +439,9 @@ export default function App() {
           <div className="flex items-center gap-2.5" style={{ height: 26, padding: "0 10px", border: "1px solid #6b4a1f", background: "#1a1509", borderRadius: 3 }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#c8792e", animation: "fr-pulse 2s infinite" }} />
             <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 10.5, fontWeight: 600, letterSpacing: ".1em", color: "#e0913f" }}>DEMO DATA</span>
-            <span style={{ fontSize: 11, color: "#9aa0a8" }}>bundled dataset · backend əlçatan deyil</span>
+            <span style={{ fontSize: 11, color: "#9aa0a8" }}>bundled dataset · backend unreachable</span>
             <span onClick={load} className="cursor-pointer uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 11, letterSpacing: ".09em", color: "#c8792e", borderBottom: "1px solid #6b4a1f" }}>
-              Yenidən sına
+              Retry
             </span>
           </div>
         ) : (
@@ -456,7 +456,7 @@ export default function App() {
 
         <div className="flex items-center gap-2.5" style={{ flex: "0 0 auto" }}>
           <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 10, letterSpacing: ".16em", color: "#676d76" }}>
-            Case-lər
+            Cases
           </span>
           <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 12 }}>
             {decidedCount}/{flaggedRings.length}
@@ -505,7 +505,7 @@ export default function App() {
           className="flex cursor-pointer items-center rounded uppercase"
           style={{ height: 28, padding: "0 12px", background: "#c8792e", color: "#0a0b0d", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 12, letterSpacing: ".1em" }}
         >
-          Hadisə jurnalı yüklə
+          Upload event log
         </div>
       </header>
 
@@ -563,7 +563,7 @@ export default function App() {
                       letterSpacing: ".11em",
                     }}
                   >
-                    Yalnız bayraqlanmış halqalar
+                    Flagged rings only
                   </div>
                   <div
                     onClick={() => setPaymentMoment((v) => !v)}
@@ -581,7 +581,7 @@ export default function App() {
                     }}
                   >
                     <span style={{ width: 6, height: 6, borderRadius: "50%", background: paymentMoment ? "#c8792e" : "#3a4048", flex: "0 0 auto" }} />
-                    Ödəniş anı görünüşü
+                    Payment-moment view
                   </div>
                 </div>
                 {(paymentMoment || briefingStep?.paymentMoment) && paymentView && (
@@ -633,14 +633,14 @@ export default function App() {
               <div className="flex items-center justify-between gap-3.5">
                 <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 12, fontWeight: 600 }}>{hoveredNode.id}</span>
                 <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 9.5, letterSpacing: ".1em", padding: "2px 6px", borderRadius: 2, color: "#9aa0a8", background: "#16191e", border: "1px solid #24282f" }}>
-                  {hoveredNode.isHub ? "CASH-OUT HUB" : hoveredNode.ringId ? "HALQA ÜZVÜ" : "ƏLAQƏSİZ"}
+                  {hoveredNode.isHub ? "CASH-OUT HUB" : hoveredNode.ringId ? "RING MEMBER" : "UNLINKED"}
                 </span>
               </div>
               <div className="mt-1.5 grid gap-y-0.5" style={{ gridTemplateColumns: "auto 1fr", columnGap: 12, fontFamily: "'IBM Plex Mono'", fontSize: 11 }}>
                 <span style={{ color: "#676d76" }}>risk</span>
                 <span style={{ color: riskColor(hoveredNode.riskScore) }}>{hoveredNode.riskScore.toFixed(2)}</span>
                 <span style={{ color: "#676d76" }}>case</span>
-                <span style={{ color: "#c3c7cc" }}>{hoverRing ? caseRef(hoverRing.id) : "yoxdur"}</span>
+                <span style={{ color: "#c3c7cc" }}>{hoverRing ? caseRef(hoverRing.id) : "none"}</span>
               </div>
             </div>
           )}
@@ -649,15 +649,15 @@ export default function App() {
             <div className="absolute inset-0 flex items-center overflow-y-auto" style={{ zIndex: 25, background: "#0a0b0d", padding: "80px 40px 24px" }}>
               <div style={{ width: "100%", maxWidth: 600, minWidth: 0 }}>
                 <div className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 10, letterSpacing: ".2em", color: "#676d76" }}>
-                  Data yüklənməyib
+                  No data loaded
                 </div>
                 <div className="mt-3" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 34, lineHeight: 1.12 }}>
-                  Ödəniş bağlandıqdan <span style={{ color: "#c8792e" }}>sonra</span> dəyərin izini sürün.
+                  Follow the value <span style={{ color: "#c8792e" }}>after</span> the payment clears.
                 </div>
                 <div className="mt-3.5" style={{ fontSize: 14, lineHeight: 1.6, color: "#9aa0a8", maxWidth: 520 }}>
-                  Bu aləti hesablar arası köçürmə jurnalınıza (ticarət, hədiyyə, bazar satışı, key redemption) yönəldin.
-                  Kimin kimə dəyər ötürdüyünü xəritələyir, nağdlaşdırma halqasına bənzəyən klasterləri tapır və hər
-                  birini qərar üçün sizə case kimi verir. Heç nə avtomatik bloklanmır.
+                  Point it at your account-to-account transfer log (trades, gifts, marketplace sales, key redemptions).
+                  It maps who sends value to whom, finds the clusters that look like cash-out rings, and hands each
+                  one to you as a case to decide. Nothing is blocked automatically.
                 </div>
                 <div className="mt-6 flex gap-2.5">
                   <div
@@ -665,12 +665,12 @@ export default function App() {
                     className="flex cursor-pointer items-center rounded uppercase"
                     style={{ height: 36, padding: "0 16px", background: "#c8792e", color: "#0a0b0d", fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 13, letterSpacing: ".1em" }}
                   >
-                    Hadisə jurnalı yüklə
+                    Upload event log
                   </div>
                 </div>
                 <div className="mt-7 border-t pt-3.5" style={{ borderColor: "#1d2127", maxWidth: 560 }}>
                   <div className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 600, fontSize: 9.5, letterSpacing: ".16em", color: "#676d76" }}>
-                    Qəbul edilən fayl — bu başlıqlı CSV, ya da JSON
+                    Accepted file: CSV with this header, or JSON
                   </div>
                   <div className="mt-2" style={{ fontFamily: "'IBM Plex Mono'", fontSize: 11, lineHeight: 1.7, color: "#9aa0a8", wordBreak: "break-all" }}>
                     event_id, type, timestamp, from_account_id, to_account_id, asset_type, asset_id, quantity,
@@ -687,7 +687,7 @@ export default function App() {
                 <div className="flex items-center gap-2.5">
                   <span style={{ width: 11, height: 11, border: "2px solid #24282f", borderTopColor: "#c8792e", borderRadius: "50%", animation: "fr-spin .7s linear infinite" }} />
                   <span className="uppercase" style={{ fontFamily: "'Barlow Semi Condensed'", fontWeight: 700, fontSize: 13, letterSpacing: ".16em" }}>
-                    Dəyər qrafı qurulur
+                    Building the value graph
                   </span>
                 </div>
               </div>
