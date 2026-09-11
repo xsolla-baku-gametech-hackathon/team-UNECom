@@ -81,7 +81,7 @@ Oxu: yuxarıdan aşağı. Mötərizədə yalnız (vaxt · klik · ekrandan oxuna
 
 `[slider 0.5 → 0.8, yavaş, 3 s]`
 
-**(1:50 · oxu: 2 halqa · ring_5 · hub_2 içində)**
+**(1:50 · oxu: 2 halqa · ring_5 · acct_0025 içində)**
 
 > "Raise the threshold: a second ring surfaces, hub inside, precision still one hundred at the account level."
 
