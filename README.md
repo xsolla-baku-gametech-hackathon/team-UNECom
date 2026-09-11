@@ -37,7 +37,7 @@ data-generator/  synthetic fraud-ring dataset generator (Python)
         │  POST /events (upload or, in production, a game's own backend
         │  pushing events live)
         ▼
-   api/  ── Node + TypeScript + Fastify gateway, Prisma/SQLite
+   api/  ── Node + TypeScript + Fastify gateway, Prisma/PostgreSQL (Neon)
         │  proxies analysis requests to the engine
         ▼
 engine/  ── Python + FastAPI
@@ -79,6 +79,17 @@ to a built-in mock scenario automatically, so the UI is always demoable.
 Want real data instead of the bundled sample? `data-generator/generate.py`
 produces a fresh synthetic dataset (`data-generator/output/events.csv`) —
 drag it onto the upload panel.
+
+## Checks
+
+Every pull request runs [`.github/workflows/ci.yml`](./.github/workflows/ci.yml):
+
+```bash
+cd engine && python -m pytest tests -q     # scoring math, graph building, explanation evidence,
+                                           # and the accuracy floors from docs/accuracy.md
+cd api    && npm test                      # engine client timeouts, error codes, event payload contract
+cd web    && npm run lint && npm test      # oxlint + vitest over the dashboard's decision logic
+```
 
 ## Docs
 
