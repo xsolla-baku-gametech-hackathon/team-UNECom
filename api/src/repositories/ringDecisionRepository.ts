@@ -12,4 +12,9 @@ export const ringDecisionRepository = {
       update: { status },
     });
   },
+
+  async deleteAll(): Promise<number> {
+    const { count } = await prisma.ringDecision.deleteMany();
+    return count;
+  },
 };
