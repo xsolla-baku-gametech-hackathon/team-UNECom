@@ -1,5 +1,5 @@
 {
-  "description": "Demo/qiymetlendirme ucun daxili ground truth. Engine bu fayl\u0131 OXUMAMALIDIR \u2014 yalniz nece netice cixdigini yoxlamaq ucundur.",
+  "description": "Internal ground truth for the demo and evaluation. The engine must NEVER read this file; it only checks what the engine found.",
   "hub_accounts": [
     "acct_0054",
     "acct_0127"

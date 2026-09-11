@@ -1,12 +1,13 @@
 # Fraud Detection Engine (/engine)
 
-Post-purchase dəyər axını üçün qraf-əsaslı risk skorlama mühərriki. Oğurlanmış
-kartla alınmış oyun valyutası/əşyası/açarının trade/gift/marketplace/key-transfer
-vasitəsilə hesablar arasında necə "yuyulduğunu" (fərma halqaları) aşkarlayır.
+Graph-based risk scoring engine for post-purchase value flow. It detects how
+in-game currency, items and keys bought with stolen cards get "laundered"
+between accounts through trades, gifts, marketplace sales and key transfers
+(farming rings).
 
-Bu README **`/api` komandası üçündür** — mühərrikin necə çağırılacağını izah edir.
+This README is **for the `/api` team**: it explains how to call the engine.
 
-## Sürətli başlanğıc
+## Quick start
 
 ```bash
 cd engine
@@ -14,25 +15,25 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# (opsional, olmasa fallback şablon izah işləyəcək)
+# (optional; without it the template explanation is used)
 export ANTHROPIC_API_KEY=sk-ant-...
 
 uvicorn app.main:app --reload --port 8000
 ```
 
-Sağlamlıq yoxlaması: `curl http://localhost:8000/health` → `{"status":"ok"}`
+Health check: `curl http://localhost:8000/health` → `{"status":"ok"}`
 
-## Testlər
+## Tests
 
-Risk skorlama düsturları (taint propagation, velocity, degree imbalance)
-və qraf qurulması üçün unit testlər (`tests/`):
+Unit tests for the risk scoring formulas (taint propagation, velocity, degree
+imbalance), graph construction and the explanation evidence (`tests/`):
 
 ```bash
 pip install -r requirements-dev.txt
 pytest tests/ -v
 ```
 
-Hazır nümunə data ilə test:
+Try it with the bundled sample data:
 
 ```bash
 curl -s -X POST http://localhost:8000/analyze \
@@ -40,16 +41,16 @@ curl -s -X POST http://localhost:8000/analyze \
   --data @sample_data/analyze_request.json | python3 -m json.tool | less
 ```
 
-(`sample_data/ground_truth.json` faylında bu nümunə datadakı əsl fərma
-halqasının hansı hesablardan ibarət olduğu yazılıb — engine bunu OXUMUR,
-sadəcə nəticəni yoxlamaq üçündür.)
+(`sample_data/ground_truth.json` lists which accounts form the real farming
+ring in that sample. The engine does NOT read it; it is only for checking the
+result.)
 
-Öz dataset-inizi yaratmaq üçün: `../data-generator/generate.py` (bax onun öz
-qovluğundakı istifadə qaydasına).
+To create your own dataset: `../data-generator/generate.py` (see its usage in
+that folder).
 
-## Data kontraktı
+## Data contract
 
-Bütün komanda bu event formatına əsaslanır (dəyişməyin):
+The whole team builds on this event format (do not change it):
 
 ```json
 {
@@ -67,19 +68,19 @@ Bütün komanda bu event formatına əsaslanır (dəyişməyin):
 }
 ```
 
-**Konvensiya:** `account_created_at` həmişə `from_account_id`-nin yaranma
-tarixidir (yəni "bu hesab nə vaxt açılıb, indi çıxış tranzaksiyası edən kimdir").
-`purchase` hadisələrində `from_account_id` sistem hesabı `STORE`-dur və onun
-yaranma tarixi yoxdur (`account_created_at: null`).
+**Convention:** `account_created_at` is always the creation time of
+`from_account_id` (i.e. when the account now sending value was opened). In
+`purchase` events `from_account_id` is the system account `STORE`, which has
+no creation time (`account_created_at: null`).
 
-## Endpoint-lər
+## Endpoints
 
 ### `POST /analyze`
 
 Request body:
 
 ```json
-{ "events": [ /* Event obyektlərinin siyahısı, yuxarıdakı kontrakta uyğun */ ] }
+{ "events": [ /* list of Event objects, per the contract above */ ] }
 ```
 
 Response (`AnalyzeResponse`):
@@ -118,62 +119,62 @@ Response (`AnalyzeResponse`):
 }
 ```
 
-`accounts` risk_score-a görə (yüksəkdən aşağıya) sıralanıb. `rings` yalnız
-kifayət qədər böyük (≥3 hesab) VƏ kifayət qədər riskli (orta risk ≥15)
-icmaları göstərir — hər icma avtomatik "ring" sayılmır.
+`accounts` is sorted by risk_score, highest first. `rings` only lists
+communities that are large enough (≥3 accounts) AND risky enough (average
+risk ≥15); not every community counts as a ring.
 
-Hər `POST /analyze` çağırışı nəticəni proses yaddaşında saxlayır və
-`analysis_id` qaytarır. Ən son analiz avtomatik "aktiv" sayılır (aşağıya bax).
+Every `POST /analyze` call keeps its result in process memory (the 32 most
+recent) and returns an `analysis_id`. The latest analysis is the default
+"active" one (see below).
 
 ### `GET /explain/{ring_id}?analysis_id=...`
 
-`ring_id` — `/analyze` cavabındakı `rings[].ring_id` (məs. `ring_10`).
-`analysis_id` **optional** — verilməsə, ən son `/analyze` çağırışının
-nəticəsi istifadə olunur (tək-analitik demo üçün kifayətdir).
+`ring_id` is a `rings[].ring_id` from the `/analyze` response (e.g.
+`ring_10`). `analysis_id` is **optional**; without it the latest `/analyze`
+result is used (enough for a single-analyst demo).
 
 Response (`ExplainResponse`):
 
 ```json
 {
   "ring_id": "ring_10",
-  "explanation": "Bu 43 hesab eyni icmada toplanıb və dəyərin böyük hissəsini acct_0044, acct_0272, acct_0236 hesab(lar)ına yönləndirib. Mənbədə 25 bayraqlanmış (payment_flagged) ödəniş aşkarlanıb, ümumi axın dəyəri ~$8,376. orta ehtimalla kart-fırıldaqçılığı ilə əldə edilmiş dəyərin yuyulduğu bir fərma halqası.",
+  "explanation": "These 43 accounts sit in one community and route most of their value to acct_0044. Account acct_0044 collects from 38 inbound links worth $5,860.70 while sending out only $533.24, a typical collection point (high likelihood).",
   "ai_generated": true,
-  "evidence": { "...": "Claude-a göndərilən strukturlaşdırılmış sübutlar" }
+  "evidence": { "...": "structured evidence sent to Claude, including hub_candidate_details" }
 }
 ```
 
-`ai_generated: false` olarsa, `ANTHROPIC_API_KEY` tapılmayıb (və ya Claude
-çağırışı uğursuz olub) — bu halda şablon-əsaslı izah qaytarılır, endpoint heç
-vaxt xəta vermir.
+If `ai_generated` is `false`, `ANTHROPIC_API_KEY` was not found (or the
+Claude call failed twice) and a template explanation is returned. The
+endpoint never errors because of Claude.
 
 ### `GET /health`
 
-`{"status": "ok"}` — liveness üçün.
+`{"status": "ok"}` for liveness.
 
-## Risk skorlama necə işləyir
+## How risk scoring works
 
-Hər hesab üçün 4 sinyal hesablanır və çəkili cəmlənir (0-100 `risk_score`):
+Four signals are computed per account and combined with weights into a 0-100
+`risk_score`:
 
-| Sinyal | Nə ölçür | Çəki |
+| Signal | What it measures | Weight |
 |---|---|---|
-| `taint_score` | Hesabın aldığı dəyərin nə qədəri `payment_flagged=true` alışlardan mənşəlidir — qraf boyunca "haircut tainting" ilə yayılır (kripto-forensikada standart üsul) | 0.40 |
-| `velocity_score` | Hesab yarandıqdan neçə tez sonra ilk çıxış tranzaksiyası edib (yeni + dərhal aktiv = şübhəli) | 0.25 |
-| `imbalance_score` | in-degree/out-degree balanssızlığı (çox giriş, az çıxış = hub-vari) | 0.20 |
-| `community_risk` | Hesabın daxil olduğu icmanın (Louvain community detection) orta riski | 0.15 |
+| `taint_score` | How much of the value the account received originates in `payment_flagged=true` purchases, propagated along the graph with "haircut tainting" (a standard crypto-forensics method) | 0.40 |
+| `velocity_score` | How soon after creation the account made its first outgoing transfer (new + immediately active = suspicious) | 0.25 |
+| `imbalance_score` | In/out-degree imbalance (many in, few out = hub-like) | 0.20 |
+| `community_risk` | Average risk of the account's community (Louvain community detection) | 0.15 |
 
-Icmalar (`rings`) Louvain alqoritmi ilə (NetworkX-in daxili
-`louvain_communities`-i, əlavə asılılıq yoxdur) tranzaksiya qrafında
-aşkarlanır, sonra hər icmanın orta riski + bayraqlanmış alış sayı +
-ümumi dəyər ilə "ring" kimi qiymətləndirilir.
+Communities (`rings`) are found in the transfer graph with the Louvain
+algorithm (NetworkX's built-in `louvain_communities`, no extra dependency),
+then each community is scored as a ring from its average risk, flagged
+purchase count and total value.
 
-## Qeydlər `/api` komandası üçün
+## Notes for the `/api` team
 
-- Vəziyyət (state) yalnız proses yaddaşındadır — server restart olsa bütün
-  analizlər itir. Hakaton prototipi üçün kifayətdir, prod üçün DB lazımdır.
-- CORS bütün mənbələr üçün açıqdır (demo sürəti üçün).
-- `ANTHROPIC_API_KEY` mühit dəyişəni yoxdursa, `/explain` yenə də işləyir,
-  sadəcə AI izahı yerinə şablon mətn qaytarır (`ai_generated: false`).
-- `CLAUDE_MODEL` mühit dəyişəni ilə model dəyişdirilə bilər (default:
-  `claude-sonnet-5`).
-- `EXPLAIN_LANGUAGE=en` izahı ingiliscə yazdırır (default `az`). Jüri
-  Azərbaycan dilini oxumursa, səhnədə ekrandakı ən böyük mətn bloku budur.
+- State lives in process memory only: a server restart loses every
+  analysis. Enough for a hackathon prototype; production needs storage.
+- CORS is open to every origin (for demo speed).
+- Without `ANTHROPIC_API_KEY`, `/explain` still works and returns template
+  text instead of an AI explanation (`ai_generated: false`).
+- The model can be changed with the `CLAUDE_MODEL` environment variable
+  (default: `claude-sonnet-5`).

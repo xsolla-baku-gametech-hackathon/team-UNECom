@@ -1,4 +1,4 @@
-"""Umumi data kontraktı (README-də sənədləşdirilib, DƏYİŞMƏ)."""
+"""Shared data contract (documented in the README; DO NOT CHANGE)."""
 from __future__ import annotations
 
 from datetime import datetime

@@ -1,7 +1,7 @@
-"""Claude API ile bayraqlanmis halqalar ucun insan-dilinde izah qatı.
+"""Plain-language explanation layer for flagged rings, written by Claude.
 
-ANTHROPIC_API_KEY tapilmasa (veya cagiris ugursuz olsa) sablon-esasli
-fallback izah qaytarilir - demo bu deyisken uzerinden asilamaz.
+If ANTHROPIC_API_KEY is missing (or the call fails twice), a template
+explanation is returned instead, so the demo never depends on the key.
 """
 from __future__ import annotations
 
@@ -14,32 +14,18 @@ logger = logging.getLogger("engine.explain")
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-sonnet-5")
 
 SYSTEM_PROMPT = (
-    "Sen bir fraud detection analitikisen. Sene qraf-analitikasindan cixan "
-    "eded-esasli subutlar verilir (hesab sayi, yaranma-fasilesi, bayraqlanmis "
-    "odenis sayi, deyer, in/out-degree balanssizligi). Bu subutlara esaslanaraq "
-    "QISA (2-4 cumle), konkret ededleri isteyen, insanlarin asanliqla basa "
-    "dusdugu {language} izah yaz. Cumlelerin sonunda ehtimal seviyyesini "
-    "(yuksek/orta/asagi ehtimal) aciq qeyd et. Uydurma fakt elave etme, yalniz "
-    "verilen subutlardan istifade et. hub_candidate_details her hub namizedinin "
-    "oz olculmus gostericilerini verir (in/out-degree, gelen/geden deyer, taint, "
-    "oz adina bayraqlanmis alis sayi) - hub-un rolunu bunlarla esaslandir. "
-    "top_risk_accounts_creation_window yalniz en riskli hesablara aiddir, butun "
-    "halqaya aid etme. JSON sahe adlarini (field names) metnde yazma."
-)
-
-# The case text is the largest block on screen. The pitch is in English, so a
-# jury that does not read Azerbaijani can switch it with EXPLAIN_LANGUAGE=en
-# (default az). The fallback template and the dashboard chrome stay as they are.
-_LANGUAGES = {
-    "az": ("Azerbaycan dilinde", "(yuksek/orta/asagi ehtimal)"),
-    "en": ("ingilis dilinde (in English)", "(high/medium/low likelihood)"),
-}
-EXPLAIN_LANGUAGE = os.getenv("EXPLAIN_LANGUAGE", "az").lower()
-if EXPLAIN_LANGUAGE not in _LANGUAGES:
-    EXPLAIN_LANGUAGE = "az"
-_lang_phrase, _likelihood = _LANGUAGES[EXPLAIN_LANGUAGE]
-SYSTEM_PROMPT = SYSTEM_PROMPT.replace("{language}", _lang_phrase).replace(
-    "(yuksek/orta/asagi ehtimal)", _likelihood
+    "You are a fraud detection analyst. You receive numeric evidence from a "
+    "value-flow graph analysis of an in-game economy (account count, account "
+    "creation window, flagged payment count, value, in/out-degree imbalance). "
+    "Based only on that evidence, write a SHORT explanation in English (2-4 "
+    "sentences) that cites concrete numbers and that a trust & safety analyst "
+    "can read at a glance. End each claim with an explicit likelihood (high / "
+    "medium / low likelihood). Do not invent facts; use only the evidence "
+    "given. hub_candidate_details gives each hub candidate's own measurements "
+    "(in/out degree, value in/out, taint, flagged purchases of its own): use "
+    "them to justify the hub's role. top_risk_accounts_creation_window covers "
+    "only the highest-risk accounts, not the whole ring. Do not write JSON "
+    "field names in the text, and do not use Markdown."
 )
 
 # One retry: an empty completion was seen ~1 in 5 calls in rehearsal, and a
@@ -61,9 +47,9 @@ def build_evidence(
         reverse=True,
     )[:5]
 
-    # Icmaya bezen aşağı-riskli cash-out qarşı-tərəfləri de qarışa bilir
-    # (məs. hub-un mal satdığı təmiz alıcılar) — yaranma pəncərəsini yalnız
-    # ən riskli hesablar üzərindən hesablamaq bunu seyreltmir.
+    # Low-risk cash-out counterparties can end up in the community too (e.g.
+    # clean buyers the hub sold items to); computing the creation window over
+    # the riskiest accounts only keeps them from diluting it.
     ages_hours = [
         account_created_at[m] for m in top_accounts if account_created_at.get(m)
     ]
@@ -118,30 +104,30 @@ def build_evidence(
 def fallback_template(evidence: dict) -> str:
     n = evidence["account_count"]
     flagged = evidence["flagged_purchase_count"]
-    hubs = ", ".join(evidence["hub_candidates"]) or "naməlum hub"
+    hubs = ", ".join(evidence["hub_candidates"]) or "an unknown hub"
     risk = evidence["risk_score"]
     value = evidence["total_value_usd"]
 
     if risk >= 60:
-        confidence = "yüksək ehtimalla"
+        confidence = "High likelihood"
     elif risk >= 30:
-        confidence = "orta ehtimalla"
+        confidence = "Medium likelihood"
     else:
-        confidence = "aşağı ehtimalla"
+        confidence = "Low likelihood"
 
     return (
-        f"Bu {n} hesab eyni icmada toplanıb və dəyərin böyük hissəsini "
-        f"{hubs} hesab(lar)ına yönləndirib. Mənbədə {flagged} bayraqlanmış "
-        f"(payment_flagged) ödəniş aşkarlanıb, ümumi axın dəyəri ~${value:,.0f}. "
-        f"{confidence} kart-fırıldaqçılığı ilə əldə edilmiş dəyərin yuyulduğu "
-        f"bir fərma halqası. [Şablon izah — Claude API əlçatan deyil]"
+        f"These {n} accounts sit in one community and route most of their value "
+        f"to {hubs}. The source shows {flagged} flagged payments, with about "
+        f"${value:,.0f} flowing through the ring. {confidence} of a farming ring "
+        f"laundering value bought with stolen cards. "
+        f"[Template text: Claude API unavailable]"
     )
 
 
 def call_claude(evidence: dict) -> tuple[str, bool]:
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
-        logger.info("ANTHROPIC_API_KEY yoxdur, sablon izaha keçilir")
+        logger.info("ANTHROPIC_API_KEY not set, using the template explanation")
         return fallback_template(evidence), False
 
     import anthropic
@@ -156,7 +142,7 @@ def call_claude(evidence: dict) -> tuple[str, bool]:
                 messages=[{
                     "role": "user",
                     "content": (
-                        "Bu bayraqlanmış halqa üçün izah yaz:\n\n"
+                        "Explain this flagged ring:\n\n"
                         + json.dumps(evidence, ensure_ascii=False, indent=2)
                     ),
                 }],
@@ -165,8 +151,8 @@ def call_claude(evidence: dict) -> tuple[str, bool]:
                 block.text for block in response.content if getattr(block, "type", None) == "text"
             ).strip()
             if not text:
-                raise ValueError(f"Claude bos cavab qaytardi (stop_reason={response.stop_reason})")
+                raise ValueError(f"Claude returned an empty completion (stop_reason={response.stop_reason})")
             return text, True
         except Exception:
-            logger.exception("Claude API cagirisi ugursuz oldu (cehd %d/%d)", attempt, CLAUDE_ATTEMPTS)
+            logger.exception("Claude API call failed (attempt %d/%d)", attempt, CLAUDE_ATTEMPTS)
     return fallback_template(evidence), False

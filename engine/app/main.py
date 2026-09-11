@@ -1,6 +1,6 @@
 """Fraud detection graph + risk scoring engine (FastAPI).
 
-Endpoint-ler ucun /engine/README.md-e bax.
+See /engine/README.md for the endpoints.
 """
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(
     title="Post-Purchase Value Flow — Fraud Detection Engine",
-    description="Qraf-esasli risk skorlama + Claude API izah qatı (Xsolla Baku GameTech Hackathon).",
+    description="Graph-based risk scoring + Claude explanation layer (Xsolla Baku GameTech Hackathon).",
     version="0.1.0",
 )
 
@@ -68,14 +68,14 @@ def analyze(req: AnalyzeRequest):
 
     all_accounts = set(G.nodes()) | set(taint.keys())
 
-    # 1-ci gedis: icma riski bilinmeden (0 qebul edilir) preliminary skor
+    # Pass 1: preliminary score, community risk not known yet (taken as 0)
     prelim_scores = combine_scores(all_accounts, taint, velocity, degree, community_risk={})
 
     H = to_undirected_weighted(G)
     node_to_community = detect_communities(H)
     community_risk = community_avg_risk(node_to_community, prelim_scores)
 
-    # 2-ci gedis: icma sinyali daxil edilerek final skor
+    # Pass 2: final score, including the community signal
     final_scores = combine_scores(all_accounts, taint, velocity, degree, community_risk)
 
     rings = build_rings(node_to_community, final_scores, taint)
@@ -127,13 +127,13 @@ def explain(ring_id: str, analysis_id: str | None = Query(default=None)):
     if aid is None or aid not in ANALYSES:
         raise HTTPException(
             status_code=404,
-            detail="Once POST /analyze cagirilmalidir (analysis_id tapilmadi).",
+            detail="Call POST /analyze first (analysis_id not found).",
         )
 
     data = ANALYSES[aid]
     ring = data["rings"].get(ring_id)
     if ring is None:
-        raise HTTPException(status_code=404, detail=f"'{ring_id}' bu analizde tapilmadi.")
+        raise HTTPException(status_code=404, detail=f"'{ring_id}' was not found in this analysis.")
 
     evidence = build_evidence(ring, data["accounts"], data["taint"], data["account_created_at"])
     explanation, ai_generated = call_claude(evidence)
