@@ -18,13 +18,28 @@ SYSTEM_PROMPT = (
     "eded-esasli subutlar verilir (hesab sayi, yaranma-fasilesi, bayraqlanmis "
     "odenis sayi, deyer, in/out-degree balanssizligi). Bu subutlara esaslanaraq "
     "QISA (2-4 cumle), konkret ededleri isteyen, insanlarin asanliqla basa "
-    "dusdugu Azerbaycan dilinde izah yaz. Cumlelerin sonunda ehtimal seviyyesini "
+    "dusdugu {language} izah yaz. Cumlelerin sonunda ehtimal seviyyesini "
     "(yuksek/orta/asagi ehtimal) aciq qeyd et. Uydurma fakt elave etme, yalniz "
     "verilen subutlardan istifade et. hub_candidate_details her hub namizedinin "
     "oz olculmus gostericilerini verir (in/out-degree, gelen/geden deyer, taint, "
     "oz adina bayraqlanmis alis sayi) - hub-un rolunu bunlarla esaslandir. "
     "top_risk_accounts_creation_window yalniz en riskli hesablara aiddir, butun "
     "halqaya aid etme. JSON sahe adlarini (field names) metnde yazma."
+)
+
+# The case text is the largest block on screen. The pitch is in English, so a
+# jury that does not read Azerbaijani can switch it with EXPLAIN_LANGUAGE=en
+# (default az). The fallback template and the dashboard chrome stay as they are.
+_LANGUAGES = {
+    "az": ("Azerbaycan dilinde", "(yuksek/orta/asagi ehtimal)"),
+    "en": ("ingilis dilinde (in English)", "(high/medium/low likelihood)"),
+}
+EXPLAIN_LANGUAGE = os.getenv("EXPLAIN_LANGUAGE", "az").lower()
+if EXPLAIN_LANGUAGE not in _LANGUAGES:
+    EXPLAIN_LANGUAGE = "az"
+_lang_phrase, _likelihood = _LANGUAGES[EXPLAIN_LANGUAGE]
+SYSTEM_PROMPT = SYSTEM_PROMPT.replace("{language}", _lang_phrase).replace(
+    "(yuksek/orta/asagi ehtimal)", _likelihood
 )
 
 # One retry: an empty completion was seen ~1 in 5 calls in rehearsal, and a
