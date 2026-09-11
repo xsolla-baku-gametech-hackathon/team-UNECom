@@ -22,13 +22,18 @@ services:
     buildCommand: npm install && npm run build && npx prisma generate && npx prisma db push
     startCommand: npm run start
     envVars:
+      - key: NODE_VERSION
+        value: 22.22.2 # the start command uses node --env-file-if-exists, which needs Node >= 22.9
       - key: DATABASE_URL
-        sync: false # Neon Postgres connection string — set manually in the Render dashboard
+        # Neon Postgres connection string — set manually in the Render dashboard.
+        # Append &connect_timeout=30: free-tier Neon suspends when idle, and the
+        # first connection after that fails under Prisma's default timeout.
+        sync: false
       - key: HOST
         value: 0.0.0.0
       - key: ENGINE_URL
         sync: false # set to the fraud-radar-engine service's Render URL after it deploys
       - key: ENGINE_TIMEOUT_MS
-        value: 5000
+        value: 60000 # a free-tier engine takes up to a minute to wake from sleep
       - key: ENGINE_EXPLAIN_TIMEOUT_MS
         value: 30000
