@@ -208,7 +208,7 @@ $6,616, 26 bayraqlanmış alış). Hub konturlu və daha iri node kimi görünü
 
 *(18 söz)*
 
-### 3c · **"Ödəniş anı görünüşü" + miqyas körpüsü — ƏSAS AN** · 1:08–1:41 (30 s + 3 s)
+### 3c · **"Payment-moment view" + miqyas körpüsü — ƏSAS AN** · 1:08–1:41 (30 s + 3 s)
 
 **Ekranda:** Toggle basılır. Yalnız bayraqlanmış ödənişin `to` tərəfindəki
 hesablar işıqlı qalır, köçürmə kənarları tamamilə sönür, sağda callout açılır.
