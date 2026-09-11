@@ -129,7 +129,7 @@ export default function App() {
     [snapshot, derived],
   );
   const decidedCount = flaggedRings.filter((r) => r.status !== "pending").length;
-  const flaggedAccountCount = flaggedRings.reduce((s, r) => s + r.memberAccountIds.length, 0);
+  const flaggedAccountCount = new Set(flaggedRings.flatMap((r) => r.memberAccountIds)).size;
 
   // What a payment-moment competitor could see in this same dataset.
   const paymentView = useMemo(
