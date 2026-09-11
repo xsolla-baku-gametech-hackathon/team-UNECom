@@ -9,7 +9,7 @@ export type Decision = "real" | "fraud";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
 const FETCH_TIMEOUT_MS = 35000;
-const UPLOAD_TIMEOUT_MS = 10000; // a judge's own export can be large
+const UPLOAD_TIMEOUT_MS = 60000; // a judge's own export can be large; the API writes it to Postgres in chunks
 
 let usingMock = false;
 export function isUsingMockData() {
