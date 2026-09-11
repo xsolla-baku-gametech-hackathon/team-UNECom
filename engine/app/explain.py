@@ -30,8 +30,11 @@ SYSTEM_PROMPT = (
 
 # One retry: an empty completion was seen ~1 in 5 calls in rehearsal, and a
 # template on screen reads as "Claude is down". Two attempts of ~13 s still
-# fit the API's 30 s explanation timeout.
+# fit the API's 30 s explanation timeout — but only if each attempt is
+# actually bounded: the SDK's default timeout is 10 minutes and its own
+# retries would stack on top of ours.
 CLAUDE_ATTEMPTS = 2
+CLAUDE_TIMEOUT_SECONDS = 13.0
 
 
 def build_evidence(
@@ -50,7 +53,7 @@ def build_evidence(
     # Low-risk cash-out counterparties can end up in the community too (e.g.
     # clean buyers the hub sold items to); computing the creation window over
     # the riskiest accounts only keeps them from diluting it.
-    ages_hours = [
+    creation_times = [
         account_created_at[m] for m in top_accounts if account_created_at.get(m)
     ]
 
@@ -84,8 +87,8 @@ def build_evidence(
         # Computed over the top-risk accounts only (see above), so it is named
         # that way: otherwise the model reports it as the whole ring's window.
         "top_risk_accounts_creation_window": {
-            "earliest": min(ages_hours).isoformat() if ages_hours else None,
-            "latest": max(ages_hours).isoformat() if ages_hours else None,
+            "earliest": min(creation_times).isoformat() if creation_times else None,
+            "latest": max(creation_times).isoformat() if creation_times else None,
         },
         "top_risk_accounts": [
             {
@@ -132,7 +135,7 @@ def call_claude(evidence: dict) -> tuple[str, bool]:
 
     import anthropic
 
-    client = anthropic.Anthropic(api_key=api_key)
+    client = anthropic.Anthropic(api_key=api_key, timeout=CLAUDE_TIMEOUT_SECONDS, max_retries=0)
     for attempt in range(1, CLAUDE_ATTEMPTS + 1):
         try:
             response = client.messages.create(

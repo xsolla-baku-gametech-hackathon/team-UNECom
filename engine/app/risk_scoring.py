@@ -14,10 +14,10 @@ from __future__ import annotations
 
 from collections import defaultdict
 from datetime import datetime
+from typing import Iterable
 
 import networkx as nx
 
-STORE_ACCOUNT = "STORE"
 
 WEIGHTS = {
     "taint": 0.40,
@@ -122,7 +122,7 @@ def compute_degree_imbalance(G: nx.MultiDiGraph) -> dict[str, dict]:
 
 
 def combine_scores(
-    accounts: list[str],
+    accounts: Iterable[str],
     taint: dict[str, dict],
     velocity: dict[str, float],
     degree: dict[str, dict],
