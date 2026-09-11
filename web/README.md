@@ -1,4 +1,4 @@
-# Fraud Radar dashboard
+# Fraud Tracker dashboard
 
 React + TypeScript + Vite + Tailwind dashboard for investigating post-purchase value flow.
 

@@ -17,7 +17,7 @@ Oxu: yuxarıdan aşağı. Mötərizədə yalnız (vaxt · klik · ekrandan oxuna
 
 **(0:10 · S1 başlıq · klik yoxdur)**
 
-> "Fraud Radar traces where in-game value goes after the payment clears, and finds the laundering rings in that flow. Every other tool stops at the payment. We start there."
+> "Fraud Tracker traces where in-game value goes after the payment clears, and finds the laundering rings in that flow. Every other tool stops at the payment. We start there."
 
 `[klik → S2]`
 

@@ -1,4 +1,4 @@
-# Business Case — Post-Purchase Value Flow: Fraud Radar
+# Business Case — Post-Purchase Value Flow: Fraud Tracker
 
 **Team UNECom · GameTech Bootcamp Baku 2026**
 

@@ -117,12 +117,12 @@ xərci sıfır: Valve cümləsi Slayd 2-dən çıxıb.
 
 ### 1b · What you built (ikinci build, klik, 0:10–0:23)
 
-**Ekranda:** Layihə adı böyük — *Post-Purchase Value Flow · Fraud Radar*,
+**Ekranda:** Layihə adı böyük — *Post-Purchase Value Flow · Fraud Tracker*,
 altında bir sətir: "We trace where in-game value goes after the payment clears."
 Komanda adı: **UNECom**. Kiçik: trade · gift · marketplace sale · key redeem.
 
 **De (EN):**
-> "Fraud Radar traces where in-game value goes after the payment clears, and finds the laundering rings in that flow. Every other tool stops at the payment. We start there."
+> "Fraud Tracker traces where in-game value goes after the payment clears, and finds the laundering rings in that flow. Every other tool stops at the payment. We start there."
 
 *(29 söz · ~13 s)*
 
